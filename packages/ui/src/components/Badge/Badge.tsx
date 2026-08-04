@@ -21,7 +21,7 @@ export type BadgeProps = {
 type TonePalette = { background: string; color: string; border: string };
 
 const tonePalettes: Record<BadgeTone, TonePalette> = {
-  brand: { background: color.badge.background, color: color.badge.hover, border: color.badge.foreground },
+  brand: { background: color.badge.background, color: color.badge.hover, border: color.badge.border },
   success: { background: color.status.success.background, color: color.status.success.text, border: color.status.success.main },
   warning: { background: color.status.warning.background, color: color.status.warning.textStrong, border: color.status.warning.main },
   error: { background: color.status.error.background, color: color.status.error.text, border: color.status.error.main },

@@ -20,9 +20,8 @@
  *
  * Not yet encoded — present in Figma's Color styles panel but not drawn into
  * the guidebook frame, which is the only machine-readable source:
- * Annotation, Highlight-Select, NavBar/Hover-2, NavBar/Disable/Background,
- * Badge/Border, Laziza/Hover. Add them to the guidebook frame to have them
- * extracted.
+ * Annotation (Text & Border, Background). Add it to the guidebook frame to
+ * have it extracted.
  *
  * Known mismatch: Figma's Color styles panel names Laziza's first swatch
  * "Text", while the guidebook frame names it "Main". Encoded below as
@@ -43,8 +42,10 @@ export const main = {
   background: '#F5F8FF',
   /** Secondary background — raised or inset panels against `background`. */
   backgroundAlt: '#E7EFF6',
-  /** Search-match highlight (the yellow behind matched text). */
+  /** Search-match highlight — the amber behind matched text. Figma: "Highlight-Search". */
   highlight: '#F3D381',
+  /** Selected-match highlight — the current match within a set. Figma: "Highlight-Select". */
+  highlightSelect: '#37A9FA',
   /** Default border/divider color. */
   border: '#C3CBD3',
 } as const;
@@ -67,6 +68,8 @@ export const navbar = {
   /** Active nav item label. */
   textActive: '#2D323E',
   hover: '#E4EAF5',
+  /** High-contrast hover, for dark nav surfaces. Figma: "Hover-2". */
+  hoverStrong: '#0A0B0E',
   background: '#FFFFFF',
   border: '#D6DFE7',
   disabledBackground: '#DCE8FF',
@@ -76,11 +79,13 @@ export const navbar = {
  * Badge / tag colors in the brand blue family.
  */
 export const badge = {
-  /** Text, icon, and border share one value. */
+  /** Text and icon color. Figma: "Text-Icon-Border". */
   foreground: '#378AFA',
   hover: '#145FC4',
   background: '#DAECFF',
   backgroundAlt: '#FFFFFF',
+  /** Badge outline — lighter than `foreground`. Figma: "Border". */
+  border: '#C2DDFE',
 } as const;
 
 /**
@@ -132,13 +137,19 @@ export const status = {
  */
 export const accent = {
   /**
-   * Figma group: "Laziza". The name has no documented meaning; it reads as a
-   * general amber accent distinct from `status.warning`.
-   * DECISION (reversible): exposed as `accent.amber`. Rename freely — this has
-   * no consumers yet.
+   * ⚠️ This is Figma's "Laziza" group, renamed.
+   *
+   * DECISION (reversible): "Laziza" has no documented meaning and does not say
+   * what the color is for, so it is exposed here as `accent.amber` — searching
+   * the codebase for "Laziza" finds nothing. If the name carries meaning worth
+   * keeping, rename this key back; it has no consumers yet, so the change is
+   * free today and breaking once the apps adopt it.
+   *
+   * Distinct from `status.warning`, which is the semantic warning color.
    */
   amber: {
     main: '#FA8C16',
+    hover: '#DE7B11',
     background: '#FFFBE6',
     backgroundAlt: '#F7B716',
   },
