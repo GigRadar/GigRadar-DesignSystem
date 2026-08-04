@@ -6,17 +6,17 @@
  * without touching a line of app code.
  */
 
-export { GigRadarProvider } from './provider/GigRadarProvider';
-export type { GigRadarProviderProps } from './provider/GigRadarProvider';
+export { GigRadarProvider } from './provider/GigRadarProvider.js';
+export type { GigRadarProviderProps } from './provider/GigRadarProvider.js';
 
-export { Button } from './components/Button/Button';
-export type { ButtonProps, ButtonVariant, ButtonSize } from './components/Button/Button';
+export { Button } from './components/Button/Button.js';
+export type { ButtonProps, ButtonVariant, ButtonSize } from './components/Button/Button.js';
 
-export { Badge } from './components/Badge/Badge';
-export type { BadgeProps, BadgeTone, BadgeSize } from './components/Badge/Badge';
+export { Badge } from './components/Badge/Badge.js';
+export type { BadgeProps, BadgeTone, BadgeSize } from './components/Badge/Badge.js';
 
-export { Card } from './components/Card/Card';
-export type { CardProps, CardVariant, CardPadding } from './components/Card/Card';
+export { Card } from './components/Card/Card.js';
+export type { CardProps, CardVariant, CardPadding } from './components/Card/Card.js';
 
 /**
  * Tokens are re-exported so app code never needs a direct `@gigradar/theme`

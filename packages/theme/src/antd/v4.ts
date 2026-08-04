@@ -1,6 +1,6 @@
-import { color } from '../tokens/color';
-import { radius, spacing } from '../tokens/space';
-import { fontFamily, fontSize, lineHeight } from '../tokens/typography';
+import { color } from '../tokens/color.js';
+import { radius, spacing } from '../tokens/space.js';
+import { fontFamily, fontSize, lineHeight } from '../tokens/typography.js';
 
 /**
  * antd v4 Less variable overrides.

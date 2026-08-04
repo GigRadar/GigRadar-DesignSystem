@@ -13,8 +13,8 @@
  * and build scripts can import it freely.
  */
 
-export { color, main, disable, navbar, badge, status, accent, stage, stageFlat, deprecated } from './tokens/color';
-export type { ColorTokens, StageName } from './tokens/color';
+export { color, main, disable, navbar, badge, status, accent, stage, stageFlat, deprecated } from './tokens/color.js';
+export type { ColorTokens, StageName } from './tokens/color.js';
 
 export {
   typography,
@@ -24,19 +24,19 @@ export {
   letterSpacing,
   lineHeight,
   textStyle,
-} from './tokens/typography';
-export type { TypographyTokens, TextStyleName } from './tokens/typography';
+} from './tokens/typography.js';
+export type { TypographyTokens, TextStyleName } from './tokens/typography.js';
 
-export { spacing, radius, shadow } from './tokens/space';
-export type { SpacingToken, RadiusToken, ShadowToken } from './tokens/space';
+export { spacing, radius, shadow } from './tokens/space.js';
+export type { SpacingToken, RadiusToken, ShadowToken } from './tokens/space.js';
 
-export { antdV4LessVariables, getAntdV4ModifyVars } from './antd/v4';
+export { antdV4LessVariables, getAntdV4ModifyVars } from './antd/v4.js';
 
-export { buildCssVars, renderCssVars } from './css-vars';
+export { buildCssVars, renderCssVars } from './css-vars.js';
 
-import { color } from './tokens/color';
-import { radius, shadow, spacing } from './tokens/space';
-import { typography } from './tokens/typography';
+import { color } from './tokens/color.js';
+import { radius, shadow, spacing } from './tokens/space.js';
+import { typography } from './tokens/typography.js';
 
 /**
  * Every token under one object, for ergonomic destructuring:

@@ -1,6 +1,6 @@
-import { color } from './tokens/color';
-import { radius, shadow, spacing } from './tokens/space';
-import { fontFamily, fontSize, fontWeight, lineHeight } from './tokens/typography';
+import { color } from './tokens/color.js';
+import { radius, shadow, spacing } from './tokens/space.js';
+import { fontFamily, fontSize, fontWeight, lineHeight } from './tokens/typography.js';
 
 /**
  * CSS custom properties for every token.

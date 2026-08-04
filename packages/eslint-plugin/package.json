@@ -1,0 +1,36 @@
+{
+  "name": "@gigradar/eslint-plugin",
+  "version": "0.1.0",
+  "description": "ESLint rules enforcing the GigRadar design system.",
+  "license": "UNLICENSED",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch"
+  },
+  "peerDependencies": {
+    "eslint": ">=8"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.56.12",
+    "@types/estree": "^1.0.6",
+    "@typescript-eslint/parser": "^8.66.0",
+    "eslint": "^8.57.1",
+    "typescript": "^5.6.3"
+  }
+}

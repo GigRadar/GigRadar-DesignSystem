@@ -13,22 +13,27 @@ npm run dev     # gallery at http://localhost:5173
 |---|---|
 | `@gigradar/theme` | Design tokens — colors, typography, spacing, radius, shadow |
 | `@gigradar/ui` | Components — the single import surface for all four apps |
+| `@gigradar/eslint-plugin` | Rules banning hardcoded values and direct antd imports |
 | Claude Code plugin | `.claude-plugin/marketplace.json` + `skills/design-system/SKILL.md` |
-| Gallery | `apps/gallery` — live previews, props, and source |
+| Gallery | `apps/gallery` — run locally with `npm run dev` |
 
 ## Layout
 
 ```
 packages/
-  theme/          @gigradar/theme — tokens, antd v4 Less map, CSS vars
-  ui/             @gigradar/ui — Button, Badge, Card, GigRadarProvider
+  theme/           @gigradar/theme — tokens, antd v4 Less map, CSS vars
+  ui/              @gigradar/ui — Button, Badge, Card, GigRadarProvider
+  eslint-plugin/   @gigradar/eslint-plugin — enforcement rules
 apps/
-  gallery/        Vite + React gallery
+  gallery/         Vite + React gallery
 skills/
-  design-system/  SKILL.md — the rules developers get in their app repos
-.claude-plugin/   marketplace.json
+  design-system/   SKILL.md — the rules developers get in their app repos
+.claude-plugin/    marketplace.json
+.github/workflows/ release.yml — Changesets → GitHub Packages
 docs/
-  adoption-antd-v4.md
+  adoption-antd-v4.md    wiring the theme into an antd v4 app
+  consuming-packages.md  auth setup for installing the packages
+  linting.md             what the rules catch, and what they miss
 ```
 
 ## Tokens

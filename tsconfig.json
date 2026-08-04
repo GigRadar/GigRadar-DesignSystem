@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/theme" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/eslint-plugin" }
+  ]
+}
