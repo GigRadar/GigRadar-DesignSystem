@@ -77,7 +77,7 @@ Everything is extracted from the Figma guidebook. Do not invent values.
 - `color.navbar` — nav chrome only: `text`, `textActive`, `hover`, `background`, `border`
 - `color.badge` — `foreground`, `hover`, `background`
 - `color.disable` — `background`, `backgroundAlt`, `text`
-- `color.accent` — `amber`, `decrease`, `schedule`, `meetings`
+- `color.accent` — `laziza`, `decrease`, `schedule`, `meetings`
 - `color.proposal` — `sent`
 - `color.stageFlat` — the nine CRM pipeline stages, keyed by name
 - `color.integration` — `slack`, `telegram`; each has `.main`, `.hover`, `.background`, `.border`

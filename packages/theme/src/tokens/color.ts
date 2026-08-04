@@ -25,7 +25,7 @@
  *
  * Known mismatch: Figma's Color styles panel names Laziza's first swatch
  * "Text", while the guidebook frame names it "Main". Encoded below as
- * `accent.amber.main`, following the guidebook.
+ * `accent.laziza.main`, following the guidebook.
  */
 
 /**
@@ -42,10 +42,23 @@ export const main = {
   background: '#F5F8FF',
   /** Secondary background — raised or inset panels against `background`. */
   backgroundAlt: '#E7EFF6',
-  /** Search-match highlight — the amber behind matched text. Figma: "Highlight-Search". */
-  highlight: '#F3D381',
-  /** Selected-match highlight — the current match within a set. Figma: "Highlight-Select". */
-  highlightSelect: '#37A9FA',
+  /**
+   * Search-match highlight — sits behind matched text. Figma: "Highlight-Search".
+   *
+   * Applied at 35% opacity in Figma, encoded as rgba rather than flattened so
+   * the text and whatever surface is beneath both show through. Flattening to
+   * an opaque hex would only be correct over white.
+   */
+  highlight: 'rgba(243, 211, 129, 0.35)',
+  /** The solid fill behind `highlight`, for cases that need it opaque. */
+  highlightSolid: '#F3D381',
+  /**
+   * Selected-match highlight — the current match within a result set.
+   * Figma: "Highlight-Select". Also 35% opacity.
+   */
+  highlightSelect: 'rgba(55, 169, 250, 0.35)',
+  /** The solid fill behind `highlightSelect`. */
+  highlightSelectSolid: '#37A9FA',
   /** Default border/divider color. */
   border: '#C3CBD3',
 } as const;
@@ -137,17 +150,14 @@ export const status = {
  */
 export const accent = {
   /**
-   * ⚠️ This is Figma's "Laziza" group, renamed.
+   * Figma group: "Laziza". Named to match Figma exactly, so a search for
+   * "Laziza" finds this in both places.
    *
-   * DECISION (reversible): "Laziza" has no documented meaning and does not say
-   * what the color is for, so it is exposed here as `accent.amber` — searching
-   * the codebase for "Laziza" finds nothing. If the name carries meaning worth
-   * keeping, rename this key back; it has no consumers yet, so the change is
-   * free today and breaking once the apps adopt it.
-   *
-   * Distinct from `status.warning`, which is the semantic warning color.
+   * Distinct from `status.warning`, which is the semantic warning color —
+   * these are near-identical oranges with different meanings, so pick by
+   * intent rather than by appearance.
    */
-  amber: {
+  laziza: {
     main: '#FA8C16',
     hover: '#DE7B11',
     background: '#FFFBE6',

@@ -120,23 +120,35 @@ function GroupLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Checkerboard, so translucent tokens read as translucent rather than pale. */
+const ALPHA_CHECKER =
+  'repeating-conic-gradient(#E8E8E8 0% 25%, #FFFFFF 0% 50%) 50% / 12px 12px';
+
 function Swatches({ entries }: { entries: [string, string][] }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: spacing.s }}>
-      {entries.map(([name, value]) => (
-        <div key={name} style={{ width: 132 }}>
-          <div
-            style={{
-              height: 56,
-              backgroundColor: value,
-              borderRadius: radius.s,
-              border: `1px solid ${color.navbar.border}`,
-            }}
-          />
-          <div style={{ ...textStyle.sMedium, color: color.navbar.textActive, marginTop: spacing.xxs }}>{name}</div>
-          <code style={{ ...textStyle.sRegular, fontFamily: typography.fontFamily.mono, color: color.main.description }}>{value}</code>
-        </div>
-      ))}
+      {entries.map(([name, value]) => {
+        const isTranslucent = value.startsWith('rgba');
+        return (
+          <div key={name} style={{ width: 132 }}>
+            <div
+              style={{
+                height: 56,
+                borderRadius: radius.s,
+                border: `1px solid ${color.navbar.border}`,
+                background: isTranslucent ? ALPHA_CHECKER : undefined,
+                overflow: 'hidden',
+              }}
+            >
+              <div style={{ height: '100%', backgroundColor: value }} />
+            </div>
+            <div style={{ ...textStyle.sMedium, color: color.navbar.textActive, marginTop: spacing.xxs }}>{name}</div>
+            <code style={{ ...textStyle.sRegular, fontFamily: typography.fontFamily.mono, color: color.main.description, wordBreak: 'break-all' }}>
+              {value}
+            </code>
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -45,7 +45,7 @@ Six decisions were made where Figma was ambiguous. Each is marked
 
 | Decision | Rationale |
 |---|---|
-| Figma "Laziza" → `accent.amber` | Undocumented name; reads as a general amber accent |
+| Figma "Laziza" kept as `accent.laziza` | Matches Figma exactly, so the name is searchable in both places |
 | `status.error` = `#FA3737`, `status.warning` = `#FFB74D` | Figma had four overlapping alert palettes; duplicates kept as deprecated aliases |
 | Stages grouped `[U]`/`[P]`/`[L]` → unqualified/pipeline/lost | Read from the Figma prefixes |
 | Line heights 1.2 heading / 1.5 paragraph | Figma reports `lineHeight: 100` (its "100%" auto setting), unusable literally |
