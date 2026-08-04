@@ -1,4 +1,4 @@
-import { Button } from '@gigradar/ui';
+import { Button } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
@@ -7,7 +7,7 @@ import { BUTTON_SOURCE } from '../sources';
 export function ButtonPage() {
   return (
     <>
-      <PageHeader title="Button" description="The primary action control. Every value reads from @gigradar/theme — no hardcoded colors or sizes." />
+      <PageHeader title="Button" description="The primary action control. Every value reads from @uiuxjoseph/theme — no hardcoded colors or sizes." />
 
       <Section title="Variants">
         <Preview>

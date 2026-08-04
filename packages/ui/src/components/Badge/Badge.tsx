@@ -1,4 +1,4 @@
-import { color, radius, spacing, textStyle, typography, type StageName } from '@gigradar/theme';
+import { color, radius, spacing, textStyle, typography, type StageName } from '@uiuxjoseph/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 
 export type BadgeTone = 'brand' | 'success' | 'warning' | 'error' | 'neutral' | 'schedule' | 'meetings';

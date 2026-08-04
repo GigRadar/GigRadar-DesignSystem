@@ -41,16 +41,16 @@ export const noHardcodedValues: Rule.RuleModule = {
   meta: {
     type: 'problem',
     docs: {
-      description: 'Disallow hardcoded colors and spacing; use @gigradar/theme tokens',
+      description: 'Disallow hardcoded colors and spacing; use @uiuxjoseph/theme tokens',
       recommended: true,
     },
     messages: {
       hardcodedColor:
-        'Hardcoded color "{{value}}". Use a token from @gigradar/theme (e.g. color.main.brand). See skills/design-system/SKILL.md.',
+        'Hardcoded color "{{value}}". Use a token from @uiuxjoseph/theme (e.g. color.main.brand). See skills/design-system/SKILL.md.',
       hardcodedSpacing:
         'Hardcoded {{property}} of {{value}}. Use a spacing or radius token (e.g. spacing.m, radius.s).',
       hardcodedPx:
-        'Hardcoded px value "{{value}}". Use a token from @gigradar/theme.',
+        'Hardcoded px value "{{value}}". Use a token from @uiuxjoseph/theme.',
     },
     schema: [
       {

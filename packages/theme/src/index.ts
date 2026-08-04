@@ -1,5 +1,5 @@
 /**
- * @gigradar/theme — the single source of truth for GigRadar design tokens.
+ * @uiuxjoseph/theme — the single source of truth for GigRadar design tokens.
  *
  * Values are extracted from the Figma guidebook
  * (file HNZEuaniWtXmEINBodTtal, node 4363:1685).
@@ -51,7 +51,7 @@ import { typography } from './tokens/typography.js';
 /**
  * Every token under one object, for ergonomic destructuring:
  *
- *   import { tokens } from '@gigradar/theme';
+ *   import { tokens } from '@uiuxjoseph/theme';
  *   const { color, spacing } = tokens;
  */
 export const tokens = {

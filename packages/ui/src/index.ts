@@ -1,5 +1,5 @@
 /**
- * @gigradar/ui — the single import surface for GigRadar apps.
+ * @uiuxjoseph/ui — the single import surface for GigRadar apps.
  *
  * Apps import every component from here. That indirection is what lets an
  * implementation be swapped without touching a line of app code.
@@ -18,8 +18,8 @@ export { Card } from './components/Card/Card.js';
 export type { CardProps, CardVariant, CardPadding } from './components/Card/Card.js';
 
 /**
- * Tokens are re-exported so app code never needs a direct `@gigradar/theme`
+ * Tokens are re-exported so app code never needs a direct `@uiuxjoseph/theme`
  * dependency for ordinary use.
  */
-export { tokens, color, spacing, radius, shadow, typography, textStyle } from '@gigradar/theme';
-export type { StageName } from '@gigradar/theme';
+export { tokens, color, spacing, radius, shadow, typography, textStyle } from '@uiuxjoseph/theme';
+export type { StageName } from '@uiuxjoseph/theme';

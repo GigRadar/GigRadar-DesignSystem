@@ -1,4 +1,4 @@
-import { color, radius, shadow, spacing, textStyle, typography } from '@gigradar/theme';
+import { color, radius, shadow, spacing, textStyle, typography } from '@uiuxjoseph/theme';
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -80,7 +80,7 @@ const variantPalettes: Record<ButtonVariant, VariantPalette> = {
 /**
  * The GigRadar button.
  *
- * Every value below reads from `@gigradar/theme`. No literals.
+ * Every value below reads from `@uiuxjoseph/theme`. No literals.
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { variant = 'primary', size = 'medium', loading = false, block = false, icon, children, disabled, ...rest },

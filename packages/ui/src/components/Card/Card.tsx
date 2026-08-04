@@ -1,4 +1,4 @@
-import { color, radius, shadow, spacing, textStyle, typography } from '@gigradar/theme';
+import { color, radius, shadow, spacing, textStyle, typography } from '@uiuxjoseph/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 
 export type CardVariant = 'elevated' | 'outlined' | 'flat';

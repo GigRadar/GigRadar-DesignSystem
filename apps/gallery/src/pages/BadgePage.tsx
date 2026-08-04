@@ -1,5 +1,5 @@
-import { color, spacing, textStyle } from '@gigradar/theme';
-import { Badge, type StageName } from '@gigradar/ui';
+import { color, spacing, textStyle } from '@uiuxjoseph/theme';
+import { Badge, type StageName } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';

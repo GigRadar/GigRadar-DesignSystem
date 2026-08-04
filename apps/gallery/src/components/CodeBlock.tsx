@@ -1,4 +1,4 @@
-import { color, radius, spacing, textStyle, typography } from '@gigradar/theme';
+import { color, radius, spacing, textStyle, typography } from '@uiuxjoseph/theme';
 import { useState, type ReactNode } from 'react';
 
 type CodeBlockProps = {

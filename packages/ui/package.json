@@ -1,5 +1,5 @@
 {
-  "name": "@gigradar/ui",
+  "name": "@uiuxjoseph/ui",
   "version": "0.2.0",
   "description": "GigRadar UI components — the single import surface for all four apps.",
   "license": "UNLICENSED",
@@ -24,7 +24,7 @@
     "dev": "tsc -p tsconfig.json --watch"
   },
   "dependencies": {
-    "@gigradar/theme": "^0.2.0"
+    "@uiuxjoseph/theme": "^0.2.0"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",

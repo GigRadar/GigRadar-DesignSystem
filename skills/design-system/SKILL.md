@@ -5,29 +5,29 @@ description: GigRadar design system rules. Use when writing or reviewing UI in a
 
 # GigRadar Design System
 
-The design system lives in `@gigradar/theme` and `@gigradar/ui`. This skill is
+The design system lives in `@uiuxjoseph/theme` and `@uiuxjoseph/ui`. This skill is
 the contract for consuming it. Four apps share these packages — home, dashboard,
 crm, and inbound — so a violation in one app is a divergence across the product.
 
 ## The three rules
 
-### 1. Import UI from `@gigradar/ui`
+### 1. Import UI from `@uiuxjoseph/ui`
 
 ```tsx
 // Correct
-import { Button, Badge, Card } from '@gigradar/ui';
+import { Button, Badge, Card } from '@uiuxjoseph/ui';
 
 // Wrong — bypasses the design system
 import { Button } from 'antd';
 import { Button } from 'some-other-ui-kit';
 ```
 
-`@gigradar/ui` is the single import surface, so an implementation can be
+`@uiuxjoseph/ui` is the single import surface, so an implementation can be
 swapped without touching app code.
 
 Some apps still have antd 4.x in their dependency tree from before the design
 system existed. Do not import from it. If a component you need is not exported
-from `@gigradar/ui` yet, say what is missing rather than reaching around the
+from `@uiuxjoseph/ui` yet, say what is missing rather than reaching around the
 wrapper — see "When something is missing" below.
 
 ### 2. Never hardcode a color, spacing, radius, font size, or shadow
@@ -36,7 +36,7 @@ Every visual value comes from tokens. No exceptions, including "just this once"
 and "it's only a one-off."
 
 ```tsx
-import { color, spacing, radius, textStyle } from '@gigradar/ui';
+import { color, spacing, radius, textStyle } from '@uiuxjoseph/ui';
 
 // Correct
 <div style={{ color: color.main.brand, padding: spacing.m, borderRadius: radius.s }} />
@@ -50,8 +50,8 @@ everywhere:
 
 | Context | How |
 |---|---|
-| React components | `import { color, spacing } from '@gigradar/ui'` |
-| Non-React code (charts, utils, configs) | `import { tokens } from '@gigradar/theme'` |
+| React components | `import { color, spacing } from '@uiuxjoseph/ui'` |
+| Non-React code (charts, utils, configs) | `import { tokens } from '@uiuxjoseph/theme'` |
 | Stylesheets | `var(--gr-color-brand)`, `var(--gr-space-m)` |
 
 Charts are the usual place hardcoded hex creeps in. Use `tokens` there.
@@ -126,7 +126,7 @@ dependency from before the design system existed.
 
 Do not add new antd usage. Do not reach for `theme.useToken()` or
 `ConfigProvider` — those are antd APIs and have no role here. Tokens come from
-`@gigradar/ui` or `@gigradar/theme`, as described above.
+`@uiuxjoseph/ui` or `@uiuxjoseph/theme`, as described above.
 
 When you encounter existing antd usage, leave it alone unless the task is to
 migrate it. If you do migrate something, note that our component APIs differ

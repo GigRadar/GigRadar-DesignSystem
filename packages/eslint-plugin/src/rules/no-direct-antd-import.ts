@@ -15,13 +15,13 @@ export const noDirectAntdImport: Rule.RuleModule = {
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Disallow importing from antd; use @gigradar/ui',
+      description: 'Disallow importing from antd; use @uiuxjoseph/ui',
       recommended: true,
     },
     fixable: undefined,
     messages: {
       directImport:
-        'Do not import from "{{source}}" — GigRadar no longer builds on antd. Use @gigradar/ui. If {{names}} is not exported yet, add it there rather than reaching around the design system.',
+        'Do not import from "{{source}}" — GigRadar no longer builds on antd. Use @uiuxjoseph/ui. If {{names}} is not exported yet, add it there rather than reaching around the design system.',
     },
     schema: [
       {
@@ -38,7 +38,7 @@ export const noDirectAntdImport: Rule.RuleModule = {
     const options = (context.options[0] ?? {}) as { allowIn?: string[] };
     const filename = context.filename ?? context.getFilename();
 
-    // @gigradar/ui itself must import antd — that is its job.
+    // @uiuxjoseph/ui itself must import antd — that is its job.
     const exempt = (options.allowIn ?? ['packages/ui/']).some((fragment) =>
       filename.includes(fragment),
     );

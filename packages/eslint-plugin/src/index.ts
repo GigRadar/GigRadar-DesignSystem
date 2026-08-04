@@ -2,7 +2,7 @@ import { noDirectAntdImport } from './rules/no-direct-antd-import.js';
 import { noHardcodedValues } from './rules/no-hardcoded-values.js';
 
 /**
- * @gigradar/eslint-plugin
+ * @uiuxjoseph/eslint-plugin
  *
  * Two rules, both enforcing constraints from skills/design-system/SKILL.md:
  *   - no-hardcoded-values   → tokens instead of literals
@@ -23,21 +23,21 @@ export const configs = {
   recommended: {
     plugins: {} as Record<string, unknown>,
     rules: {
-      '@gigradar/no-hardcoded-values': 'error',
-      '@gigradar/no-direct-antd-import': 'error',
+      '@uiuxjoseph/no-hardcoded-values': 'error',
+      '@uiuxjoseph/no-direct-antd-import': 'error',
     },
   },
   /** Legacy .eslintrc config (ESLint 8). */
   legacy: {
-    plugins: ['@gigradar'],
+    plugins: ['@uiuxjoseph'],
     rules: {
-      '@gigradar/no-hardcoded-values': 'error',
-      '@gigradar/no-direct-antd-import': 'error',
+      '@uiuxjoseph/no-hardcoded-values': 'error',
+      '@uiuxjoseph/no-direct-antd-import': 'error',
     },
   },
 };
 
 // Self-reference so flat config `plugins` resolves without extra wiring.
-configs.recommended.plugins = { '@gigradar': { rules } };
+configs.recommended.plugins = { '@uiuxjoseph': { rules } };
 
 export default { rules, configs };

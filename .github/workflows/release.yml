@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com
-          scope: '@gigradar'
+          scope: '@uiuxjoseph'
 
       - run: npm ci
 

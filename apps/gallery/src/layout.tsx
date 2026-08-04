@@ -1,4 +1,4 @@
-import { color, shadow, spacing, textStyle } from '@gigradar/theme';
+import { color, shadow, spacing, textStyle } from '@uiuxjoseph/theme';
 import type { ReactNode } from 'react';
 
 export function Shell({ nav, children }: { nav: ReactNode; children: ReactNode }) {

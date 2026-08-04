@@ -11,9 +11,9 @@ npm run dev     # gallery at http://localhost:5173
 
 | Output | Where |
 |---|---|
-| `@gigradar/theme` | Design tokens — colors, typography, spacing, radius, shadow |
-| `@gigradar/ui` | Components — the single import surface for all four apps |
-| `@gigradar/eslint-plugin` | Rules banning hardcoded values and legacy antd imports |
+| `@uiuxjoseph/theme` | Design tokens — colors, typography, spacing, radius, shadow |
+| `@uiuxjoseph/ui` | Components — the single import surface for all four apps |
+| `@uiuxjoseph/eslint-plugin` | Rules banning hardcoded values and legacy antd imports |
 | Claude Code plugin | `.claude-plugin/marketplace.json` + `skills/design-system/SKILL.md` |
 | Gallery | `apps/gallery` — run locally with `npm run dev` |
 
@@ -21,9 +21,9 @@ npm run dev     # gallery at http://localhost:5173
 
 ```
 packages/
-  theme/           @gigradar/theme — tokens + CSS custom properties
-  ui/              @gigradar/ui — Button, Badge, Card, GigRadarProvider
-  eslint-plugin/   @gigradar/eslint-plugin — enforcement rules
+  theme/           @uiuxjoseph/theme — tokens + CSS custom properties
+  ui/              @uiuxjoseph/ui — Button, Badge, Card, GigRadarProvider
+  eslint-plugin/   @uiuxjoseph/eslint-plugin — enforcement rules
 apps/
   gallery/         Vite + React gallery
 skills/

@@ -1,4 +1,4 @@
-import { renderCssVars } from '@gigradar/theme';
+import { renderCssVars } from '@uiuxjoseph/theme';
 import { useEffect, type ReactNode } from 'react';
 
 const STYLE_ELEMENT_ID = 'gigradar-tokens';
@@ -20,7 +20,7 @@ export type GigRadarProviderProps = {
  * Wraps a GigRadar app and makes design tokens available.
  *
  * Apps mount this once at the root. Because the provider owns token delivery,
- * a token change ships as a `@gigradar/ui` version bump rather than a code
+ * a token change ships as a `@uiuxjoseph/ui` version bump rather than a code
  * change in each of the four app repos.
  */
 export function GigRadarProvider({ children, injectCssVars = true }: GigRadarProviderProps) {

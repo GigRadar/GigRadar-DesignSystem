@@ -1,5 +1,5 @@
 {
-  "name": "@gigradar/design-system",
+  "name": "@uiuxjoseph/design-system",
   "version": "0.0.0",
   "private": true,
   "description": "GigRadar design system — tokens, components, and rules for home, dashboard, crm, and inbound",
@@ -8,7 +8,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @gigradar/gallery",
+    "dev": "npm run dev --workspace @uiuxjoseph/gallery",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "tsc --build --force",
     "lint": "eslint .",

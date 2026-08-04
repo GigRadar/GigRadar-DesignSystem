@@ -1,5 +1,5 @@
-import { color, spacing, textStyle } from '@gigradar/theme';
-import { Badge, Button, Card } from '@gigradar/ui';
+import { color, spacing, textStyle } from '@uiuxjoseph/theme';
+import { Badge, Button, Card } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
