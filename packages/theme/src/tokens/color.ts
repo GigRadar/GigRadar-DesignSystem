@@ -1,12 +1,32 @@
 /**
  * GigRadar color tokens.
  *
- * Extracted verbatim from the Figma guidebook (file HNZEuaniWtXmEINBodTtal,
- * node 4363:1685). Every hex here appears in that file — none were invented.
+ * Extracted from the Figma guidebook (file HNZEuaniWtXmEINBodTtal, node
+ * 4363:1685). Every hex here came from Figma — none were invented.
+ *
+ * Organised into six categories:
+ *
+ *   Foundation   `main`                    brand, text, surfaces, border
+ *   State        `disable`, `status`       disabled, success, error, warning
+ *   Surface      `navbar`, `badge`         component-specific chrome
+ *   Domain       `accent`, `proposal`,     GigRadar concepts
+ *                `stage`
+ *   Integration  `integration`             external service brand colors
+ *   Legacy       `deprecated`              retained for compatibility only
  *
  * These are LOCAL STYLES in Figma, not variables. When the Figma file is
  * migrated to variables, the values below should not change; only the
  * extraction method does.
+ *
+ * Not yet encoded — present in Figma's Color styles panel but not drawn into
+ * the guidebook frame, which is the only machine-readable source:
+ * Annotation, Highlight-Select, NavBar/Hover-2, NavBar/Disable/Background,
+ * Badge/Border, Laziza/Hover. Add them to the guidebook frame to have them
+ * extracted.
+ *
+ * Known mismatch: Figma's Color styles panel names Laziza's first swatch
+ * "Text", while the guidebook frame names it "Main". Encoded below as
+ * `accent.amber.main`, following the guidebook.
  */
 
 /**
@@ -147,6 +167,44 @@ export const accent = {
 } as const;
 
 /**
+ * Proposal state colors.
+ *
+ * Figma group: "Proposal". Only the `sent` state exists today; further states
+ * are additive when they are designed.
+ */
+export const proposal = {
+  sent: '#FBF0FF',
+} as const;
+
+/**
+ * Brand colors for external services.
+ *
+ * Deliberately separate from the semantic tokens. These are Slack's and
+ * Telegram's brand colors, owned by those companies — they carry no meaning
+ * inside GigRadar's own UI. Keeping them out of `status` and `accent` stops
+ * `slack.main` being reached for when a semantic purple was wanted.
+ *
+ * Use these only where the service itself is being represented: a channel
+ * badge, a connection card, an integration toggle.
+ */
+export const integration = {
+  slack: {
+    main: '#4A154B',
+    hover: '#340E35',
+    background: '#F3EEF4',
+    border: '#C6B4C7',
+  },
+  telegram: {
+    main: '#2AABEE',
+    hover: '#1D74A1',
+    background: '#E8F6FD',
+    border: '#B5E2F9',
+  },
+} as const;
+
+export type IntegrationName = keyof typeof integration;
+
+/**
  * CRM pipeline stage colors.
  *
  * Figma prefixes these `[U]`, `[P]`, and `[L]`.
@@ -214,8 +272,10 @@ export const color = {
   badge,
   status,
   accent,
+  proposal,
   stage,
   stageFlat,
+  integration,
   deprecated,
 } as const;
 

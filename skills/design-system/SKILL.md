@@ -78,7 +78,15 @@ Everything is extracted from the Figma guidebook. Do not invent values.
 - `color.badge` — `foreground`, `hover`, `background`
 - `color.disable` — `background`, `backgroundAlt`, `text`
 - `color.accent` — `amber`, `decrease`, `schedule`, `meetings`
+- `color.proposal` — `sent`
 - `color.stageFlat` — the nine CRM pipeline stages, keyed by name
+- `color.integration` — `slack`, `telegram`; each has `.main`, `.hover`, `.background`, `.border`
+
+`color.integration` holds brand colors owned by Slack and Telegram. Use them
+only where the service itself is being represented — a channel badge, a
+connection card, an integration toggle. They carry no meaning inside GigRadar's
+own UI, so never reach for `integration.slack.main` because a dark purple was
+wanted; that is what `accent.schedule` is for.
 
 **Spacing** (px): `xxs` 4, `xs` 6, `s` 12, `m` 16, `l` 24, `xl` 32, `xxl` 64, `sxxl` 128
 

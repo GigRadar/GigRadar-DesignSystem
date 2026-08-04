@@ -50,6 +50,18 @@ export function buildCssVars(): Record<string, string> {
     set(`color-stage-${kebab(key)}`, value);
   }
 
+  // Colors — proposal states
+  for (const [key, value] of Object.entries(color.proposal)) {
+    set(`color-proposal-${kebab(key)}`, value);
+  }
+
+  // Colors — external service brand colors
+  for (const [service, values] of Object.entries(color.integration)) {
+    for (const [key, value] of Object.entries(values)) {
+      set(`color-${kebab(service)}-${kebab(key)}`, value as string);
+    }
+  }
+
   // Spacing / radius
   for (const [key, value] of Object.entries(spacing)) set(`space-${key}`, value);
   for (const [key, value] of Object.entries(radius)) set(`radius-${key}`, value);

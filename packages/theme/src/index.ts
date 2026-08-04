@@ -12,8 +12,21 @@
  * scripts can import it freely.
  */
 
-export { color, main, disable, navbar, badge, status, accent, stage, stageFlat, deprecated } from './tokens/color.js';
-export type { ColorTokens, StageName } from './tokens/color.js';
+export {
+  color,
+  main,
+  disable,
+  navbar,
+  badge,
+  status,
+  accent,
+  proposal,
+  stage,
+  stageFlat,
+  integration,
+  deprecated,
+} from './tokens/color.js';
+export type { ColorTokens, StageName, IntegrationName } from './tokens/color.js';
 
 export {
   typography,

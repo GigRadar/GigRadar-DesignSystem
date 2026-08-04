@@ -38,6 +38,20 @@ export function TokensPage() {
             <Swatches entries={Object.entries(values)} />
           </div>
         ))}
+        <GroupLabel>proposal</GroupLabel>
+        <Swatches entries={Object.entries(color.proposal)} />
+      </Section>
+
+      <Section
+        title="Integrations"
+        description="Brand colors owned by external services. Kept separate from the semantic tokens — use these only where the service itself is represented, never as a stand-in for a semantic color."
+      >
+        {Object.entries(color.integration).map(([service, values]) => (
+          <div key={service} style={{ marginBottom: spacing.m }}>
+            <GroupLabel>{service}</GroupLabel>
+            <Swatches entries={Object.entries(values)} />
+          </div>
+        ))}
       </Section>
 
       <Section title="Navigation & disabled">
