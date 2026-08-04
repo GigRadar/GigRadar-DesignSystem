@@ -23,6 +23,21 @@ export type { AvatarSize, AvatarToneName };
 export type AvatarService = 'gigradar' | 'upwork' | 'zoom';
 
 /**
+ * The six kinds of avatar.
+ *
+ * `default` is initials on a tinted fill, `image` a photo, `placeholder` the
+ * disabled grey state, and the last three are the service marks drawn in
+ * Figma.
+ *
+ * Usually inferred rather than passed: supplying `src` gives `image`,
+ * `service` gives that service, and a bare `<Avatar />` with no name gives
+ * `placeholder`. Set it explicitly when the type is fixed by the design and
+ * should not follow the data — a `placeholder` that stays grey even once a
+ * name arrives, say.
+ */
+export type AvatarType = 'default' | 'image' | 'placeholder' | AvatarService;
+
+/**
  * The badge pinned to the avatar's bottom-right corner.
  *
  * `gigradar` is the GigRadar mark, `upworkApi` the blue "API" pill — both are
@@ -31,7 +46,58 @@ export type AvatarService = 'gigradar' | 'upwork' | 'zoom';
  */
 export type AvatarBadge = 'gigradar' | 'upworkApi' | ReactNode;
 
+/**
+ * A CSS length. Numbers are treated as px, so `radius={8}` and `radius="8px"`
+ * are the same; any other unit passes through verbatim (`"50%"`, `"2rem"`).
+ */
+export type CssLength = number | string;
+
+/**
+ * Per-instance overrides for the avatar's own metrics.
+ *
+ * These are the same knobs as the `--gr-avatar-*` CSS variables, surfaced as
+ * typed props: setting one writes that variable on the element, so a prop, a
+ * stylesheet rule, and the token default are one mechanism rather than three.
+ * Reach for a prop for a one-off, and the variable for a whole surface.
+ *
+ * Deliberately narrow — these are the avatar's own metrics, not a general
+ * style system. There is no `margin`, `color`, or layout prop here.
+ */
+export type AvatarStyleProps = {
+  /** Avatar diameter. Overrides the `size` step. */
+  diameter?: CssLength;
+  /** Corner radius. The default fully rounds the avatar. */
+  radius?: CssLength;
+  /** Border thickness on tinted avatars. */
+  borderWidth?: CssLength;
+  /** Initials type size. */
+  fontSize?: CssLength;
+  /** Initials weight. */
+  fontWeight?: number;
+  /** Mini avatar diameter. */
+  badgeSize?: CssLength;
+  /** Ring separating the mini avatar from the avatar beneath it. */
+  badgeRingWidth?: CssLength;
+
+  /**
+   * Surface fill. Overrides whatever the tone supplies, so a one-off avatar can
+   * sit outside the palette without reaching for a `style` prop.
+   */
+  background?: string;
+  /** Border color. Overrides the tone's. */
+  borderColor?: string;
+  /** Initials color. Overrides the tone's. */
+  textColor?: string;
+  /** Color of the ring around the mini avatar. Defaults to white. */
+  badgeRingColor?: string;
+};
+
 export type AvatarProps = {
+  /**
+   * Which of the six kinds to render. Inferred from `src` / `service` / `name`
+   * when omitted; set it to pin the type regardless of the data.
+   */
+  type?: AvatarType;
   size?: AvatarSize;
   /**
    * Background/border/text palette for the initials. Ignored when `src` or
@@ -57,9 +123,57 @@ export type AvatarProps = {
   service?: AvatarService;
   /** The bottom-right corner badge. */
   badge?: AvatarBadge;
-} & Omit<HTMLAttributes<HTMLSpanElement>, 'className' | 'style'>;
+} & AvatarStyleProps &
+  Omit<HTMLAttributes<HTMLSpanElement>, 'className' | 'style'>;
 
 const { avatar } = component;
+
+/**
+ * Formats a length prop for CSS. A bare number means px — the unit every
+ * avatar metric is expressed in — while a string is passed through so `"50%"`
+ * or `"2rem"` still work.
+ */
+function len(value: CssLength | undefined): string | undefined {
+  if (value == null) return undefined;
+  return typeof value === 'number' ? `${value}px` : value;
+}
+
+/**
+ * Builds the CSS variables for whichever style props were passed.
+ *
+ * Writing variables rather than concrete properties is what lets the badge —
+ * a separate element further down the tree — pick up `badgeSize` without the
+ * value being threaded through as a prop.
+ *
+ * Size-stepped variables are written unsuffixed AND at the active step, since
+ * the component reads `--gr-avatar-size-medium` rather than a generic name.
+ */
+function styleVars(props: AvatarStyleProps, size: AvatarSize): Record<string, string> {
+  const vars: Record<string, string> = {};
+  const set = (name: string, value: CssLength | undefined) => {
+    const formatted = len(value);
+    if (formatted !== undefined) vars[name] = formatted;
+  };
+  // Colors are already CSS values — no px to append.
+  const setRaw = (name: string, value: string | number | undefined) => {
+    if (value !== undefined) vars[name] = String(value);
+  };
+
+  set(`--gr-avatar-size-${size}`, props.diameter);
+  set(`--gr-avatar-font-size-${size}`, props.fontSize);
+  set(`--gr-avatar-badge-size-${size}`, props.badgeSize);
+  set('--gr-avatar-radius', props.radius);
+  set('--gr-avatar-border-width', props.borderWidth);
+  set('--gr-avatar-badge-ring-width', props.badgeRingWidth);
+
+  setRaw('--gr-avatar-font-weight', props.fontWeight);
+  setRaw('--gr-avatar-background', props.background);
+  setRaw('--gr-avatar-border-color', props.borderColor);
+  setRaw('--gr-avatar-text-color', props.textColor);
+  setRaw('--gr-avatar-badge-ring-color', props.badgeRingColor);
+
+  return vars;
+}
 
 /**
  * The GigRadar mark's own navy field, sampled from the exported asset. Backing
@@ -131,21 +245,73 @@ export function initialsFromName(name: string): string {
  * photo always wins over a letter and a service mark always wins over a photo.
  */
 export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
-  { size = 'medium', tone, name, initials, src, service, badge, ...rest },
+  {
+    size = 'medium',
+    tone,
+    name,
+    initials,
+    src,
+    service,
+    type,
+    badge,
+    diameter: diameterProp,
+    radius,
+    borderWidth,
+    fontSize,
+    fontWeight,
+    badgeSize,
+    badgeRingWidth,
+    background,
+    borderColor,
+    textColor,
+    badgeRingColor,
+    ...rest
+  },
   ref,
 ) {
+  const vars = styleVars(
+    {
+      diameter: diameterProp,
+      radius,
+      borderWidth,
+      fontSize,
+      fontWeight,
+      badgeSize,
+      badgeRingWidth,
+      background,
+      borderColor,
+      textColor,
+      badgeRingColor,
+    },
+    size,
+  );
   const diameter = `var(--gr-avatar-size-${size}, ${avatar.size[size]}px)`;
   const text = (initials ?? (name ? initialsFromName(name) : '')).slice(0, 2);
 
-  // No tone given: derive one from the name so a person keeps their color.
-  // With neither, fall back to Figma's grey placeholder variant.
-  const resolvedTone = tone ?? (name ? toneFromName(name) : 'default');
+  // The type is normally implied by whichever content prop was given; an
+  // explicit `type` pins it so the design does not shift with the data.
+  const resolvedType: AvatarType =
+    type ??
+    (service != null ? service : src != null ? 'image' : text !== '' ? 'default' : 'placeholder');
+
+  const serviceName: AvatarService | undefined =
+    resolvedType === 'gigradar' || resolvedType === 'upwork' || resolvedType === 'zoom'
+      ? resolvedType
+      : undefined;
+
+  // `placeholder` is the grey disabled state, so it ignores both the given
+  // tone and the one hashed from the name.
+  const resolvedTone =
+    resolvedType === 'placeholder' ? 'default' : (tone ?? (name ? toneFromName(name) : 'default'));
   const palette = color.avatarTone[resolvedTone];
 
-  const hasImage = service != null || src != null;
-  const imageSrc = service != null ? serviceImages[service] : src;
+  const imageSrc = serviceName != null ? serviceImages[serviceName] : src;
+  const hasImage = resolvedType !== 'placeholder' && imageSrc != null;
 
   const rootStyle: CSSProperties = {
+    // The variables land on the root so every descendant — including the badge
+    // — resolves them, and so a `var()` further down still sees the override.
+    ...vars,
     position: 'relative',
     display: 'inline-flex',
     flexShrink: 0,
@@ -166,14 +332,16 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
     fontFamily: typography.fontFamily.base,
     // An image covers the surface edge to edge, so a border would read as a
     // ring drawn on top of the photo rather than as the avatar's own edge.
+    // Each value reads its variable and falls back to the tone, so a prop
+    // overrides the palette without the palette being duplicated here.
     ...(hasImage
-      ? { backgroundColor: color.main.backgroundAlt }
+      ? { backgroundColor: `var(--gr-avatar-background, ${color.main.backgroundAlt})` }
       : {
-          backgroundColor: palette.background,
-          border: `var(--gr-avatar-border-width, ${avatar.borderWidth}px) solid ${palette.border}`,
-          color: palette.text,
+          backgroundColor: `var(--gr-avatar-background, ${palette.background})`,
+          border: `var(--gr-avatar-border-width, ${avatar.borderWidth}px) solid var(--gr-avatar-border-color, ${palette.border})`,
+          color: `var(--gr-avatar-text-color, ${palette.text})`,
           fontSize: `var(--gr-avatar-font-size-${size}, ${avatar.fontSize[size]}px)`,
-          fontWeight: typography.fontWeight.medium,
+          fontWeight: `var(--gr-avatar-font-weight, ${typography.fontWeight.medium})`,
           letterSpacing: typography.letterSpacing.m,
           textTransform: 'uppercase',
           lineHeight: 1,
@@ -191,7 +359,9 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
         ) : (
-          text
+          // `placeholder` stays empty even when a name is available — that is
+          // what makes it a fixed empty state rather than initials in grey.
+          resolvedType !== 'placeholder' && text
         )}
       </span>
       {badge != null && badge !== false && <AvatarBadgeSlot size={size} badge={badge} />}
@@ -224,8 +394,8 @@ function AvatarBadgeSlot({ size, badge }: { size: AvatarSize; badge: AvatarBadge
     borderRadius: `var(--gr-avatar-radius, ${avatar.radius}px)`,
     // The white ring is what separates the badge from the avatar beneath it.
     // Without it the two circles merge at any tone with a light background.
-    border: `${ring} solid ${color.main.white}`,
-    backgroundColor: color.main.white,
+    border: `${ring} solid var(--gr-avatar-badge-ring-color, ${color.main.white})`,
+    backgroundColor: `var(--gr-avatar-badge-ring-color, ${color.main.white})`,
   };
 
   if (badge === 'gigradar') {

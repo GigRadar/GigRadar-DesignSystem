@@ -1,4 +1,4 @@
-import { color, radius, spacing, textStyle, typography } from '@uiuxjoseph/theme';
+import { color, component, spacing, textStyle, typography } from '@uiuxjoseph/theme';
 
 export type PropRow = {
   name: string;
@@ -11,8 +11,8 @@ export function PropsTable({ rows }: { rows: PropRow[] }) {
   return (
     <div
       style={{
-        border: `1px solid ${color.navbar.border}`,
-        borderRadius: radius.s,
+        border: `${component.docs.panel.borderWidth}px solid ${color.navbar.border}`,
+        borderRadius: component.docs.panel.radius,
         overflow: 'hidden',
         backgroundColor: color.main.white,
       }}

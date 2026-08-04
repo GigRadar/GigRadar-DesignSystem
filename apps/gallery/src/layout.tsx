@@ -1,4 +1,4 @@
-import { color, shadow, spacing, textStyle } from '@uiuxjoseph/theme';
+import { color, component, spacing, textStyle } from '@uiuxjoseph/theme';
 import type { ReactNode } from 'react';
 
 export function Shell({ nav, children }: { nav: ReactNode; children: ReactNode }) {
@@ -45,17 +45,17 @@ export function Section({ title, description, children }: { title: string; descr
 }
 
 export function Preview({ children }: { children: ReactNode }) {
+  const { preview } = component.docs;
+
   return (
     <div
       style={{
-        padding: spacing.l,
-        backgroundColor: color.main.white,
-        border: `1px solid ${color.navbar.border}`,
-        borderRadius: 8,
-        boxShadow: shadow.none,
+        // Open on the page — no fill, no border, no card. The component is the
+        // only thing drawn here, so nothing competes with it for the eye.
+        padding: `${preview.paddingY}px 0`,
         display: 'flex',
         flexWrap: 'wrap',
-        gap: spacing.s,
+        gap: preview.gap,
         alignItems: 'center',
         marginBottom: spacing.s,
       }}

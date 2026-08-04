@@ -2,11 +2,13 @@ import { color, radius, spacing, textStyle } from '@uiuxjoseph/theme';
 import { useState } from 'react';
 import { Section, Shell } from './layout';
 import { AvatarPage } from './pages/AvatarPage';
+import { ButtonPage } from './pages/ButtonPage';
 import { TokensPage } from './pages/TokensPage';
 
 const PAGES = [
   { id: 'tokens', label: 'Tokens', render: () => <TokensPage /> },
   { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
+  { id: 'button', label: 'Button', render: () => <ButtonPage /> },
 ] as const;
 
 type PageId = (typeof PAGES)[number]['id'];
