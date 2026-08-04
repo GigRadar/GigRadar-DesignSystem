@@ -24,9 +24,8 @@ import { fontSize } from './typography.js';
 /**
  * Control heights.
  *
- * Sized so the text sits on the spacing scale: a `medium` control is the
- * medium font size (14) plus `spacing.m` above and below, rounded to an even
- * number for crisp centring.
+ * Kept as a shared scale for controls added later, so sizes stay consistent
+ * across components rather than each picking its own.
  */
 export const controlHeight = {
   small: 28,
@@ -36,75 +35,9 @@ export const controlHeight = {
 
 export type ControlSize = keyof typeof controlHeight;
 
-export const button = {
-  height: controlHeight,
-  paddingX: {
-    small: spacing.s,
-    medium: spacing.m,
-    large: spacing.l,
-  },
-  gap: {
-    small: spacing.xxs,
-    medium: spacing.xs,
-    large: spacing.xs,
-  },
-  radius: radius.s,
-  borderWidth: 1,
-  /** Width of the focus ring drawn outside the border. */
-  focusRingWidth: 3,
-} as const;
 
-export const badge = {
-  height: {
-    small: 20,
-    medium: 24,
-  },
-  paddingX: {
-    small: spacing.xs,
-    medium: spacing.s,
-  },
-  gap: {
-    small: spacing.xxs,
-    medium: spacing.xxs,
-  },
-  radius: radius.round,
-  borderWidth: 1,
-  /** Diameter of the optional leading dot. */
-  dotSize: 6,
-} as const;
 
-export const card = {
-  padding: {
-    none: 0,
-    small: spacing.s,
-    medium: spacing.m,
-    large: spacing.l,
-  },
-  /** Vertical padding of the header strip; horizontal follows the body. */
-  headerPaddingY: spacing.s,
-  radius: radius.m,
-  borderWidth: 1,
-  gap: spacing.s,
-} as const;
 
-export const input = {
-  height: controlHeight,
-  paddingX: {
-    small: spacing.xs,
-    medium: spacing.s,
-    large: spacing.s,
-  },
-  radius: radius.s,
-  borderWidth: 1,
-  focusRingWidth: 3,
-  /** Gap between the field and its label or helper text. */
-  labelGap: spacing.xxs,
-  fontSize: {
-    small: fontSize.s,
-    medium: fontSize.m,
-    large: fontSize.l,
-  },
-} as const;
 
 /**
  * Avatar metrics.
@@ -156,10 +89,6 @@ export const avatar = {
 export type AvatarSize = keyof typeof avatar.size;
 
 export const component = {
-  button,
-  badge,
-  card,
-  input,
   avatar,
 } as const;
 

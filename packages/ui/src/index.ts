@@ -8,15 +8,6 @@
 export { GigRadarProvider } from './provider/GigRadarProvider.js';
 export type { GigRadarProviderProps } from './provider/GigRadarProvider.js';
 
-export { Button } from './components/Button/Button.js';
-export type { ButtonProps, ButtonVariant, ButtonSize } from './components/Button/Button.js';
-
-export { Badge } from './components/Badge/Badge.js';
-export type { BadgeProps, BadgeTone, BadgeSize } from './components/Badge/Badge.js';
-
-export { Card } from './components/Card/Card.js';
-export type { CardProps, CardVariant, CardPadding } from './components/Card/Card.js';
-
 export { Avatar, initialsFromName } from './components/Avatar/Avatar.js';
 export type {
   AvatarProps,
