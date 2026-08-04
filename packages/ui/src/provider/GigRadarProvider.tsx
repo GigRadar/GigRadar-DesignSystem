@@ -22,10 +22,6 @@ export type GigRadarProviderProps = {
  * Apps mount this once at the root. Because the provider owns token delivery,
  * a token change ships as a `@gigradar/ui` version bump rather than a code
  * change in each of the four app repos.
- *
- * Note for antd v4: this does NOT theme antd components. antd v4 themes at
- * build time through Less variables — see `getAntdV4ModifyVars()` in
- * `@gigradar/theme` and `docs/adoption-antd-v4.md`.
  */
 export function GigRadarProvider({ children, injectCssVars = true }: GigRadarProviderProps) {
   useEffect(() => {

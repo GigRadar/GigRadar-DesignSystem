@@ -5,7 +5,7 @@
 | Rule | Catches |
 |---|---|
 | `no-hardcoded-values` | Hex/rgb colors, `px` strings, and numeric spacing/radius/fontSize in JS, TS, and JSX |
-| `no-direct-antd-import` | `import … from 'antd'` outside `@gigradar/ui` |
+| `no-direct-antd-import` | `import … from 'antd'` — legacy antd still resolves in app repos that carry it |
 
 ## What these rules do NOT catch
 
@@ -14,9 +14,9 @@ conversation about a problem that is only partly solved.
 
 ESLint parses JavaScript. It cannot see:
 
-1. **`.less` and `.css` files.** A hardcoded `#378AFA` in a stylesheet is
-   invisible to ESLint. In an antd v4 codebase this is likely where *most*
-   hardcoded values live.
+1. **Stylesheets (`.css`, `.less`, `.scss`).** A hardcoded `#378AFA` in a
+   stylesheet is invisible to ESLint, and stylesheets are where a great deal of
+   color and spacing actually lives.
 2. **Values behind an indirection.** `const c = getBrandColor()` passes, no
    matter what that function returns.
 3. **Runtime-computed strings.** `` `#${hex}` `` is not a literal.
@@ -58,7 +58,7 @@ Then use the CSS custom properties instead:
 ```
 
 Those variables come from `GigRadarProvider`, or from a build-time
-`renderCssVars()` emit. See [adoption-antd-v4.md](adoption-antd-v4.md).
+`renderCssVars()` emit. See [consuming-packages.md](consuming-packages.md).
 
 ## Exemptions
 
@@ -70,8 +70,7 @@ skipped:
 ```
 
 Defaults: `no-hardcoded-values` exempts `packages/theme/` (it defines the
-tokens), and `no-direct-antd-import` exempts `packages/ui/` (wrapping antd is
-its job).
+tokens), and `no-direct-antd-import` exempts `packages/ui/`.
 
 ## Rolling out to an existing app
 

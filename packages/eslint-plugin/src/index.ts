@@ -6,10 +6,11 @@ import { noHardcodedValues } from './rules/no-hardcoded-values.js';
  *
  * Two rules, both enforcing constraints from skills/design-system/SKILL.md:
  *   - no-hardcoded-values   → tokens instead of literals
- *   - no-direct-antd-import → @gigradar/ui as the single import surface
+ *   - no-direct-antd-import → catches legacy antd imports, which still resolve
+ *                             in app repos that carry antd 4.x
  *
- * Coverage limit: ESLint sees JS/TS/JSX only. Colors and sizes in `.less` and
- * `.css` files are NOT covered here — use the stylelint config alongside this.
+ * Coverage limit: ESLint sees JS/TS/JSX only. Colors and sizes in stylesheets
+ * are NOT covered here — use the stylelint config alongside this.
  * See docs/linting.md.
  */
 export const rules = {

@@ -80,9 +80,6 @@ const variantPalettes: Record<ButtonVariant, VariantPalette> = {
 /**
  * The GigRadar button.
  *
- * An identity component — implemented here rather than delegated to antd, so
- * the four apps share one button regardless of what they render around it.
- *
  * Every value below reads from `@gigradar/theme`. No literals.
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

@@ -4,13 +4,12 @@
  * Values are extracted from the Figma guidebook
  * (file HNZEuaniWtXmEINBodTtal, node 4363:1685).
  *
- * Three consumption formats, one source:
- *   1. `tokens`               — plain TS objects, usable anywhere
- *   2. `getAntdV4ModifyVars()` — antd v4 Less variables, for the build config
- *   3. `renderCssVars()`      — CSS custom properties, for stylesheets
+ * Two consumption formats, one source:
+ *   1. `tokens`          — plain TS objects, usable anywhere
+ *   2. `renderCssVars()` — CSS custom properties, for stylesheets
  *
- * This package has NO runtime dependency on React or antd, so charts, utils,
- * and build scripts can import it freely.
+ * This package has NO runtime dependencies, so charts, utils, and build
+ * scripts can import it freely.
  */
 
 export { color, main, disable, navbar, badge, status, accent, stage, stageFlat, deprecated } from './tokens/color.js';
@@ -29,8 +28,6 @@ export type { TypographyTokens, TextStyleName } from './tokens/typography.js';
 
 export { spacing, radius, shadow } from './tokens/space.js';
 export type { SpacingToken, RadiusToken, ShadowToken } from './tokens/space.js';
-
-export { antdV4LessVariables, getAntdV4ModifyVars } from './antd/v4.js';
 
 export { buildCssVars, renderCssVars } from './css-vars.js';
 

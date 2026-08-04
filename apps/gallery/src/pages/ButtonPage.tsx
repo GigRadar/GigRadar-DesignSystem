@@ -7,7 +7,7 @@ import { BUTTON_SOURCE } from '../sources';
 export function ButtonPage() {
   return (
     <>
-      <PageHeader title="Button" description="The primary action control. An identity component — implemented in @gigradar/ui, not delegated to antd." />
+      <PageHeader title="Button" description="The primary action control. Every value reads from @gigradar/theme — no hardcoded colors or sizes." />
 
       <Section title="Variants">
         <Preview>

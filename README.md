@@ -13,7 +13,7 @@ npm run dev     # gallery at http://localhost:5173
 |---|---|
 | `@gigradar/theme` | Design tokens — colors, typography, spacing, radius, shadow |
 | `@gigradar/ui` | Components — the single import surface for all four apps |
-| `@gigradar/eslint-plugin` | Rules banning hardcoded values and direct antd imports |
+| `@gigradar/eslint-plugin` | Rules banning hardcoded values and legacy antd imports |
 | Claude Code plugin | `.claude-plugin/marketplace.json` + `skills/design-system/SKILL.md` |
 | Gallery | `apps/gallery` — run locally with `npm run dev` |
 
@@ -21,7 +21,7 @@ npm run dev     # gallery at http://localhost:5173
 
 ```
 packages/
-  theme/           @gigradar/theme — tokens, antd v4 Less map, CSS vars
+  theme/           @gigradar/theme — tokens + CSS custom properties
   ui/              @gigradar/ui — Button, Badge, Card, GigRadarProvider
   eslint-plugin/   @gigradar/eslint-plugin — enforcement rules
 apps/
@@ -31,7 +31,6 @@ skills/
 .claude-plugin/    marketplace.json
 .github/workflows/ release.yml — Changesets → GitHub Packages
 docs/
-  adoption-antd-v4.md    wiring the theme into an antd v4 app
   consuming-packages.md  auth setup for installing the packages
   linting.md             what the rules catch, and what they miss
 ```
@@ -57,8 +56,8 @@ Anything here can be changed in one file. Nothing is load-bearing.
 
 ## Adoption
 
-The apps run antd v4, which themes at build time through Less variables —
-see [docs/adoption-antd-v4.md](docs/adoption-antd-v4.md).
+See [docs/consuming-packages.md](docs/consuming-packages.md) for the GitHub
+Packages auth each developer needs, and how to enable the lint rules.
 
 ## Releasing
 

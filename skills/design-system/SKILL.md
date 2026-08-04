@@ -11,7 +11,7 @@ crm, and inbound — so a violation in one app is a divergence across the produc
 
 ## The three rules
 
-### 1. Import from `@gigradar/ui`, never from `antd`
+### 1. Import UI from `@gigradar/ui`
 
 ```tsx
 // Correct
@@ -19,15 +19,16 @@ import { Button, Badge, Card } from '@gigradar/ui';
 
 // Wrong — bypasses the design system
 import { Button } from 'antd';
+import { Button } from 'some-other-ui-kit';
 ```
 
-`@gigradar/ui` is the single import surface. Some components are our own
-implementations; others are re-exported antd. That distinction is deliberately
-invisible, so an implementation can be swapped without touching app code.
+`@gigradar/ui` is the single import surface, so an implementation can be
+swapped without touching app code.
 
-If a component is not yet exported from `@gigradar/ui`, importing it from antd
-directly is acceptable **only** as a temporary measure — say so explicitly in
-your response so it can be tracked and added to the wrapper.
+Some apps still have antd 4.x in their dependency tree from before the design
+system existed. Do not import from it. If a component you need is not exported
+from `@gigradar/ui` yet, say what is missing rather than reaching around the
+wrapper — see "When something is missing" below.
 
 ### 2. Never hardcode a color, spacing, radius, font size, or shadow
 
@@ -51,7 +52,7 @@ everywhere:
 |---|---|
 | React components | `import { color, spacing } from '@gigradar/ui'` |
 | Non-React code (charts, utils, configs) | `import { tokens } from '@gigradar/theme'` |
-| `.css` / `.less` files | `var(--gr-color-brand)`, `var(--gr-space-m)` |
+| Stylesheets | `var(--gr-color-brand)`, `var(--gr-space-m)` |
 
 Charts are the usual place hardcoded hex creeps in. Use `tokens` there.
 
@@ -110,18 +111,19 @@ Stages: `new`, `contactLater` (unqualified) · `interested`, `booked`,
 `happened`, `qualified`, `converted` (pipeline) · `unreachable`,
 `notInterested` (lost).
 
-## antd v4 and this design system
+## Legacy antd
 
-The apps run antd v4, which themes at **build time** through Less variables —
-there is no runtime `ConfigProvider` theming and no `theme.useToken()` hook
-(both are antd v5 features; do not reach for them).
+GigRadar no longer builds on antd. Some app repos still list antd 4.x as a
+dependency from before the design system existed.
 
-Complex antd components (Table, DatePicker, Select, Form, Upload) inherit the
-theme through `getAntdV4ModifyVars()` wired into the app's build config. Identity
-components (Button, Badge, Card) are our own and ignore antd entirely.
+Do not add new antd usage. Do not reach for `theme.useToken()` or
+`ConfigProvider` — those are antd APIs and have no role here. Tokens come from
+`@gigradar/ui` or `@gigradar/theme`, as described above.
 
-When styling around an antd component, still use our tokens — the surrounding
-layout is ours even when the widget is not.
+When you encounter existing antd usage, leave it alone unless the task is to
+migrate it. If you do migrate something, note that our component APIs differ
+from antd's — our `Button` uses `variant="primary"` where antd used
+`type="primary"`, and `variant="danger"` where antd used a `danger` boolean.
 
 ## Deprecations in effect
 

@@ -1,23 +1,27 @@
 import type { Rule } from 'eslint';
 
 /**
- * Requires antd components to be imported from @gigradar/ui.
+ * Bans importing from antd.
  *
- * This is what makes the wrapper worth having: if app code names antd
- * directly, an implementation can never be swapped without touching every
- * app. Icons are exempt — @ant-design/icons is a separate concern.
+ * GigRadar no longer builds on antd, but several app repos still carry antd
+ * 4.x in their dependency tree from before the design system existed — which
+ * means an autocomplete-driven `import { Button } from 'antd'` still resolves
+ * and still compiles. This rule catches that.
+ *
+ * Icons are not covered: `@ant-design/icons` is a separate package and a
+ * separate decision.
  */
 export const noDirectAntdImport: Rule.RuleModule = {
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Require antd components to be imported from @gigradar/ui',
+      description: 'Disallow importing from antd; use @gigradar/ui',
       recommended: true,
     },
     fixable: undefined,
     messages: {
       directImport:
-        'Import from "@gigradar/ui" instead of "{{source}}". The wrapper is what lets an implementation change without touching app code. If {{names}} is not exported yet, add it to @gigradar/ui rather than reaching around it.',
+        'Do not import from "{{source}}" — GigRadar no longer builds on antd. Use @gigradar/ui. If {{names}} is not exported yet, add it there rather than reaching around the design system.',
     },
     schema: [
       {

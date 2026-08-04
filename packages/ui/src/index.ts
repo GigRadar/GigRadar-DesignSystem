@@ -1,9 +1,8 @@
 /**
  * @gigradar/ui — the single import surface for GigRadar apps.
  *
- * Apps import components from here, never from antd directly. That indirection
- * is what lets an implementation be swapped — antd today, our own tomorrow —
- * without touching a line of app code.
+ * Apps import every component from here. That indirection is what lets an
+ * implementation be swapped without touching a line of app code.
  */
 
 export { GigRadarProvider } from './provider/GigRadarProvider.js';
