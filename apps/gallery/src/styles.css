@@ -1,0 +1,15 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--gr-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes gr-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

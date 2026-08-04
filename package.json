@@ -1,0 +1,26 @@
+{
+  "name": "@gigradar/design-system",
+  "version": "0.0.0",
+  "private": true,
+  "description": "GigRadar design system — tokens, components, and rules for home, dashboard, crm, and inbound",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @gigradar/gallery",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "tsc --build --force",
+    "lint": "eslint .",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "npm run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.9",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

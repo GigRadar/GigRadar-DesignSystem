@@ -1,0 +1,86 @@
+import { color } from './tokens/color';
+import { radius, shadow, spacing } from './tokens/space';
+import { fontFamily, fontSize, fontWeight, lineHeight } from './tokens/typography';
+
+/**
+ * CSS custom properties for every token.
+ *
+ * Why this exists: tokens must be reachable from places a React hook cannot go
+ * — `.less` and `.css` files, chart config objects, utility functions outside a
+ * render, and third-party widgets. Those are exactly the places where hardcoded
+ * hex values creep in. Same source of truth, different consumption format.
+ *
+ * Naming: `--gr-<group>-<name>`, kebab-cased.
+ */
+export function buildCssVars(): Record<string, string> {
+  const vars: Record<string, string> = {};
+
+  const set = (name: string, value: string | number) => {
+    vars[`--gr-${name}`] = typeof value === 'number' ? `${value}px` : value;
+  };
+
+  // Colors — main
+  for (const [key, value] of Object.entries(color.main)) {
+    set(`color-${kebab(key)}`, value);
+  }
+  for (const [key, value] of Object.entries(color.disable)) {
+    set(`color-disable-${kebab(key)}`, value);
+  }
+  for (const [key, value] of Object.entries(color.navbar)) {
+    set(`color-navbar-${kebab(key)}`, value);
+  }
+  for (const [key, value] of Object.entries(color.badge)) {
+    set(`color-badge-${kebab(key)}`, value);
+  }
+
+  // Colors — status + accent (two levels deep)
+  for (const [group, values] of Object.entries(color.status)) {
+    for (const [key, value] of Object.entries(values)) {
+      set(`color-${kebab(group)}-${kebab(key)}`, value as string);
+    }
+  }
+  for (const [group, values] of Object.entries(color.accent)) {
+    for (const [key, value] of Object.entries(values)) {
+      set(`color-${kebab(group)}-${kebab(key)}`, value as string);
+    }
+  }
+
+  // Colors — CRM stages (flat, keyed by stage name)
+  for (const [key, value] of Object.entries(color.stageFlat)) {
+    set(`color-stage-${kebab(key)}`, value);
+  }
+
+  // Spacing / radius
+  for (const [key, value] of Object.entries(spacing)) set(`space-${key}`, value);
+  for (const [key, value] of Object.entries(radius)) set(`radius-${key}`, value);
+
+  // Shadow
+  set('shadow-base', shadow.base);
+
+  // Typography
+  set('font-family', fontFamily.base);
+  set('font-family-mono', fontFamily.mono);
+  for (const [key, value] of Object.entries(fontSize)) set(`font-size-${key}`, value);
+  for (const [key, value] of Object.entries(fontWeight)) set(`font-weight-${key}`, String(value));
+  for (const [key, value] of Object.entries(lineHeight)) set(`line-height-${key}`, String(value));
+
+  return vars;
+}
+
+function kebab(value: string): string {
+  return value.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+/**
+ * Renders the tokens as a `:root { ... }` stylesheet.
+ *
+ * Inject once at app startup, or write to a `.css` file at build time so
+ * stylesheets can reference `var(--gr-color-brand)`.
+ */
+export function renderCssVars(selector = ':root'): string {
+  const vars = buildCssVars();
+  const body = Object.entries(vars)
+    .map(([name, value]) => `  ${name}: ${value};`)
+    .join('\n');
+  return `${selector} {\n${body}\n}\n`;
+}

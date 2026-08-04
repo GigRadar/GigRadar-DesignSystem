@@ -1,0 +1,22 @@
+{
+  "name": "gigradar",
+  "owner": {
+    "name": "GigRadar Design",
+    "email": "joseph.wijaya@gigradar.io"
+  },
+  "metadata": {
+    "description": "GigRadar design system rules for Claude Code",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "design-system",
+      "source": "./",
+      "description": "GigRadar design system rules — tokens, component usage, and the constraints that keep home, dashboard, crm, and inbound visually consistent.",
+      "version": "0.1.0",
+      "author": {
+        "name": "GigRadar Design"
+      }
+    }
+  ]
+}
