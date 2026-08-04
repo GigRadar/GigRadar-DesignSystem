@@ -2,8 +2,9 @@ import { component } from '@uiuxjoseph/theme';
 import { Button } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { CssPropsTable } from '../components/CssPropsTable';
+import { Example } from '../components/Example';
 import { PropsTable } from '../components/PropsTable';
-import { PageHeader, Preview, Section } from '../layout';
+import { PageHeader, Section } from '../layout';
 import { BUTTON_SOURCE } from '../sources';
 
 export function ButtonPage() {
@@ -12,48 +13,44 @@ export function ButtonPage() {
       <PageHeader title="Button" description="The primary action control. Every value reads from @uiuxjoseph/theme — no hardcoded colors or sizes." />
 
       <Section title="Variants">
-        <Preview>
-          <Button variant="primary">Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="danger">Danger</Button>
-        </Preview>
-        <CodeBlock
+        <Example
           code={`<Button variant="primary">Primary</Button>
 <Button variant="secondary">Secondary</Button>
 <Button variant="ghost">Ghost</Button>
 <Button variant="danger">Danger</Button>`}
-        />
+        >
+          <Button variant="primary">Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="danger">Danger</Button>
+        </Example>
       </Section>
 
       <Section title="Sizes">
-        <Preview>
+        <Example code={`<Button size="small">Small</Button>\n<Button size="medium">Medium</Button>\n<Button size="large">Large</Button>`}>
           <Button size="small">Small</Button>
           <Button size="medium">Medium</Button>
           <Button size="large">Large</Button>
-        </Preview>
-        <CodeBlock code={`<Button size="small">Small</Button>\n<Button size="medium">Medium</Button>\n<Button size="large">Large</Button>`} />
+        </Example>
       </Section>
 
       <Section title="States">
-        <Preview>
+        <Example code={`<Button>Default</Button>\n<Button disabled>Disabled</Button>\n<Button loading>Loading</Button>\n<Button variant="secondary" disabled>Disabled</Button>`}>
           <Button>Default</Button>
           <Button disabled>Disabled</Button>
           <Button loading>Loading</Button>
           <Button variant="secondary" disabled>
             Disabled
           </Button>
-        </Preview>
-        <CodeBlock code={`<Button>Default</Button>\n<Button disabled>Disabled</Button>\n<Button loading>Loading</Button>`} />
+        </Example>
       </Section>
 
       <Section title="Block">
-        <Preview>
+        <Example code={`<Button block>Full width</Button>`}>
           <div style={{ width: '100%' }}>
             <Button block>Full width</Button>
           </div>
-        </Preview>
-        <CodeBlock code={`<Button block>Full width</Button>`} />
+        </Example>
       </Section>
 
       <Section title="Props">

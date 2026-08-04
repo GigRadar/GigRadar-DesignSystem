@@ -2,8 +2,9 @@ import { color, component, spacing, textStyle } from '@uiuxjoseph/theme';
 import { Badge, Button, Card } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { CssPropsTable } from '../components/CssPropsTable';
+import { Example } from '../components/Example';
 import { PropsTable } from '../components/PropsTable';
-import { PageHeader, Preview, Section } from '../layout';
+import { PageHeader, Section } from '../layout';
 import { CARD_SOURCE } from '../sources';
 
 export function CardPage() {
@@ -12,7 +13,18 @@ export function CardPage() {
       <PageHeader title="Card" description="A surface container. Elevated uses the single four-layer shadow defined in Figma — there is no elevation scale, by design." />
 
       <Section title="Variants">
-        <Preview>
+        <Example
+          code={`<Card variant="elevated" title="Elevated">
+  Ambient shadow. Sits within the page.
+</Card>
+
+<Card variant="popup" title="Popup">
+  Tighter shadow. Floats above the page.
+</Card>
+
+<Card variant="outlined" title="Outlined">…</Card>
+<Card variant="flat" title="Flat">…</Card>`}
+        >
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: spacing.m, width: '100%' }}>
             <Card variant="elevated" title="Elevated">
               <span style={{ ...textStyle.mRegular, color: color.main.description }}>Ambient shadow. Sits within the page.</span>
@@ -27,12 +39,16 @@ export function CardPage() {
               <span style={{ ...textStyle.mRegular, color: color.main.description }}>Tinted, no border or shadow.</span>
             </Card>
           </div>
-        </Preview>
-        <CodeBlock code={`<Card variant="elevated" title="Elevated">…</Card>\n<Card variant="popup" title="Popup">…</Card>\n<Card variant="outlined" title="Outlined">…</Card>\n<Card variant="flat" title="Flat">…</Card>`} />
+        </Example>
       </Section>
 
       <Section title="With header actions">
-        <Preview>
+        <Example
+          code={`<Card title="Pipeline" extra={<Badge stage="qualified">qualified</Badge>}>
+  <Text>Cards accept any node in extra — badges, counts, or menus.</Text>
+  <Button size="small">View all</Button>
+</Card>`}
+        >
           <div style={{ width: 420 }}>
             <Card title="Pipeline" extra={<Badge stage="qualified">qualified</Badge>}>
               <div style={{ ...textStyle.mRegular, color: color.main.description, marginBottom: spacing.m }}>
@@ -41,12 +57,16 @@ export function CardPage() {
               <Button size="small">View all</Button>
             </Card>
           </div>
-        </Preview>
-        <CodeBlock code={`<Card title="Pipeline" extra={<Badge stage="qualified">qualified</Badge>}>\n  <Button size="small">View all</Button>\n</Card>`} />
+        </Example>
       </Section>
 
       <Section title="Padding">
-        <Preview>
+        <Example
+          code={`<Card padding="none">…</Card>
+<Card padding="small">…</Card>
+<Card padding="medium">…</Card>
+<Card padding="large">…</Card>`}
+        >
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: spacing.s, width: '100%' }}>
             {(['none', 'small', 'medium', 'large'] as const).map((padding) => (
               <Card key={padding} variant="outlined" padding={padding}>
@@ -54,8 +74,7 @@ export function CardPage() {
               </Card>
             ))}
           </div>
-        </Preview>
-        <CodeBlock code={`<Card padding="none">…</Card>\n<Card padding="small">…</Card>\n<Card padding="large">…</Card>`} />
+        </Example>
       </Section>
 
       <Section title="Props">

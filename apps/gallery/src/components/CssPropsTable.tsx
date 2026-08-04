@@ -16,8 +16,18 @@ export type CssPropRow = {
  * change when you set it. Overrides are scoped to the preview above, so
  * experimenting here cannot affect the rest of the gallery.
  */
-export function CssPropsTable({ rows, children }: { rows: CssPropRow[]; children?: ReactNode }) {
+export function CssPropsTable({
+  rows,
+  children,
+  defaultOpen = false,
+}: {
+  rows: CssPropRow[];
+  children?: ReactNode;
+  /** Expanded on load. Off by default so a page of components stays scannable. */
+  defaultOpen?: boolean;
+}) {
   const [overrides, setOverrides] = useState<Record<string, string>>({});
+  const [open, setOpen] = useState(defaultOpen);
   const scopeId = useId().replace(/:/g, '');
 
   const activeOverrides = Object.entries(overrides).filter(([, v]) => v.trim() !== '');
@@ -48,6 +58,39 @@ export function CssPropsTable({ rows, children }: { rows: CssPropRow[]; children
         </div>
       )}
 
+      <button
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        style={{
+          ...textStyle.sMedium,
+          fontFamily: typography.fontFamily.base,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: spacing.xxs,
+          padding: `${spacing.xs}px ${spacing.s}px`,
+          border: `1px solid ${color.navbar.border}`,
+          borderRadius: radius.s,
+          backgroundColor: color.main.background,
+          color: color.main.description,
+          cursor: 'pointer',
+          marginBottom: open ? spacing.s : 0,
+        }}
+      >
+        <span
+          aria-hidden
+          style={{
+            display: 'inline-block',
+            transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
+            transition: 'transform 120ms ease',
+            fontSize: 10,
+          }}
+        >
+          ▶
+        </span>
+        {open ? 'Hide CSS properties' : `Show CSS properties (${rows.length})`}
+      </button>
+
+      {open && (
       <div
         style={{
           border: `1px solid ${color.navbar.border}`,
@@ -111,8 +154,9 @@ export function CssPropsTable({ rows, children }: { rows: CssPropRow[]; children
           </tbody>
         </table>
       </div>
+      )}
 
-      {activeOverrides.length > 0 && (
+      {open && activeOverrides.length > 0 && (
         <div style={{ marginTop: spacing.s }}>
           <div style={{ ...textStyle.sMedium, color: color.main.description, marginBottom: spacing.xxs }}>
             Paste into your app's stylesheet:

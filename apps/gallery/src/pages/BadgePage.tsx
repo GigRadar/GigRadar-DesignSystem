@@ -2,8 +2,9 @@ import { color, component, spacing, textStyle } from '@uiuxjoseph/theme';
 import { Badge, type StageName } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { CssPropsTable } from '../components/CssPropsTable';
+import { Example } from '../components/Example';
 import { PropsTable } from '../components/PropsTable';
-import { PageHeader, Preview, Section } from '../layout';
+import { PageHeader, Section } from '../layout';
 import { BADGE_SOURCE } from '../sources';
 
 const STAGE_GROUPS: { label: string; stages: StageName[] }[] = [
@@ -18,7 +19,15 @@ export function BadgePage() {
       <PageHeader title="Badge" description="A status or category label. The stage prop covers the nine CRM pipeline states from Figma, so pipeline UI never hand-rolls colors." />
 
       <Section title="Tones">
-        <Preview>
+        <Example
+          code={`<Badge tone="brand">Brand</Badge>
+<Badge tone="success">Success</Badge>
+<Badge tone="warning">Warning</Badge>
+<Badge tone="error">Error</Badge>
+<Badge tone="neutral">Neutral</Badge>
+<Badge tone="schedule">Scheduled</Badge>
+<Badge tone="meetings">Meeting</Badge>`}
+        >
           <Badge tone="brand">Brand</Badge>
           <Badge tone="success">Success</Badge>
           <Badge tone="warning">Warning</Badge>
@@ -26,28 +35,33 @@ export function BadgePage() {
           <Badge tone="neutral">Neutral</Badge>
           <Badge tone="schedule">Scheduled</Badge>
           <Badge tone="meetings">Meeting</Badge>
-        </Preview>
-        <CodeBlock code={`<Badge tone="brand">Brand</Badge>\n<Badge tone="success">Success</Badge>\n<Badge tone="error">Error</Badge>`} />
+        </Example>
       </Section>
 
       <Section title="CRM stages" description="Grouped by the [U] / [P] / [L] prefixes in the Figma guidebook.">
         {STAGE_GROUPS.map((group) => (
-          <div key={group.label} style={{ marginBottom: spacing.s }}>
+          <div key={group.label} style={{ marginBottom: spacing.xxs }}>
             <div style={{ ...textStyle.sSemibold, color: color.main.description, marginBottom: spacing.xxs }}>{group.label}</div>
-            <Preview>
+            <Example
+              code={group.stages.map((s) => `<Badge stage="${s}">${s}</Badge>`).join('\n')}
+            >
               {group.stages.map((stage) => (
                 <Badge key={stage} stage={stage}>
                   {stage}
                 </Badge>
               ))}
-            </Preview>
+            </Example>
           </div>
         ))}
-        <CodeBlock code={`<Badge stage="new">New</Badge>\n<Badge stage="qualified">Qualified</Badge>\n<Badge stage="unreachable">Unreachable</Badge>`} />
       </Section>
 
       <Section title="Sizes and dot">
-        <Preview>
+        <Example
+          code={`<Badge size="small">Small</Badge>
+<Badge size="medium">Medium</Badge>
+<Badge tone="success" dot>With dot</Badge>
+<Badge tone="error" dot size="small">Failed</Badge>`}
+        >
           <Badge size="small">Small</Badge>
           <Badge size="medium">Medium</Badge>
           <Badge tone="success" dot>
@@ -56,8 +70,7 @@ export function BadgePage() {
           <Badge tone="error" dot size="small">
             Failed
           </Badge>
-        </Preview>
-        <CodeBlock code={`<Badge size="small">Small</Badge>\n<Badge tone="success" dot>With dot</Badge>`} />
+        </Example>
       </Section>
 
       <Section title="Props">
