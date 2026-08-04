@@ -1,7 +1,7 @@
 import { color, component, shadow, spacing, textStyle, typography } from '@uiuxjoseph/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 
-export type CardVariant = 'elevated' | 'outlined' | 'flat';
+export type CardVariant = 'elevated' | 'outlined' | 'flat' | 'popup';
 export type CardPadding = 'none' | 'small' | 'medium' | 'large';
 
 export type CardProps = {
@@ -33,6 +33,16 @@ const variantStyles: Record<CardVariant, CSSProperties> = {
     backgroundColor: color.main.backgroundAlt,
     border: '1px solid transparent',
     boxShadow: shadow.none,
+  },
+  /**
+   * For transient surfaces that float above the page — dropdowns, menus,
+   * popovers. Uses the tighter `popup` elevation so the surface reads as
+   * detached rather than as part of the layout.
+   */
+  popup: {
+    backgroundColor: color.main.white,
+    border: `1px solid ${color.navbar.border}`,
+    boxShadow: shadow.popup,
   },
 };
 

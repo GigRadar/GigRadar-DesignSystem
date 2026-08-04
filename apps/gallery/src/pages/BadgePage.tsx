@@ -1,6 +1,7 @@
-import { color, spacing, textStyle } from '@uiuxjoseph/theme';
+import { color, component, spacing, textStyle } from '@uiuxjoseph/theme';
 import { Badge, type StageName } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
+import { CssPropsTable } from '../components/CssPropsTable';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
 import { BADGE_SOURCE } from '../sources';
@@ -68,6 +69,27 @@ export function BadgePage() {
             { name: 'dot', type: 'boolean', default: 'false', description: 'Renders a filled dot before the label.' },
           ]}
         />
+      </Section>
+
+      <Section
+        title="CSS properties"
+        description="Type a value to see it apply — the override is scoped to this preview."
+      >
+        <CssPropsTable
+          rows={[
+            { name: 'badge-height-medium', value: `${component.badge.height.medium}px`, description: 'Badge height at the default size.' },
+            { name: 'badge-height-small', value: `${component.badge.height.small}px`, description: 'Badge height at size="small".' },
+            { name: 'badge-padding-x-medium', value: `${component.badge.paddingX.medium}px`, description: 'Horizontal padding at the default size.' },
+            { name: 'badge-radius', value: `${component.badge.radius}px`, description: 'Corner radius. 9999px produces the pill shape.' },
+            { name: 'badge-border-width', value: `${component.badge.borderWidth}px`, description: 'Border thickness.' },
+            { name: 'badge-dot-size', value: `${component.badge.dotSize}px`, description: 'Diameter of the leading dot.' },
+          ]}
+        >
+          <Badge tone="brand">Brand</Badge>
+          <Badge tone="success" dot>Success</Badge>
+          <Badge stage="qualified">qualified</Badge>
+          <Badge size="small">Small</Badge>
+        </CssPropsTable>
       </Section>
 
       <Section title="Source">

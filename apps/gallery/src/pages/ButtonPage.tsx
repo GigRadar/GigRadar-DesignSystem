@@ -1,5 +1,7 @@
+import { component } from '@uiuxjoseph/theme';
 import { Button } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
+import { CssPropsTable } from '../components/CssPropsTable';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
 import { BUTTON_SOURCE } from '../sources';
@@ -65,6 +67,28 @@ export function ButtonPage() {
             { name: 'disabled', type: 'boolean', default: 'false', description: 'Standard button disabled state.' },
           ]}
         />
+      </Section>
+
+      <Section
+        title="CSS properties"
+        description="Every metric is a CSS variable with the token as fallback. Type a value below to see it apply — the override is scoped to this preview."
+      >
+        <CssPropsTable
+          rows={[
+            { name: 'button-height-medium', value: `${component.button.height.medium}px`, description: 'Control height at the default size.' },
+            { name: 'button-height-small', value: `${component.button.height.small}px`, description: 'Control height at size="small".' },
+            { name: 'button-height-large', value: `${component.button.height.large}px`, description: 'Control height at size="large".' },
+            { name: 'button-padding-x-medium', value: `${component.button.paddingX.medium}px`, description: 'Horizontal padding at the default size.' },
+            { name: 'button-gap-medium', value: `${component.button.gap.medium}px`, description: 'Gap between icon and label.' },
+            { name: 'button-radius', value: `${component.button.radius}px`, description: 'Corner radius.' },
+            { name: 'button-border-width', value: `${component.button.borderWidth}px`, description: 'Border thickness.' },
+          ]}
+        >
+          <Button variant="primary">Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button size="small">Small</Button>
+          <Button size="large">Large</Button>
+        </CssPropsTable>
       </Section>
 
       <Section title="Source">

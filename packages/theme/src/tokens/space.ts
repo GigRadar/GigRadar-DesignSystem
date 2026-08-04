@@ -53,8 +53,12 @@ export type RadiusToken = keyof typeof radius;
  */
 export const shadow = {
   /**
-   * The single GigRadar elevation. Four stacked drop shadows.
-   * Figma name: "Tooltips Shadow".
+   * The ambient elevation — four stacked drop shadows producing a soft, wide
+   * spread. Use for raised surfaces that sit within the page: cards, panels,
+   * anything that reads as part of the layout.
+   *
+   * Figma name: "Tooltips Shadow" (node 4363:1774). The name is narrower than
+   * the usage; it is the general elevation.
    */
   base: [
     '0px 0.27px 3.53px rgba(0, 0, 0, 0.035)',
@@ -62,6 +66,16 @@ export const shadow = {
     '0px 1.81px 23.51px rgba(0, 0, 0, 0.067)',
     '0px 6px 78px rgba(0, 0, 0, 0.10)',
   ].join(', '),
+  /**
+   * The popup elevation — a single tight shadow for transient surfaces that
+   * float above the page: dropdowns, menus, popovers, dialogs.
+   *
+   * Deliberately tighter than `base`. A popup needs a crisp edge to read as
+   * detached; `base`'s 78px spread would make it feel like part of the layout.
+   *
+   * Figma name: "Popup Border" (node 4877:220).
+   */
+  popup: '0px 6px 12px rgba(0, 0, 0, 0.05)',
   none: 'none',
 } as const;
 

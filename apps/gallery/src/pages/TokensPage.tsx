@@ -101,11 +101,37 @@ export function TokensPage() {
         </div>
       </Section>
 
-      <Section title="Shadow" description="Figma defines exactly one elevation — a four-layer stack named 'Tooltips Shadow'.">
-        <div style={{ display: 'flex', gap: spacing.xl, padding: spacing.l }}>
-          <div style={{ width: 160, height: 96, backgroundColor: color.main.white, borderRadius: radius.m, boxShadow: shadow.base, display: 'flex', alignItems: 'center', justifyContent: 'center', ...textStyle.mMedium, color: color.main.description }}>
-            base
-          </div>
+      <Section
+        title="Shadow"
+        description="Two elevations. `base` is ambient — for surfaces that sit within the page. `popup` is tighter, for transient surfaces that float above it; a wide spread would make a dropdown read as part of the layout."
+      >
+        <div style={{ display: 'flex', gap: spacing.xl, padding: spacing.l, flexWrap: 'wrap' }}>
+          {([
+            ['base', shadow.base, 'Cards, panels, raised surfaces'],
+            ['popup', shadow.popup, 'Dropdowns, menus, popovers, dialogs'],
+          ] as const).map(([name, value, usage]) => (
+            <div key={name} style={{ width: 220 }}>
+              <div
+                style={{
+                  height: 96,
+                  backgroundColor: color.main.white,
+                  borderRadius: radius.m,
+                  boxShadow: value,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  ...textStyle.mMedium,
+                  color: color.main.description,
+                }}
+              >
+                {name}
+              </div>
+              <div style={{ ...textStyle.sRegular, color: color.main.description, marginTop: spacing.s }}>{usage}</div>
+              <code style={{ ...textStyle.sRegular, fontFamily: typography.fontFamily.mono, color: color.main.description, wordBreak: 'break-all', display: 'block', marginTop: spacing.xxs }}>
+                --gr-shadow-{name}
+              </code>
+            </div>
+          ))}
         </div>
       </Section>
     </>

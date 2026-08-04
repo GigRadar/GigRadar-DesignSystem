@@ -105,7 +105,10 @@ and line-height:
 Available: `h1`–`h4`, and `l`/`m`/`s` × `Semibold`/`Medium`/`Regular`.
 `mRegular` (14px) is the default body style.
 
-**Shadow** — `shadow.base` is the only elevation. There is no scale.
+**Shadow** — two elevations, chosen by intent rather than depth:
+- `shadow.base` — ambient. Cards, panels, surfaces that sit within the page.
+- `shadow.popup` — tighter. Dropdowns, menus, popovers; a wide spread makes a
+  floating surface read as part of the layout.
 
 ## Component CSS properties
 

@@ -67,8 +67,11 @@ export function buildCssVars(): Record<string, string> {
   for (const [key, value] of Object.entries(spacing)) set(`space-${key}`, value);
   for (const [key, value] of Object.entries(radius)) set(`radius-${key}`, value);
 
-  // Shadow
-  set('shadow-base', shadow.base);
+  // Shadow — every elevation, so a new one does not need a change here
+  for (const [key, value] of Object.entries(shadow)) {
+    if (key === 'none') continue;
+    set(`shadow-${kebab(key)}`, value);
+  }
 
   // Typography
   set('font-family', fontFamily.base);

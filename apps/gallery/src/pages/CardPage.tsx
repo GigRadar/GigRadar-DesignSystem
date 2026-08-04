@@ -1,6 +1,7 @@
-import { color, spacing, textStyle } from '@uiuxjoseph/theme';
+import { color, component, spacing, textStyle } from '@uiuxjoseph/theme';
 import { Badge, Button, Card } from '@uiuxjoseph/ui';
 import { CodeBlock } from '../components/CodeBlock';
+import { CssPropsTable } from '../components/CssPropsTable';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
 import { CARD_SOURCE } from '../sources';
@@ -12,9 +13,12 @@ export function CardPage() {
 
       <Section title="Variants">
         <Preview>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: spacing.m, width: '100%' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: spacing.m, width: '100%' }}>
             <Card variant="elevated" title="Elevated">
-              <span style={{ ...textStyle.mRegular, color: color.main.description }}>Default surface with shadow.</span>
+              <span style={{ ...textStyle.mRegular, color: color.main.description }}>Ambient shadow. Sits within the page.</span>
+            </Card>
+            <Card variant="popup" title="Popup">
+              <span style={{ ...textStyle.mRegular, color: color.main.description }}>Tighter shadow. Floats above the page.</span>
             </Card>
             <Card variant="outlined" title="Outlined">
               <span style={{ ...textStyle.mRegular, color: color.main.description }}>Border only, no shadow.</span>
@@ -24,7 +28,7 @@ export function CardPage() {
             </Card>
           </div>
         </Preview>
-        <CodeBlock code={`<Card variant="elevated" title="Elevated">…</Card>\n<Card variant="outlined" title="Outlined">…</Card>\n<Card variant="flat" title="Flat">…</Card>`} />
+        <CodeBlock code={`<Card variant="elevated" title="Elevated">…</Card>\n<Card variant="popup" title="Popup">…</Card>\n<Card variant="outlined" title="Outlined">…</Card>\n<Card variant="flat" title="Flat">…</Card>`} />
       </Section>
 
       <Section title="With header actions">
@@ -57,12 +61,34 @@ export function CardPage() {
       <Section title="Props">
         <PropsTable
           rows={[
-            { name: 'variant', type: `'elevated' | 'outlined' | 'flat'`, default: `'elevated'`, description: 'Surface treatment.' },
+            { name: 'variant', type: `'elevated' | 'popup' | 'outlined' | 'flat'`, default: `'elevated'`, description: 'Surface treatment. Use popup for dropdowns and menus.' },
             { name: 'padding', type: `'none' | 'small' | 'medium' | 'large'`, default: `'medium'`, description: 'Inner padding of the content area.' },
             { name: 'title', type: 'ReactNode', description: 'Heading rendered above the content, with a divider.' },
             { name: 'extra', type: 'ReactNode', description: 'Rendered opposite the title — actions, menus, counts.' },
           ]}
         />
+      </Section>
+
+      <Section
+        title="CSS properties"
+        description="Type a value to see it apply — the override is scoped to this preview."
+      >
+        <CssPropsTable
+          rows={[
+            { name: 'card-radius', value: `${component.card.radius}px`, description: 'Corner radius.' },
+            { name: 'card-padding-medium', value: `${component.card.padding.medium}px`, description: 'Inner padding at the default size.' },
+            { name: 'card-padding-large', value: `${component.card.padding.large}px`, description: 'Inner padding at padding="large".' },
+            { name: 'card-header-padding-y', value: `${component.card.headerPaddingY}px`, description: 'Vertical padding of the header strip.' },
+            { name: 'card-gap', value: `${component.card.gap}px`, description: 'Gap between title and extra.' },
+            { name: 'card-border-width', value: `${component.card.borderWidth}px`, description: 'Border thickness.' },
+          ]}
+        >
+          <div style={{ width: 280 }}>
+            <Card title="Pipeline" extra={<Badge stage="qualified">qualified</Badge>}>
+              <span style={{ ...textStyle.mRegular, color: color.main.description }}>Adjust the values to see this card change.</span>
+            </Card>
+          </div>
+        </CssPropsTable>
       </Section>
 
       <Section title="Source">
