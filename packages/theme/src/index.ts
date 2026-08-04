@@ -24,9 +24,10 @@ export {
   stage,
   stageFlat,
   integration,
+  avatarTone,
   deprecated,
 } from './tokens/color.js';
-export type { ColorTokens, StageName, IntegrationName } from './tokens/color.js';
+export type { ColorTokens, StageName, IntegrationName, AvatarToneName } from './tokens/color.js';
 
 export {
   typography,
@@ -43,7 +44,7 @@ export { spacing, radius, shadow } from './tokens/space.js';
 export type { SpacingToken, RadiusToken, ShadowToken } from './tokens/space.js';
 
 export { component, controlHeight } from './tokens/components.js';
-export type { ComponentTokens, ControlSize } from './tokens/components.js';
+export type { ComponentTokens, ControlSize, AvatarSize } from './tokens/components.js';
 
 export { buildCssVars, renderCssVars } from './css-vars.js';
 

@@ -1,6 +1,7 @@
 import { color, radius, spacing, textStyle } from '@uiuxjoseph/theme';
 import { useState } from 'react';
 import { Section, Shell } from './layout';
+import { AvatarPage } from './pages/AvatarPage';
 import { BadgePage } from './pages/BadgePage';
 import { ButtonPage } from './pages/ButtonPage';
 import { CardPage } from './pages/CardPage';
@@ -11,6 +12,7 @@ const PAGES = [
   { id: 'button', label: 'Button', render: () => <ButtonPage /> },
   { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
   { id: 'card', label: 'Card', render: () => <CardPage /> },
+  { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
 ] as const;
 
 type PageId = (typeof PAGES)[number]['id'];

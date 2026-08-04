@@ -17,9 +17,21 @@ export type { BadgeProps, BadgeTone, BadgeSize } from './components/Badge/Badge.
 export { Card } from './components/Card/Card.js';
 export type { CardProps, CardVariant, CardPadding } from './components/Card/Card.js';
 
+export { Avatar, initialsFromName } from './components/Avatar/Avatar.js';
+export type {
+  AvatarProps,
+  AvatarSize,
+  AvatarToneName,
+  AvatarService,
+  AvatarBadge,
+} from './components/Avatar/Avatar.js';
+
+export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
+export type { AvatarGroupProps } from './components/Avatar/AvatarGroup.js';
+
 /**
  * Tokens are re-exported so app code never needs a direct `@uiuxjoseph/theme`
  * dependency for ordinary use.
  */
-export { tokens, color, spacing, radius, shadow, typography, textStyle } from '@uiuxjoseph/theme';
+export { tokens, color, spacing, radius, shadow, typography, textStyle, avatarTone } from '@uiuxjoseph/theme';
 export type { StageName } from '@uiuxjoseph/theme';

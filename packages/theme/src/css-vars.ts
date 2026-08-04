@@ -63,6 +63,13 @@ export function buildCssVars(): Record<string, string> {
     }
   }
 
+  // Colors — avatar tones (background / border / text per hue)
+  for (const [tone, values] of Object.entries(color.avatarTone)) {
+    for (const [key, value] of Object.entries(values)) {
+      set(`color-avatar-${kebab(tone)}-${kebab(key)}`, value as string);
+    }
+  }
+
   // Spacing / radius
   for (const [key, value] of Object.entries(spacing)) set(`space-${key}`, value);
   for (const [key, value] of Object.entries(radius)) set(`radius-${key}`, value);

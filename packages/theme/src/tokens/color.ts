@@ -272,6 +272,39 @@ export const stageFlat = {
 export type StageName = keyof typeof stageFlat;
 
 /**
+ * Avatar tone palette.
+ *
+ * Extracted from the Avatar component in Figma (node 456:8607). Each tone is a
+ * background / border / text triplet drawn from one hue, so initials stay
+ * legible on their own fill.
+ *
+ * Deliberately separate from `status` and `accent`: these carry no semantic
+ * meaning. A tone is picked to distinguish one person from another — usually by
+ * hashing a name — not to signal state. Keeping them apart stops
+ * `avatarTone.red` being reached for when `status.error` was meant.
+ */
+export const avatarTone = {
+  cyan: { background: '#E6FFFB', border: '#87E8DE', text: '#006D75' },
+  magenta: { background: '#FFF0F6', border: '#FFADD2', text: '#C41D7F' },
+  purple: { background: '#F9F0FF', border: '#D3ADF7', text: '#531DAB' },
+  orange: { background: '#FFF7E6', border: '#FFD591', text: '#AD4E00' },
+  red: { background: '#FFF1F0', border: '#FFA39E', text: '#CF1322' },
+  volcano: { background: '#FFF2E8', border: '#FFBB96', text: '#D4380D' },
+  green: { background: '#F6FFED', border: '#B7EB8F', text: '#237804' },
+  gold: { background: '#FFFBE6', border: '#FFE58F', text: '#874D00' },
+  lime: { background: '#FCFFE6', border: '#EAFF8F', text: '#4B700E' },
+  geekBlue: { background: '#F0F5FF', border: '#ADC6FF', text: '#1D39C4' },
+  blue: { background: '#E6F4FF', border: '#91CAFF', text: '#0958D9' },
+  /**
+   * The placeholder tone — Figma's "*️⃣ 0.5 - Default" variant. Uses the
+   * disabled greys, and is what an avatar falls back to with no name to show.
+   */
+  default: { background: disable.background, border: disable.text, text: disable.text },
+} as const;
+
+export type AvatarToneName = keyof typeof avatarTone;
+
+/**
  * Values kept only so existing screens keep compiling.
  *
  * Per the additive-by-default rule, nothing is deleted outright — removal
@@ -297,6 +330,7 @@ export const color = {
   stage,
   stageFlat,
   integration,
+  avatarTone,
   deprecated,
 } as const;
 
