@@ -1,6 +1,6 @@
 {
   "name": "@gigradar/theme",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "GigRadar design tokens — colors, typography, spacing, radius, shadow. Extracted from Figma.",
   "license": "UNLICENSED",
   "private": false,
@@ -13,7 +13,9 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
