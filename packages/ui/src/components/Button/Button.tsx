@@ -1,4 +1,4 @@
-import { color, radius, shadow, spacing, textStyle, typography } from '@uiuxjoseph/theme';
+import { color, component, shadow, textStyle, typography } from '@uiuxjoseph/theme';
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -17,24 +17,32 @@ export type ButtonProps = {
   children?: ReactNode;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'style'>;
 
+const { button } = component;
+
+/**
+ * Sizes read from the component tokens, and each is expressed as a CSS
+ * variable with the token as its fallback — so an app can restyle a size by
+ * setting `--gr-button-height-medium` in a stylesheet, without forking this
+ * component or overriding the whole `style` prop.
+ */
 const sizeStyles: Record<ButtonSize, CSSProperties> = {
   small: {
     ...textStyle.sMedium,
-    height: 28,
-    padding: `0 ${spacing.s}px`,
-    gap: spacing.xxs,
+    height: `var(--gr-button-height-small, ${button.height.small}px)`,
+    padding: `0 var(--gr-button-padding-x-small, ${button.paddingX.small}px)`,
+    gap: `var(--gr-button-gap-small, ${button.gap.small}px)`,
   },
   medium: {
     ...textStyle.mMedium,
-    height: 36,
-    padding: `0 ${spacing.m}px`,
-    gap: spacing.xs,
+    height: `var(--gr-button-height-medium, ${button.height.medium}px)`,
+    padding: `0 var(--gr-button-padding-x-medium, ${button.paddingX.medium}px)`,
+    gap: `var(--gr-button-gap-medium, ${button.gap.medium}px)`,
   },
   large: {
     ...textStyle.lMedium,
-    height: 44,
-    padding: `0 ${spacing.l}px`,
-    gap: spacing.xs,
+    height: `var(--gr-button-height-large, ${button.height.large}px)`,
+    padding: `0 var(--gr-button-padding-x-large, ${button.paddingX.large}px)`,
+    gap: `var(--gr-button-gap-large, ${button.gap.large}px)`,
   },
 };
 
@@ -100,8 +108,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 
     // Identity
     fontFamily: typography.fontFamily.base,
-    borderRadius: radius.s,
-    borderWidth: 1,
+    borderRadius: `var(--gr-button-radius, ${button.radius}px)`,
+    borderWidth: `var(--gr-button-border-width, ${button.borderWidth}px)`,
     borderStyle: 'solid',
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     transition: 'background-color 120ms ease, border-color 120ms ease, color 120ms ease',
@@ -136,7 +144,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       }}
       onFocus={(event) => {
         if (!isDisabled) {
-          event.currentTarget.style.boxShadow = `0 0 0 3px ${color.badge.background}`;
+          event.currentTarget.style.boxShadow = `0 0 0 ${button.focusRingWidth}px ${color.badge.background}`;
         }
         rest.onFocus?.(event);
       }}
@@ -160,7 +168,7 @@ function Spinner() {
         height: '1em',
         border: '2px solid currentColor',
         borderTopColor: 'transparent',
-        borderRadius: radius.round,
+        borderRadius: '9999px',
         display: 'inline-block',
         animation: 'gr-spin 600ms linear infinite',
       }}

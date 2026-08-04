@@ -107,6 +107,25 @@ Available: `h1`–`h4`, and `l`/`m`/`s` × `Semibold`/`Medium`/`Regular`.
 
 **Shadow** — `shadow.base` is the only elevation. There is no scale.
 
+## Component CSS properties
+
+Every component reads its metrics from a CSS variable with the token as
+fallback — `height: var(--gr-button-height-medium, 36px)`. An app can retune a
+component without forking it:
+
+```css
+.compact-toolbar {
+  --gr-button-height-medium: 28px;
+}
+```
+
+Use a **prop** for a choice the system offers (`size`, `variant`). Use a **CSS
+variable** to retune the system for an app or region. Do not use variables to
+make one component impersonate another.
+
+Note: component sizes are the one set of values not extracted from Figma — the
+guidebook has no component specs. See docs/component-css-properties.md.
+
 ## CRM stage colors
 
 Pipeline UI must use the `stage` prop rather than picking colors by hand:

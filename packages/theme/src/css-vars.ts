@@ -1,4 +1,5 @@
 import { color } from './tokens/color.js';
+import { component } from './tokens/components.js';
 import { radius, shadow, spacing } from './tokens/space.js';
 import { fontFamily, fontSize, fontWeight, lineHeight } from './tokens/typography.js';
 
@@ -75,6 +76,21 @@ export function buildCssVars(): Record<string, string> {
   for (const [key, value] of Object.entries(fontSize)) set(`font-size-${key}`, value);
   for (const [key, value] of Object.entries(fontWeight)) set(`font-weight-${key}`, String(value));
   for (const [key, value] of Object.entries(lineHeight)) set(`line-height-${key}`, String(value));
+
+  // Component tokens — `--gr-<component>-<property>[-<variant>]`.
+  // Emitted so an app can override one component's metrics in a stylesheet
+  // without forking the component.
+  for (const [name, tokens] of Object.entries(component)) {
+    for (const [property, value] of Object.entries(tokens)) {
+      if (typeof value === 'object' && value !== null) {
+        for (const [variant, variantValue] of Object.entries(value)) {
+          set(`${kebab(name)}-${kebab(property)}-${kebab(variant)}`, variantValue as string | number);
+        }
+      } else {
+        set(`${kebab(name)}-${kebab(property)}`, value as string | number);
+      }
+    }
+  }
 
   return vars;
 }

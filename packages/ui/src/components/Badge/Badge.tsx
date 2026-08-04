@@ -1,4 +1,4 @@
-import { color, radius, spacing, textStyle, typography, type StageName } from '@uiuxjoseph/theme';
+import { color, component, textStyle, typography, type StageName } from '@uiuxjoseph/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 
 export type BadgeTone = 'brand' | 'success' | 'warning' | 'error' | 'neutral' | 'schedule' | 'meetings';
@@ -41,9 +41,21 @@ const stagePalette = (stage: StageName): TonePalette => ({
   border: 'transparent',
 });
 
+const { badge } = component;
+
 const sizeStyles: Record<BadgeSize, CSSProperties> = {
-  small: { ...textStyle.sMedium, height: 20, padding: `0 ${spacing.xs}px`, gap: spacing.xxs },
-  medium: { ...textStyle.mMedium, height: 24, padding: `0 ${spacing.s}px`, gap: spacing.xxs },
+  small: {
+    ...textStyle.sMedium,
+    height: `var(--gr-badge-height-small, ${badge.height.small}px)`,
+    padding: `0 var(--gr-badge-padding-x-small, ${badge.paddingX.small}px)`,
+    gap: `var(--gr-badge-gap-small, ${badge.gap.small}px)`,
+  },
+  medium: {
+    ...textStyle.mMedium,
+    height: `var(--gr-badge-height-medium, ${badge.height.medium}px)`,
+    padding: `0 var(--gr-badge-padding-x-medium, ${badge.paddingX.medium}px)`,
+    gap: `var(--gr-badge-gap-medium, ${badge.gap.medium}px)`,
+  },
 };
 
 /**
@@ -64,8 +76,8 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
     justifyContent: 'center',
     boxSizing: 'border-box',
     fontFamily: typography.fontFamily.base,
-    borderRadius: radius.round,
-    borderWidth: 1,
+    borderRadius: `var(--gr-badge-radius, ${badge.radius}px)`,
+    borderWidth: `var(--gr-badge-border-width, ${badge.borderWidth}px)`,
     borderStyle: 'solid',
     whiteSpace: 'nowrap',
     ...sizeStyles[size],
@@ -80,9 +92,9 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
         <span
           aria-hidden
           style={{
-            width: 6,
-            height: 6,
-            borderRadius: radius.round,
+            width: `var(--gr-badge-dot-size, ${badge.dotSize}px)`,
+            height: `var(--gr-badge-dot-size, ${badge.dotSize}px)`,
+            borderRadius: '9999px',
             backgroundColor: palette.color,
             flexShrink: 0,
           }}

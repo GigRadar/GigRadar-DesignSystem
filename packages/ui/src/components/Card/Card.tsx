@@ -1,4 +1,4 @@
-import { color, radius, shadow, spacing, textStyle, typography } from '@uiuxjoseph/theme';
+import { color, component, shadow, spacing, textStyle, typography } from '@uiuxjoseph/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 
 export type CardVariant = 'elevated' | 'outlined' | 'flat';
@@ -14,12 +14,9 @@ export type CardProps = {
   children?: ReactNode;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'title'>;
 
-const paddingValues: Record<CardPadding, number> = {
-  none: 0,
-  small: spacing.s,
-  medium: spacing.m,
-  large: spacing.l,
-};
+const { card } = component;
+
+const paddingValues: Record<CardPadding, number> = card.padding;
 
 const variantStyles: Record<CardVariant, CSSProperties> = {
   elevated: {
@@ -53,7 +50,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
 
   const style: CSSProperties = {
     boxSizing: 'border-box',
-    borderRadius: radius.m,
+    borderRadius: `var(--gr-card-radius, ${card.radius}px)`,
     fontFamily: typography.fontFamily.base,
     color: color.navbar.textActive,
     overflow: 'hidden',
@@ -70,8 +67,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: spacing.s,
-            padding: `${spacing.s}px ${pad || spacing.m}px`,
+            gap: `var(--gr-card-gap, ${card.gap}px)`,
+            padding: `var(--gr-card-header-padding-y, ${card.headerPaddingY}px) ${pad || spacing.m}px`,
             borderBottom: `1px solid ${color.navbar.border}`,
             ...textStyle.lSemibold,
           }}
