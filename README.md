@@ -7,6 +7,12 @@ npm install
 npm run dev     # gallery at http://localhost:5173
 ```
 
+> **Scope is temporary.** Packages publish as `@uiuxjoseph/*` because GitHub
+> Packages requires the npm scope to match the repo owner, and GigRadar org
+> access was not available at setup. They will be renamed to `@gigradar/*` at
+> handoff — a breaking change, so the fewer apps that have adopted by then, the
+> cheaper it is. See [docs/handoff-to-gigradar-org.md](docs/handoff-to-gigradar-org.md).
+
 ## What this repo publishes
 
 | Output | Where |

@@ -1,5 +1,11 @@
 # Installing @uiuxjoseph packages in an app
 
+> **The scope will change.** These packages will be renamed to `@gigradar/*`
+> once the design system moves to the GigRadar organization. That is a breaking
+> change requiring a find-and-replace in every consuming app. Plan for it — and
+> if you are about to adopt broadly, check whether the move is imminent first.
+> See [handoff-to-gigradar-org.md](handoff-to-gigradar-org.md).
+
 The packages are private and hosted on GitHub Packages, which requires
 authentication **even to read**. Each developer authenticates once; the app
 repos hold no secrets.
