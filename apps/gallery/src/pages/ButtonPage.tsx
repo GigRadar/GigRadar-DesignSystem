@@ -1,6 +1,5 @@
 import { color, textStyle } from '@uiuxjoseph/theme';
 import { Button, ComposerButton, HStack, VStack } from '@uiuxjoseph/ui';
-import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
 
@@ -35,19 +34,6 @@ export function ButtonPage() {
             <Button loading>Send</Button>
           </HStack>
         </Preview>
-        <CodeBlock
-          code={`import { Button, HStack } from "@uiuxjoseph/ui"
-
-export function ProposalActions({ onApply, onCancel, isSending }) {
-  return (
-    <HStack gap="s">
-      <Button onClick={onApply}>Apply</Button>
-      <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-      <Button loading={isSending}>Send</Button>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -58,18 +44,6 @@ export function ProposalActions({ onApply, onCancel, isSending }) {
           <Button variant="primary">Apply</Button>
           <Button variant="secondary">Apply</Button>
         </Preview>
-        <CodeBlock
-          code={`import { Button, HStack } from "@uiuxjoseph/ui"
-
-const Demo = () => {
-  return (
-    <HStack gap="s">
-      <Button variant="primary">Apply</Button>
-      <Button variant="secondary">Apply</Button>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -97,27 +71,6 @@ const Demo = () => {
             </VStack>
           ))}
         </VStack>
-        <CodeBlock
-          code={`import { Button, HStack } from "@uiuxjoseph/ui"
-
-// Figma's eight named variants are variant x state, so the four
-// states apply to both kinds — there is no eighth prop value.
-const Demo = () => {
-  return (
-    <HStack gap="s">
-      <Button variant="primary">Active</Button>
-      <Button variant="primary">Hover me</Button>
-      <Button variant="primary" disabled>Disable</Button>
-      <Button variant="primary" loading>Syncing</Button>
-
-      <Button variant="secondary">Active</Button>
-      <Button variant="secondary">Hover me</Button>
-      <Button variant="secondary" disabled>Disable</Button>
-      <Button variant="secondary" loading>Syncing</Button>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -152,20 +105,6 @@ const Demo = () => {
             </HStack>
           </VStack>
         </Preview>
-        <CodeBlock
-          code={`import { Button, HStack } from "@uiuxjoseph/ui"
-
-const Demo = () => {
-  return (
-    <HStack gap="s">
-      <Button tone="meeting">Send</Button>        {/* Meeting button */}
-      <Button tone="schedule">Send</Button>       {/* Schedule button */}
-      <Button tone="laziza">Send</Button>         {/* Laziza AI button */}
-      <Button tone="danger" variant="secondary">Cancel</Button>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -210,19 +149,6 @@ const Demo = () => {
             </HStack>
           </VStack>
         </Preview>
-        <CodeBlock
-          code={`import { Button, HStack } from "@uiuxjoseph/ui"
-
-const Demo = () => {
-  return (
-    <HStack gap="s">
-      <Button>Apply</Button>
-      <Button disabled>Apply</Button>
-      <Button loading>Send</Button>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -235,13 +161,6 @@ const Demo = () => {
             Send
           </Button>
         </Preview>
-        <CodeBlock
-          code={`import { Button } from "@uiuxjoseph/ui"
-
-const Demo = ({ isSyncing }) => {
-  return <Button loading={isSyncing}>Send</Button>
-}`}
-        />
       </Section>
 
       <Section
@@ -257,18 +176,6 @@ const Demo = ({ isSyncing }) => {
             Add job
           </Button>
         </Preview>
-        <CodeBlock
-          code={`import { Button, HStack } from "@uiuxjoseph/ui"
-
-const Demo = () => {
-  return (
-    <HStack gap="s">
-      <Button startIcon={<PlusIcon />}>Add job</Button>
-      <Button variant="secondary" endIcon={<PlusIcon />}>Add job</Button>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -280,19 +187,6 @@ const Demo = () => {
           <Button size="medium">Apply</Button>
           <Button size="large">Apply</Button>
         </Preview>
-        <CodeBlock
-          code={`import { Button, HStack } from "@uiuxjoseph/ui"
-
-const Demo = () => {
-  return (
-    <HStack gap="s">
-      <Button size="small">Apply</Button>
-      <Button size="medium">Apply</Button>
-      <Button size="large">Apply</Button>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -307,18 +201,6 @@ const Demo = () => {
             </Button>
           </VStack>
         </Preview>
-        <CodeBlock
-          code={`import { Button, VStack } from "@uiuxjoseph/ui"
-
-const Demo = () => {
-  return (
-    <VStack gap="s" width={280}>
-      <Button fullWidth>Apply now</Button>
-      <Button variant="secondary" fullWidth>Save draft</Button>
-    </VStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -345,26 +227,6 @@ const Demo = () => {
             Custom outline
           </Button>
         </Preview>
-        <CodeBlock
-          code={`import { Button, HStack } from "@uiuxjoseph/ui"
-
-const Demo = () => {
-  return (
-    <HStack gap="s">
-      <Button radius={9999} paddingX={24}>Pill</Button>
-      <Button variant="secondary" radius={0} borderWidth={2}>Square</Button>
-      <Button fontSize={18} paddingY={14}>Roomy</Button>
-      <Button startIcon={<PlusIcon />} iconSize={24} gap={16}>Big icon</Button>
-
-      {/* colours are props too — no style prop needed, or accepted */}
-      <Button background="#2E1065" textColor="#FDE68A" fontWeight={700}>Custom fill</Button>
-      <Button variant="secondary" borderColor="#2E1065" textColor="#2E1065" borderWidth={2}>
-        Custom outline
-      </Button>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section
@@ -387,25 +249,6 @@ const Demo = () => {
             </ComposerButton>
           </HStack>
         </Preview>
-        <CodeBlock
-          code={`import { ComposerButton, HStack } from "@uiuxjoseph/ui"
-
-const Demo = () => {
-  const [tab, setTab] = useState("message")
-
-  return (
-    <HStack gap="xxs">
-      <ComposerButton selected={tab === "message"} info onClick={() => setTab("message")}>
-        Message
-      </ComposerButton>
-      {/* laziza is the orange spark on the Note tab — the AI-assisted composer */}
-      <ComposerButton selected={tab === "note"} laziza info onClick={() => setTab("note")}>
-        Note
-      </ComposerButton>
-    </HStack>
-  )
-}`}
-        />
       </Section>
 
       <Section title="Button props">

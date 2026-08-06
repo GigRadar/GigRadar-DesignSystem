@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Section, Shell } from './layout';
 import { AvatarPage } from './pages/AvatarPage';
 import { ButtonPage } from './pages/ButtonPage';
+import { IconsPage } from './pages/IconsPage';
 import { TokensPage } from './pages/TokensPage';
 
 const PAGES = [
   { id: 'tokens', label: 'Tokens', render: () => <TokensPage /> },
+  { id: 'icons', label: 'Icons', render: () => <IconsPage /> },
   { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
   { id: 'button', label: 'Button', render: () => <ButtonPage /> },
 ] as const;
@@ -24,13 +26,13 @@ export function App() {
           <div style={{ ...textStyle.sSemibold, color: color.main.description, padding: `${spacing.xs}px ${spacing.s}px`, textTransform: 'uppercase', letterSpacing: 0.5 }}>
             Foundations
           </div>
-          {PAGES.filter((p) => p.id === 'tokens').map((p) => (
+          {PAGES.filter((p) => p.id === 'tokens' || p.id === 'icons').map((p) => (
             <NavItem key={p.id} label={p.label} active={active === p.id} onClick={() => setActive(p.id)} />
           ))}
           <div style={{ ...textStyle.sSemibold, color: color.main.description, padding: `${spacing.s}px ${spacing.s}px ${spacing.xs}px`, textTransform: 'uppercase', letterSpacing: 0.5 }}>
             Components
           </div>
-          {PAGES.filter((p) => p.id !== 'tokens').map((p) => (
+          {PAGES.filter((p) => p.id !== 'tokens' && p.id !== 'icons').map((p) => (
             <NavItem key={p.id} label={p.label} active={active === p.id} onClick={() => setActive(p.id)} />
           ))}
         </nav>

@@ -39,6 +39,14 @@ export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
 export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/AvatarGroup.js';
 
 /**
+ * The icon set — `Icon` plus one `IconDef` per glyph (`IconLockFill`,
+ * `IconSearch`, …). The full-set registry is deliberately NOT exported here;
+ * the gallery imports it from the package internals so product bundles only
+ * carry the icons they name.
+ */
+export * from './icons/index.js';
+
+/**
  * Tokens are re-exported so app code never needs a direct `@uiuxjoseph/theme`
  * dependency for ordinary use.
  */
