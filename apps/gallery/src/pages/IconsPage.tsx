@@ -1,7 +1,7 @@
 import { color, radius, spacing, textStyle, typography } from '@uiuxjoseph/theme';
 import { Icon } from '@uiuxjoseph/ui';
 import { useState } from 'react';
-import { iconSections } from '../../../../packages/ui/src/icons/registry';
+import { fillIcons, strokeIcons } from '../../../../packages/ui/src/icons/registry';
 import { PageHeader, Section } from '../layout';
 
 /**
@@ -14,13 +14,18 @@ export function IconsPage() {
   const [copied, setCopied] = useState<string | null>(null);
 
   const q = query.trim().toLowerCase();
-  const total = iconSections.reduce((n, s) => n + s.icons.length, 0);
+  const total = fillIcons.length + strokeIcons.length;
 
   const copyName = async (name: string) => {
     await navigator.clipboard.writeText(name);
     setCopied(name);
     window.setTimeout(() => setCopied((current) => (current === name ? null : current)), 1200);
   };
+
+  const groups: { title: string; icons: typeof fillIcons }[] = [
+    { title: `Fill (${fillIcons.length})`, icons: fillIcons },
+    { title: `Stroke (${strokeIcons.length})`, icons: strokeIcons },
+  ];
 
   return (
     <>
@@ -48,11 +53,11 @@ export function IconsPage() {
         />
       </div>
 
-      {iconSections.map(({ section, icons }) => {
+      {groups.map(({ title, icons }) => {
         const visible = q ? icons.filter((icon) => icon.name.includes(q)) : icons;
         if (visible.length === 0) return null;
         return (
-          <Section key={section} title={section[0]!.toUpperCase() + section.slice(1)}>
+          <Section key={title} title={title}>
             <div
               style={{
                 display: 'grid',
