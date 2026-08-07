@@ -15,15 +15,18 @@ import { PageHeader, Preview, Section } from '../layout';
 const PLACEMENTS: TooltipPlacement[] = ['top', 'bottom', 'left', 'right'];
 
 /**
- * Room reserved around the placement examples.
+ * Room reserved around each placement example.
  *
  * A tooltip is absolutely positioned and takes no layout space, so an open one
- * can overlap whatever sits next to it. The examples here open on hover rather
- * than staying pinned, but the placement row still holds space on all four
- * sides — otherwise hovering a card makes it collide with its neighbours, which
- * misrepresents how the component behaves in a real layout.
+ * can overlap whatever sits next to it. The examples open on hover rather than
+ * staying pinned, so only ONE card is ever out at a time — the room only has to
+ * clear that card, not every card at once.
+ *
+ * Split because the four sit in a single row: vertical room clears a title +
+ * description card, while horizontal room is deliberately tighter, since four
+ * columns of it would push the outer two off the content width.
  */
-const PLACEMENT_ROOM = 92;
+const PLACEMENT_ROOM = { block: 88, inline: 24 } as const;
 
 /**
  * A tooltip example behaving exactly as it would in an app — closed until you
@@ -67,7 +70,16 @@ function Hint({ children }: { children: React.ReactNode }) {
  * room to open into already.
  */
 function Room({ children }: { children: React.ReactNode }) {
-  return <div style={{ display: 'inline-flex', padding: PLACEMENT_ROOM }}>{children}</div>;
+  return (
+    <div
+      style={{
+        display: 'inline-flex',
+        padding: `${PLACEMENT_ROOM.block}px ${PLACEMENT_ROOM.inline}px`,
+      }}
+    >
+      {children}
+    </div>
+  );
 }
 
 /** A caption above an example, so variants can be compared side by side. */
@@ -177,13 +189,16 @@ export function TooltipPage() {
         <Preview>
           <VStack gap="s" alignItems="flex-start">
             <Hint>Hover each button to see where its card opens.</Hint>
-            {/* Every cell holds room on all four sides. The card is absolutely
-                positioned and takes no layout space, so without this an opened
-                tooltip lands on its neighbours. */}
+            {/* One row, always — the four placements are meant to be compared
+                side by side, and an auto-fit grid wraps them into a 2×2 at this
+                content width, which reads as a stack rather than a comparison.
+                Each cell holds room on all four sides because the card is
+                absolutely positioned and takes no layout space, so without it an
+                opened tooltip lands on its neighbours. */}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gridTemplateColumns: `repeat(${PLACEMENTS.length}, 1fr)`,
                 width: '100%',
               }}
             >
@@ -194,7 +209,16 @@ export function TooltipPage() {
                 >
                   <Room>
                     <Labeled label={placement}>
-                      <Shown content="Description" title="Title" placement={placement}>
+                      <Shown
+                        content="Description"
+                        title="Title"
+                        placement={placement}
+                        // The sideways cards open into their column rather than
+                        // above or below it, so they are capped to fit one.
+                        // Without this a 260px card overflows a ~243px column
+                        // and lands on the example beside it.
+                        maxWidth={placement === 'left' || placement === 'right' ? 150 : undefined}
+                      >
                         <Button variant="secondary">{placement}</Button>
                       </Shown>
                     </Labeled>
