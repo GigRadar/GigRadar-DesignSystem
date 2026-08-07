@@ -466,6 +466,132 @@ export const switchControl = {
 export type SwitchSize = keyof typeof switchControl.height;
 
 /**
+ * Tooltip metrics.
+ *
+ * From Figma (node 64:2546, the four-position component set): a white 6px-radius
+ * card with 14px horizontal and 10px vertical padding, an 8px gap between the
+ * title and the body, and a 10×5px arrow pointing at the anchor. The title is
+ * 18px Bold and the description 12px Medium in `main.description`.
+ *
+ * That drawn card anchors the `medium` step. Figma draws one size, so `small`
+ * and `large` extend the scale proportionally — the part of this block not
+ * traceable to a Figma value.
+ *
+ * Figma constrains the card to 110px wide, but that is the mock's own text
+ * rather than a spec: a tooltip is sized by its content and capped by
+ * `maxWidth`, so a real sentence wraps instead of being clipped at 110px.
+ */
+export const tooltip = {
+  /** Horizontal padding. Figma draws 14px. */
+  paddingX: {
+    small: spacing.s,
+    medium: 14,
+    large: spacing.m,
+  },
+  /** Vertical padding. Figma draws 10px. */
+  paddingY: {
+    small: 8,
+    medium: 10,
+    large: spacing.s,
+  },
+  /** Gap between the title, the description, and any actions. */
+  gap: {
+    small: spacing.xs,
+    medium: spacing.xs,
+    large: spacing.xs,
+  },
+  /** Title type size. Figma draws 18px Bold. */
+  titleFontSize: {
+    small: fontSize.m,
+    medium: 18,
+    large: 20,
+  },
+  /** Description type size. Figma draws 12px Medium. */
+  fontSize: {
+    small: 11,
+    medium: fontSize.s,
+    large: fontSize.m,
+  },
+  radius: radius.xs,
+  /**
+   * The arrow, drawn as a CSS triangle rather than the exported SVG: Figma
+   * ships one asset per direction, but the shape is a plain 10×5 triangle that
+   * borders draw exactly — and drawn in CSS it inherits the card's background,
+   * so recoloring the tooltip never leaves a white arrow behind.
+   */
+  arrow: {
+    /** Base width of the triangle. Figma draws 10px. */
+    width: 10,
+    /** How far it protrudes from the card. Figma draws 5px. */
+    height: 5,
+  },
+  /**
+   * Distance between the anchor and the card, arrow included. The arrow is 5px,
+   * so this leaves ~3px of daylight — enough that the tooltip reads as detached
+   * without drifting away from what it points at.
+   */
+  offset: 8,
+  /**
+   * The cap on a tooltip's width before its text wraps. Not a Figma value —
+   * Figma's 110px is the width of the word "Description". A tooltip is a short
+   * sentence, and this is about where one becomes hard to scan.
+   */
+  maxWidth: 260,
+  /**
+   * The title's gradient, as Figma paints it — a radial sweep across the text
+   * running light blue through the brand blue into a deeper blue.
+   *
+   * NOT what the component draws. The title renders as a flat `badge.foreground`
+   * blue instead: the gradient reads as decoration on a label meant to be
+   * scanned in a fraction of a second, and it costs a `background-clip: text`
+   * trick that renders the title invisible wherever that is unsupported.
+   * Retained here because it is still the drawn design, and a caller who wants
+   * it can pass it through `titleColor`.
+   */
+  titleGradient: {
+    from: '#5DADFD',
+    via: '#3F8CF6',
+    to: '#216BEF',
+  },
+  /** How long the tooltip waits before opening on hover, in milliseconds. */
+  openDelay: 150,
+} as const;
+
+export type TooltipSize = keyof typeof tooltip.fontSize;
+
+/**
+ * Confirmation popover metrics.
+ *
+ * From Figma (node 1272:11979): a 219px-wide white card at an 8px radius, built
+ * as three bands — a head holding the title, a body holding the message, and a
+ * footer holding the actions right-aligned with a 4px gap. Padding is 16px
+ * horizontal throughout, 12px vertical in the head, and 8px in the footer.
+ *
+ * Deliberately its own block rather than a size step of `tooltip`: the two are
+ * different shapes. A tooltip is a floating label sized by its text, while this
+ * is a fixed-width card with banded structure and a footer — sharing tokens
+ * would mean one of them fighting the other's numbers.
+ */
+export const confirm = {
+  /** Card width. Figma draws 219px. */
+  width: 219,
+  radius: radius.s,
+  paddingX: spacing.m,
+  /** Vertical padding in the head band. Figma draws 12px. */
+  headPaddingY: spacing.s,
+  /** Vertical padding in the footer band. Figma draws 8px. */
+  footerPaddingY: 8,
+  /** Space below the message, before the footer. */
+  bodyPaddingBottom: spacing.s,
+  /** Gap between the footer's buttons. Figma draws 4px. */
+  footerGap: spacing.xxs,
+  /** Title type size. Figma draws 14px Medium. */
+  titleFontSize: fontSize.m,
+  /** Message type size. Figma draws 14px Regular. */
+  fontSize: fontSize.m,
+} as const;
+
+/**
  * Documentation chrome.
  *
  * The gallery's own surfaces — preview panels, prop tables, code blocks. These
@@ -499,8 +625,10 @@ export const component = {
   badge,
   button,
   checkbox,
+  confirm,
   spinner,
   switchControl,
+  tooltip,
   docs,
 } as const;
 

@@ -53,6 +53,7 @@ export type {
   CheckboxSize,
   SpinnerSize,
   SwitchSize,
+  TooltipSize,
 } from './tokens/components.js';
 
 export { buildCssVars, renderCssVars } from './css-vars.js';

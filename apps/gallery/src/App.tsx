@@ -9,6 +9,7 @@ import { IconsPage } from './pages/IconsPage';
 import { SpinnerPage } from './pages/SpinnerPage';
 import { SwitchPage } from './pages/SwitchPage';
 import { TokensPage } from './pages/TokensPage';
+import { TooltipPage } from './pages/TooltipPage';
 
 const PAGES = [
   { id: 'tokens', label: 'Tokens', render: () => <TokensPage /> },
@@ -19,6 +20,7 @@ const PAGES = [
   { id: 'checkbox', label: 'Checkbox', render: () => <CheckboxPage /> },
   { id: 'spinner', label: 'Spinner', render: () => <SpinnerPage /> },
   { id: 'switch', label: 'Switch', render: () => <SwitchPage /> },
+  { id: 'tooltip', label: 'Tooltip', render: () => <TooltipPage /> },
 ] as const;
 
 type PageId = (typeof PAGES)[number]['id'];

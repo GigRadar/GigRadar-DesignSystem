@@ -33,9 +33,10 @@ export type ButtonVariant = 'primary' | 'secondary';
  * this table instead of a new file.
  *
  * `brand` is the default blue. `danger` is Figma's Cancel button, which is the
- * one tone drawn only as an outline.
+ * one tone drawn only as an outline. `remove` is the filled destructive button
+ * from the confirmation popover (node 1272:11993).
  */
-export type ButtonTone = 'brand' | 'meeting' | 'schedule' | 'laziza' | 'danger';
+export type ButtonTone = 'brand' | 'meeting' | 'schedule' | 'laziza' | 'danger' | 'remove';
 
 /**
  * Per-instance overrides for the button's own metrics.
@@ -178,6 +179,20 @@ const tones = {
     hover: color.accent.decrease.main,
     outline: color.accent.decrease.main,
   },
+  /**
+   * The Remove button from the confirmation popover (node 1272:11993).
+   *
+   * Distinct from `danger`, which Figma draws as an outline: this one is filled,
+   * and it is the only tone that deepens rather than lightens on hover — from
+   * the soft `decrease` coral to a full red. That jump is the point. The button
+   * confirms a deletion, so it should feel more serious the closer the pointer
+   * gets, where the other tones just acknowledge the hover.
+   */
+  remove: {
+    main: color.accent.decrease.main,
+    hover: color.status.error.text,
+    outline: color.accent.decrease.main,
+  },
 } as const;
 
 /**
@@ -207,8 +222,10 @@ function paletteFor(variant: ButtonVariant, tone: ButtonTone) {
 
   // Cancel is drawn as an outline in its own color rather than a neutral one,
   // and tints its fill on hover instead of filling solid — a destructive action
-  // should read as destructive before it is hovered.
-  if (tone === 'danger') {
+  // should read as destructive before it is hovered. `remove` outlines the same
+  // way: Figma draws it only as a filled button, so rather than invent a
+  // neutral-bordered variant it borrows the destructive outline.
+  if (tone === 'danger' || tone === 'remove') {
     return {
       background: color.main.white,
       hoverBackground: color.accent.decrease.background,
@@ -248,8 +265,9 @@ function disabledPaletteFor(variant: ButtonVariant, tone: ButtonTone) {
 
   // Cancel fades its outline to the disabled grey; the feature buttons keep a
   // neutral border and lean on `opacity` instead, which Figma applies to the
-  // whole button rather than recoloring each part.
-  if (tone === 'danger') {
+  // whole button rather than recoloring each part. `remove` follows Cancel,
+  // matching how it borrows the destructive outline above.
+  if (tone === 'danger' || tone === 'remove') {
     return {
       background: color.main.white,
       border: color.disable.background,
@@ -371,9 +389,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     backgroundColor: `var(--gr-button-background, ${fill.background})`,
     color: `var(--gr-button-text-color, ${fill.text})`,
     // Figma dims the whole disabled outlined button rather than restyling it.
-    // `danger` is excluded — Cancel recolors its border and label instead.
+    // The destructive tones are excluded — they recolor border and label
+    // instead, so dimming on top would fade them twice.
     opacity:
-      inert && variant === 'secondary' && tone !== 'danger' ? disabledSecondaryOpacity : undefined,
+      inert && variant === 'secondary' && tone !== 'danger' && tone !== 'remove'
+        ? disabledSecondaryOpacity
+        : undefined,
     fontFamily: typography.fontFamily.base,
     fontSize: `var(--gr-button-font-size-${size}, ${button.fontSize[size]}px)`,
     fontWeight: `var(--gr-button-font-weight, ${typography.fontWeight.medium})`,

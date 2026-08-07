@@ -232,6 +232,33 @@ export function ButtonPage() {
       </Section>
 
       <Section
+        title="Remove + 2nd"
+        description="The Remove button from the confirmation popover (Figma node 1272:11993). It is the one tone that DEEPENS on hover — from the soft coral to a full red — rather than lightening. That jump is deliberate: the button confirms a deletion, so it should feel more serious the closer the pointer gets."
+      >
+        <FeatureStates
+          tone="remove"
+          label="Remove"
+          icon={IconXClose}
+          usageMain={`// The confirm step INSIDE a confirmation, not the button that opens one.
+// ConfirmTooltip already renders this button — reach for it directly only
+// when you are building your own confirm surface.
+<Button tone="remove" onClick={doDelete} loading={isDeleting}>
+  Remove
+</Button>
+
+// Usually you want the whole flow instead, which draws this for you:
+<ConfirmTooltip onConfirm={doDelete}>
+  <Button variant="secondary" tone="danger">Delete</Button>
+</ConfirmTooltip>`}
+          usageSecondary={`// Rare. Figma draws Remove only as a filled button; the outlined form
+// borrows the destructive outline so it still reads as destructive at rest.
+<Button variant="secondary" tone="remove" onClick={askToConfirm}>
+  Remove
+</Button>`}
+        />
+      </Section>
+
+      <Section
         title="Composer text"
         description="The Message / Note toggle above a message box. A separate component because the shape genuinely differs: no border, transparent until hovered or selected, 12px semibold — and its state is selected or not. Figma draws no disabled or loading state for it. Click the live example."
       >

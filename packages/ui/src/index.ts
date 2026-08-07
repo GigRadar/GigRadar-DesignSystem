@@ -64,6 +64,20 @@ export type {
 export { SwitchButton } from './components/Switch/SwitchButton.js';
 export type { SwitchButtonProps, SwitchButtonStyleProps } from './components/Switch/SwitchButton.js';
 
+export { Tooltip } from './components/Tooltip/Tooltip.js';
+export type {
+  TooltipProps,
+  TooltipStyleProps,
+  TooltipPlacement,
+  TooltipSize,
+} from './components/Tooltip/Tooltip.js';
+
+export { ConfirmTooltip } from './components/Tooltip/ConfirmTooltip.js';
+export type {
+  ConfirmTooltipProps,
+  ConfirmTooltipStyleProps,
+} from './components/Tooltip/ConfirmTooltip.js';
+
 export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
 export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/AvatarGroup.js';
 
