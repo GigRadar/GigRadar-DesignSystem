@@ -27,40 +27,52 @@ function FeatureStates({
   tone,
   label,
   icon,
+  usageMain,
+  usageSecondary,
 }: {
   tone: ButtonProps['tone'];
   label: string;
   icon: IconDef;
+  /** Usage snippet shown under the Main row. */
+  usageMain: string;
+  /** Usage snippet shown under the Secondary row. */
+  usageSecondary: string;
 }) {
   return (
-    <VStack gap="m" mb="m">
+    <VStack gap="l" mb="m">
       {(['primary', 'secondary'] as const).map((variant) => (
-        <VStack key={variant} gap="xxs">
-          <div style={{ ...textStyle.sSemibold, color: color.main.description }}>
-            {variant === 'primary' ? 'Button (Main)' : 'Button (Secondary)'}
-          </div>
-          <HStack gap="s" flexWrap="wrap">
-            <Button variant={variant} tone={tone}>
-              {label}
-            </Button>
-            {/* Hover is a real pointer state — point at it rather than a frozen fake. */}
-            <Button variant={variant} tone={tone}>
-              Hover me
-            </Button>
-            <Button variant={variant} tone={tone} disabled>
-              {label}
-            </Button>
-            <Button variant={variant} tone={tone} loading>
-              {label}
-            </Button>
-            {/* The icon is optional, and goes on either side — or both. */}
-            <Button variant={variant} tone={tone} startIcon={<Icon icon={icon} size={16} />}>
-              {label}
-            </Button>
-            <Button variant={variant} tone={tone} endIcon={<Icon icon={icon} size={16} />}>
-              {label}
-            </Button>
-          </HStack>
+        <VStack key={variant} gap="s">
+          <VStack gap="xxs">
+            <div style={{ ...textStyle.sSemibold, color: color.main.description }}>
+              {variant === 'primary' ? 'Button (Main)' : 'Button (Secondary)'}
+            </div>
+            <HStack gap="s" flexWrap="wrap">
+              <Button variant={variant} tone={tone}>
+                {label}
+              </Button>
+              {/* Hover is a real pointer state — point at it rather than a frozen fake. */}
+              <Button variant={variant} tone={tone}>
+                Hover me
+              </Button>
+              <Button variant={variant} tone={tone} disabled>
+                {label}
+              </Button>
+              <Button variant={variant} tone={tone} loading>
+                {label}
+              </Button>
+              {/* The icon is optional, and goes on either side — or both. */}
+              <Button variant={variant} tone={tone} startIcon={<Icon icon={icon} size={16} />}>
+                {label}
+              </Button>
+              <Button variant={variant} tone={tone} endIcon={<Icon icon={icon} size={16} />}>
+                {label}
+              </Button>
+            </HStack>
+          </VStack>
+          <CodeBlock
+            label={variant === 'primary' ? 'Usage — Button (Main)' : 'Usage — Button (Secondary)'}
+            code={variant === 'primary' ? usageMain : usageSecondary}
+          />
         </VStack>
       ))}
     </VStack>
@@ -117,25 +129,25 @@ export function ButtonPage() {
         title="Main + 2nd"
         description="The default button — Figma's Main (filled) and 2nd (outlined). One Main per view: the action you want taken. Everything beside it is the 2nd variant."
       >
-        <FeatureStates tone="brand" label="Apply" icon={IconPlus} />
-        <CodeBlock
-          code={`// Pick by hierarchy: ONE Main per view, 2nd for everything beside it.
+        <FeatureStates
+          tone="brand"
+          label="Apply"
+          icon={IconPlus}
+          usageMain={`// ONE Main per view — the action you want taken.
 <Button onClick={apply}>Apply</Button>
-<Button variant="secondary" onClick={saveDraft}>Save draft</Button>
 
 // States come from your data, not from styling:
 <Button loading={isSending} onClick={send}>Send</Button>   // in flight
 <Button disabled={!form.isValid}>Apply</Button>            // not allowed yet
 
-// Icons are OPTIONAL, and go on the left, the right, or both.
-// Use the icon set — size 16 matches the slot:
+// Icons are OPTIONAL — left, right, or both. size 16 matches the slot:
 <Button startIcon={<Icon icon={IconPlus} size={16} />}>Add job</Button>
-<Button endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}>More</Button>
-<Button
-  startIcon={<Icon icon={IconPlus} size={16} />}
-  endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}
->
-  Add job
+<Button endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}>More</Button>`}
+          usageSecondary={`// Everything beside the Main action — same states, same icon slots.
+<Button variant="secondary" onClick={saveDraft}>Save draft</Button>
+<Button variant="secondary" disabled={!hasChanges}>Reset</Button>
+<Button variant="secondary" startIcon={<Icon icon={IconPlus} size={16} />}>
+  Add filter
 </Button>`}
         />
       </Section>
@@ -144,14 +156,19 @@ export function ButtonPage() {
         title="Schedule message + 2nd"
         description="The Schedule Messages feature button — purple, per the schedule accent tokens. Same control, same states; only the tone changes."
       >
-        <FeatureStates tone="schedule" label="Schedule message" icon={IconScheduleClockStroke} />
-        <CodeBlock
-          code={`// Pick the tone by FEATURE, not by color — scheduling is purple because
+        <FeatureStates
+          tone="schedule"
+          label="Schedule message"
+          icon={IconScheduleClockStroke}
+          usageMain={`// Pick the tone by FEATURE, not by color — scheduling is purple because
 // the design system says so, not because this call site chose purple.
 <Button tone="schedule" startIcon={<Icon icon={IconScheduleClockStroke} size={16} />}>
   Schedule message
-</Button>
-<Button variant="secondary" tone="schedule">Reschedule</Button>`}
+</Button>`}
+          usageSecondary={`<Button variant="secondary" tone="schedule">Reschedule</Button>
+<Button variant="secondary" tone="schedule" loading={isRescheduling}>
+  Rescheduling…
+</Button>`}
         />
       </Section>
 
@@ -159,11 +176,14 @@ export function ButtonPage() {
         title="Meetings + 2nd"
         description="The Meetings feature button — green, per the meetings accent tokens."
       >
-        <FeatureStates tone="meeting" label="Book a meeting" icon={IconMeetingsStroke} />
-        <CodeBlock
-          code={`<Button tone="meeting" startIcon={<Icon icon={IconMeetingsStroke} size={16} />}>
+        <FeatureStates
+          tone="meeting"
+          label="Book a meeting"
+          icon={IconMeetingsStroke}
+          usageMain={`<Button tone="meeting" startIcon={<Icon icon={IconMeetingsStroke} size={16} />}>
   Book a meeting
-</Button>
+</Button>`}
+          usageSecondary={`<Button variant="secondary" tone="meeting">Suggest a time</Button>
 <Button variant="secondary" tone="meeting" loading={isBooking}>
   Booking…
 </Button>`}
@@ -174,11 +194,14 @@ export function ButtonPage() {
         title="Laziza AI + 2nd"
         description="The Laziza AI feature button — amber, per the laziza accent tokens."
       >
-        <FeatureStates tone="laziza" label="Ask Laziza AI" icon={IconLazizaSparkleStroke} />
-        <CodeBlock
-          code={`<Button tone="laziza" startIcon={<Icon icon={IconLazizaSparkleStroke} size={16} />}>
+        <FeatureStates
+          tone="laziza"
+          label="Ask Laziza AI"
+          icon={IconLazizaSparkleStroke}
+          usageMain={`<Button tone="laziza" startIcon={<Icon icon={IconLazizaSparkleStroke} size={16} />}>
   Ask Laziza AI
-</Button>
+</Button>`}
+          usageSecondary={`<Button variant="secondary" tone="laziza">Improve reply</Button>
 <Button variant="secondary" tone="laziza" loading={isGenerating}>
   Generating…
 </Button>`}
@@ -189,14 +212,22 @@ export function ButtonPage() {
         title="Cancel / negative + 2nd"
         description="Destructive actions. Unlike the other outlined tones, the 2nd variant carries its red outline at rest — a destructive action should read as destructive before it is hovered."
       >
-        <FeatureStates tone="danger" label="Cancel proposal" icon={IconXClose} />
-        <CodeBlock
-          code={`// Destructive: reads red at rest, on purpose. Confirm before acting when
-// the action is not undoable — the color warns, it does not protect.
-<Button variant="secondary" tone="danger" onClick={confirmCancel}>
+        <FeatureStates
+          tone="danger"
+          label="Cancel proposal"
+          icon={IconXClose}
+          usageMain={`// Filled red is the loudest thing on any screen — reserve it for the
+// confirm step of a destructive flow, not the entry point.
+<Button tone="danger" onClick={confirmCancel} loading={isCancelling}>
   Cancel proposal
-</Button>
-<Button tone="danger" loading={isCancelling}>Cancelling…</Button>`}
+</Button>`}
+          usageSecondary={`// The usual entry point. Unlike other tones it carries its red outline at
+// rest — destructive should read as destructive before it is hovered.
+// Confirm before acting when the action is not undoable: the color warns,
+// it does not protect.
+<Button variant="secondary" tone="danger" onClick={askToConfirm}>
+  Cancel proposal
+</Button>`}
         />
       </Section>
 
