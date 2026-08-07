@@ -1,4 +1,4 @@
-import { GigRadarProvider } from '@uiuxjoseph/ui';
+import { GigRadarProvider } from '@gigradar/ui';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';

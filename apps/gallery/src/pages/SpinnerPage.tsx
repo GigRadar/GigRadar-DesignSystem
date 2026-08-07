@@ -1,5 +1,5 @@
-import { color, textStyle } from '@uiuxjoseph/theme';
-import { Button, HStack, Spinner, VStack, type SpinnerSize } from '@uiuxjoseph/ui';
+import { color, textStyle } from '@gigradar/theme';
+import { Button, HStack, Spinner, VStack, type SpinnerSize } from '@gigradar/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';

@@ -1,6 +1,6 @@
 ---
-'@uiuxjoseph/theme': minor
-'@uiuxjoseph/ui': minor
+'@gigradar/theme': minor
+'@gigradar/ui': minor
 ---
 
 Add four badge components, each in three sizes.

@@ -1,10 +1,4 @@
-# Installing @uiuxjoseph packages in an app
-
-> **The scope will change.** These packages will be renamed to `@gigradar/*`
-> once the design system moves to the GigRadar organization. That is a breaking
-> change requiring a find-and-replace in every consuming app. Plan for it — and
-> if you are about to adopt broadly, check whether the move is imminent first.
-> See [handoff-to-gigradar-org.md](handoff-to-gigradar-org.md).
+# Installing @gigradar packages in an app
 
 The packages are private and hosted on GitHub Packages, which requires
 authentication **even to read**. Each developer authenticates once; the app
@@ -24,7 +18,7 @@ Classic tokens are required here. Fine-grained tokens do not yet support npm
 reads from GitHub Packages.
 
 > This token grants read access to **all** private packages the account can
-> see, not just `@uiuxjoseph/*`. GitHub Packages has no per-package npm scoping.
+> see, not just `@gigradar/*`. GitHub Packages has no per-package npm scoping.
 > If that is too broad, create a machine user with access limited to this repo
 > and issue the token from that account instead.
 
@@ -52,7 +46,7 @@ Add the token to the **global** `~/.npmrc` (never a repo file):
 Verify:
 
 ```bash
-npm view @uiuxjoseph/theme --registry https://npm.pkg.github.com
+npm view @gigradar/theme --registry https://npm.pkg.github.com
 ```
 
 ## Per app repo
@@ -60,14 +54,14 @@ npm view @uiuxjoseph/theme --registry https://npm.pkg.github.com
 Commit a `.npmrc` at the repo root. It contains no secret — only routing:
 
 ```ini
-@uiuxjoseph:registry=https://npm.pkg.github.com
+@gigradar:registry=https://npm.pkg.github.com
 ```
 
 Then install:
 
 ```bash
-npm install @uiuxjoseph/theme @uiuxjoseph/ui
-npm install -D @uiuxjoseph/eslint-plugin
+npm install @gigradar/theme @gigradar/ui
+npm install -D @gigradar/eslint-plugin
 ```
 
 ## CI in the app repos
@@ -80,7 +74,7 @@ App CI needs the same auth. If the app repo is in the same org, the automatic
   with:
     node-version: 20
     registry-url: https://npm.pkg.github.com
-    scope: '@uiuxjoseph'
+    scope: '@gigradar'
 - run: npm ci
   env:
     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -106,14 +100,14 @@ In the app's ESLint config:
 
 ```js
 // Flat config (ESLint 9)
-import gigradar from '@uiuxjoseph/eslint-plugin';
+import gigradar from '@gigradar/eslint-plugin';
 
 export default [
   {
-    plugins: { '@uiuxjoseph': gigradar },
+    plugins: { '@gigradar': gigradar },
     rules: {
-      '@uiuxjoseph/no-hardcoded-values': 'error',
-      '@uiuxjoseph/no-direct-antd-import': 'error',
+      '@gigradar/no-hardcoded-values': 'error',
+      '@gigradar/no-direct-antd-import': 'error',
     },
   },
 ];
@@ -122,10 +116,10 @@ export default [
 ```js
 // .eslintrc (ESLint 8)
 module.exports = {
-  plugins: ['@uiuxjoseph'],
+  plugins: ['@gigradar'],
   rules: {
-    '@uiuxjoseph/no-hardcoded-values': 'error',
-    '@uiuxjoseph/no-direct-antd-import': 'error',
+    '@gigradar/no-hardcoded-values': 'error',
+    '@gigradar/no-direct-antd-import': 'error',
   },
 };
 ```
@@ -139,7 +133,7 @@ So each developer's Claude knows the design system rules:
 
 ```
 /plugin marketplace add CallB007/GigRadar-DesignSystem
-/plugin install design-system@uiuxjoseph
+/plugin install design-system@gigradar
 ```
 
 This works per-developer regardless of which Claude account they are on.

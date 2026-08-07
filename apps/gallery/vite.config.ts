@@ -8,8 +8,8 @@ export default defineConfig({
     alias: {
       // Point at source, so gallery hot-reloads on token and component edits
       // without a build step in between.
-      '@uiuxjoseph/theme': resolve(__dirname, '../../packages/theme/src/index.ts'),
-      '@uiuxjoseph/ui': resolve(__dirname, '../../packages/ui/src/index.ts'),
+      '@gigradar/theme': resolve(__dirname, '../../packages/theme/src/index.ts'),
+      '@gigradar/ui': resolve(__dirname, '../../packages/ui/src/index.ts'),
     },
   },
   server: {

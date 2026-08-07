@@ -1,5 +1,5 @@
 /**
- * @uiuxjoseph/ui — the single import surface for GigRadar apps.
+ * @gigradar/ui — the single import surface for GigRadar apps.
  *
  * Apps import every component from here. That indirection is what lets an
  * implementation be swapped without touching a line of app code.
@@ -76,8 +76,8 @@ export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/Avata
 export * from './icons/index.js';
 
 /**
- * Tokens are re-exported so app code never needs a direct `@uiuxjoseph/theme`
+ * Tokens are re-exported so app code never needs a direct `@gigradar/theme`
  * dependency for ordinary use.
  */
-export { tokens, color, spacing, radius, shadow, typography, textStyle, avatarTone } from '@uiuxjoseph/theme';
-export type { StageName } from '@uiuxjoseph/theme';
+export { tokens, color, spacing, radius, shadow, typography, textStyle, avatarTone } from '@gigradar/theme';
+export type { StageName } from '@gigradar/theme';

@@ -1,4 +1,4 @@
-import { radius as radiusScale, spacing, type RadiusToken, type SpacingToken } from '@uiuxjoseph/theme';
+import { radius as radiusScale, spacing, type RadiusToken, type SpacingToken } from '@gigradar/theme';
 import {
   createElement,
   forwardRef,

@@ -1,5 +1,5 @@
-import { color, textStyle } from '@uiuxjoseph/theme';
-import { Checkbox, HStack, VStack, type CheckboxSize } from '@uiuxjoseph/ui';
+import { color, textStyle } from '@gigradar/theme';
+import { Checkbox, HStack, VStack, type CheckboxSize } from '@gigradar/ui';
 import { useState } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
@@ -50,7 +50,7 @@ export function CheckboxPage() {
           </HStack>
         </Preview>
         <CodeBlock
-          code={`import { Checkbox } from '@uiuxjoseph/ui';
+          code={`import { Checkbox } from '@gigradar/ui';
 
 // Controlled — the parent owns the value. This is what a form wants.
 const [done, setDone] = useState(false);

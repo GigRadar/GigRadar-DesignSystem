@@ -1,5 +1,5 @@
 {
-  "name": "@uiuxjoseph/gallery",
+  "name": "@gigradar/gallery",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uiuxjoseph/theme": "^1.0.0",
-    "@uiuxjoseph/ui": "^1.0.0",
+    "@gigradar/theme": "^1.0.0",
+    "@gigradar/ui": "^1.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

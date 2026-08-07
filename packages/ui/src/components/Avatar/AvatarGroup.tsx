@@ -5,7 +5,7 @@ import {
   typography,
   type AvatarSize,
   type SpacingToken,
-} from '@uiuxjoseph/theme';
+} from '@gigradar/theme';
 import { Children, forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import type { CssLength } from './Avatar.js';
 

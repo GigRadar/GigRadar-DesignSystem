@@ -1,4 +1,4 @@
-import { color, radius, spacing, typography } from '@uiuxjoseph/theme';
+import { color, radius, spacing, typography } from '@gigradar/theme';
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 
 /**

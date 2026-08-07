@@ -4,7 +4,7 @@ import {
   typography,
   type AvatarSize,
   type AvatarToneName,
-} from '@uiuxjoseph/theme';
+} from '@gigradar/theme';
 import { len, type CssLength } from '../../internal/length.js';
 
 export type { CssLength };

@@ -1,4 +1,4 @@
-import { color, textStyle } from '@uiuxjoseph/theme';
+import { color, textStyle } from '@gigradar/theme';
 import {
   Button,
   ComposerButton,
@@ -12,7 +12,7 @@ import {
   VStack,
   type ButtonProps,
   type IconDef,
-} from '@uiuxjoseph/ui';
+} from '@gigradar/ui';
 import { useState } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
@@ -103,7 +103,7 @@ export function ButtonPage() {
 
       <Section
         title="Quick start"
-        description="Everything comes from @uiuxjoseph/ui — components, icons, layout, and tokens through one entry point. Mount GigRadarProvider once at the app root."
+        description="Everything comes from @gigradar/ui — components, icons, layout, and tokens through one entry point. Mount GigRadarProvider once at the app root."
       >
         <Preview>
           <HStack gap="s">
@@ -113,7 +113,7 @@ export function ButtonPage() {
           </HStack>
         </Preview>
         <CodeBlock
-          code={`import { GigRadarProvider, Button, HStack } from '@uiuxjoseph/ui';
+          code={`import { GigRadarProvider, Button, HStack } from '@gigradar/ui';
 
 // Mount the provider ONCE at the app root — it delivers the design tokens.
 <GigRadarProvider>

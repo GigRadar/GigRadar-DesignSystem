@@ -1,6 +1,6 @@
 # Linting
 
-`@uiuxjoseph/eslint-plugin` ships two rules:
+`@gigradar/eslint-plugin` ships two rules:
 
 | Rule | Catches |
 |---|---|
@@ -66,7 +66,7 @@ Both rules accept an `allowIn` option — an array of path fragments that are
 skipped:
 
 ```js
-'@uiuxjoseph/no-hardcoded-values': ['error', { allowIn: ['packages/theme/', 'src/legacy/'] }]
+'@gigradar/no-hardcoded-values': ['error', { allowIn: ['packages/theme/', 'src/legacy/'] }]
 ```
 
 Defaults: `no-hardcoded-values` exempts `packages/theme/` (it defines the

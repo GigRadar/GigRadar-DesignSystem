@@ -1,4 +1,4 @@
-import { color, component, typography, type SwitchSize } from '@uiuxjoseph/theme';
+import { color, component, typography, type SwitchSize } from '@gigradar/theme';
 import {
   forwardRef,
   useState,

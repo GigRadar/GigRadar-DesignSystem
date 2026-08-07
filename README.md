@@ -7,19 +7,13 @@ npm install
 npm run dev     # gallery at http://localhost:5173
 ```
 
-> **Scope is temporary.** Packages publish as `@uiuxjoseph/*` because GitHub
-> Packages requires the npm scope to match the repo owner, and GigRadar org
-> access was not available at setup. They will be renamed to `@gigradar/*` at
-> handoff — a breaking change, so the fewer apps that have adopted by then, the
-> cheaper it is. See [docs/handoff-to-gigradar-org.md](docs/handoff-to-gigradar-org.md).
-
 ## What this repo publishes
 
 | Output | Where |
 |---|---|
-| `@uiuxjoseph/theme` | Design tokens — colors, typography, spacing, radius, shadow |
-| `@uiuxjoseph/ui` | Components — the single import surface for all four apps |
-| `@uiuxjoseph/eslint-plugin` | Rules banning hardcoded values and legacy antd imports |
+| `@gigradar/theme` | Design tokens — colors, typography, spacing, radius, shadow |
+| `@gigradar/ui` | Components — the single import surface for all four apps |
+| `@gigradar/eslint-plugin` | Rules banning hardcoded values and legacy antd imports |
 | Claude Code plugin | `.claude-plugin/marketplace.json` + `skills/design-system/SKILL.md` |
 | Gallery | `apps/gallery` — run locally with `npm run dev` |
 
@@ -27,9 +21,9 @@ npm run dev     # gallery at http://localhost:5173
 
 ```
 packages/
-  theme/           @uiuxjoseph/theme — tokens + CSS custom properties
-  ui/              @uiuxjoseph/ui — Button, Badge, Card, GigRadarProvider
-  eslint-plugin/   @uiuxjoseph/eslint-plugin — enforcement rules
+  theme/           @gigradar/theme — tokens + CSS custom properties
+  ui/              @gigradar/ui — Button, Badge, Card, GigRadarProvider
+  eslint-plugin/   @gigradar/eslint-plugin — enforcement rules
 apps/
   gallery/         Vite + React gallery
 skills/

@@ -1,4 +1,4 @@
-import { color, component, typography, type BadgeSize } from '@uiuxjoseph/theme';
+import { color, component, typography, type BadgeSize } from '@gigradar/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 

@@ -1,4 +1,4 @@
-import { color, radius, spacing, textStyle } from '@uiuxjoseph/theme';
+import { color, radius, spacing, textStyle } from '@gigradar/theme';
 import { useState } from 'react';
 import { Section, Shell } from './layout';
 import { AvatarPage } from './pages/AvatarPage';

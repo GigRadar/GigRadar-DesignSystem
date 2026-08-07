@@ -1,4 +1,4 @@
-# @uiuxjoseph/eslint-plugin
+# @gigradar/eslint-plugin
 
 ## 0.2.0
 
@@ -6,8 +6,8 @@
 
 - f70ac86: Initial release.
 
-  - `@uiuxjoseph/theme` — design tokens extracted from the Figma guidebook, in two
+  - `@gigradar/theme` — design tokens extracted from the Figma guidebook, in two
     consumption formats: TS objects and CSS custom properties.
-  - `@uiuxjoseph/ui` — Button, Badge (including the nine CRM pipeline stages), Card,
+  - `@gigradar/ui` — Button, Badge (including the nine CRM pipeline stages), Card,
     and GigRadarProvider.
-  - `@uiuxjoseph/eslint-plugin` — `no-hardcoded-values` and `no-direct-antd-import`.
+  - `@gigradar/eslint-plugin` — `no-hardcoded-values` and `no-direct-antd-import`.

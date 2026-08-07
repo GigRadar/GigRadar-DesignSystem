@@ -1,4 +1,4 @@
-import { color, component, typography, type CheckboxSize } from '@uiuxjoseph/theme';
+import { color, component, typography, type CheckboxSize } from '@gigradar/theme';
 import {
   forwardRef,
   useId,

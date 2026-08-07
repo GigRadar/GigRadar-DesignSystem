@@ -1,4 +1,4 @@
-import { color, radius, shadow, spacing, textStyle, typography } from '@uiuxjoseph/theme';
+import { color, radius, shadow, spacing, textStyle, typography } from '@gigradar/theme';
 import { PageHeader, Section } from '../layout';
 
 export function TokensPage() {

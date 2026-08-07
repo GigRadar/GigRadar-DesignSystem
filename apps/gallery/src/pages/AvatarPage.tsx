@@ -1,5 +1,5 @@
-import { color, component, radius, type AvatarToneName } from '@uiuxjoseph/theme';
-import { Avatar, AvatarGroup, HStack, VStack } from '@uiuxjoseph/ui';
+import { color, component, radius, type AvatarToneName } from '@gigradar/theme';
+import { Avatar, AvatarGroup, HStack, VStack } from '@gigradar/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
@@ -44,16 +44,16 @@ export function AvatarPage() {
           />
           <CodeBlock
             label="Once per app repo — .npmrc (committed, no secret)"
-            code={`@uiuxjoseph:registry=https://npm.pkg.github.com`}
+            code={`@gigradar:registry=https://npm.pkg.github.com`}
           />
-          <CodeBlock label="Then install" code={`npm install @uiuxjoseph/ui`} />
+          <CodeBlock label="Then install" code={`npm install @gigradar/ui`} />
         </VStack>
       </Section>
 
 
       <Section
         title="Quick start"
-        description="Everything on this page is imported from @uiuxjoseph/ui — components, layout primitives, and tokens all come from the one entry point."
+        description="Everything on this page is imported from @gigradar/ui — components, layout primitives, and tokens all come from the one entry point."
       >
         <Preview>
           <HStack gap="s">
@@ -63,7 +63,7 @@ export function AvatarPage() {
           </HStack>
         </Preview>
         <CodeBlock
-          code={`import { GigRadarProvider, Avatar, HStack } from '@uiuxjoseph/ui';
+          code={`import { GigRadarProvider, Avatar, HStack } from '@gigradar/ui';
 
 // Provider once at the root; then pass what you have — a photo when there is
 // one, a name always. The avatar works out the rest.

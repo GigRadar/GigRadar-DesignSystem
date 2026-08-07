@@ -4,7 +4,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@uiuxjoseph/theme": ["../theme/src/index.ts"]
+      "@gigradar/theme": ["../theme/src/index.ts"]
     }
   },
   "include": ["src/**/*"],

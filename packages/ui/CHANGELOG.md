@@ -1,4 +1,4 @@
-# @uiuxjoseph/ui
+# @gigradar/ui
 
 ## 1.0.0
 
@@ -6,10 +6,10 @@
 
 - 54c8a9b: **Breaking:** remove `Button`, `Badge`, and `Card`.
 
-  `@uiuxjoseph/ui` now exports `Avatar`, `AvatarGroup`, and `GigRadarProvider`.
+  `@gigradar/ui` now exports `Avatar`, `AvatarGroup`, and `GigRadarProvider`.
   Their component tokens (`component.button`, `component.badge`, `component.card`,
   `component.input`) and the corresponding `--gr-*` CSS custom properties are
-  removed from `@uiuxjoseph/theme`.
+  removed from `@gigradar/theme`.
 
   Anything importing these will fail to compile after upgrading. They were built
   before component specs existed in Figma, so their metrics were inferred from
@@ -33,7 +33,7 @@
   order — `service`, then `src`, then initials — with a grey placeholder when
   none are given.
 
-  New in `@uiuxjoseph/theme`: the `avatarTone` palette (12 background/border/text
+  New in `@gigradar/theme`: the `avatarTone` palette (12 background/border/text
   triplets, kept separate from `status` and `accent` because they carry no
   semantic meaning) and `component.avatar` metrics. Unlike the other component
   tokens these are extracted from Figma — the component is drawn at 32px with a
@@ -92,7 +92,7 @@
   explicitly stays grey and empty even once a name arrives, where the inferred
   one would switch to initials.
 
-  New in `@uiuxjoseph/theme`: `component.docs`, holding the metrics for the
+  New in `@gigradar/theme`: `component.docs`, holding the metrics for the
   gallery's preview panels and tables. These are documentation chrome, not
   product tokens — nothing in a GigRadar app should read them — but they keep the
   docs off bare numbers and on the same radius scale as the components.
@@ -171,7 +171,7 @@
   `--gr-button-*` variable rather than a concrete style, the same mechanism
   `Avatar` uses. Numbers are treated as px and any other unit passes through.
 
-  `@uiuxjoseph/theme` gains `component.button` and the `ButtonSize` type.
+  `@gigradar/theme` gains `component.button` and the `ButtonSize` type.
 
   Three sizes, with `medium` as the drawn one; `small` and `large` extend the scale
   proportionally and are the one part of the button tokens not traceable to Figma.
@@ -199,7 +199,7 @@
   retune a component without forking it or overriding the `style` prop. Apps that
   set nothing are unaffected.
 
-  New: `component` export from `@uiuxjoseph/theme`, and 42 component variables
+  New: `component` export from `@gigradar/theme`, and 42 component variables
   covering Button, Badge, Card, and Input (Input's tokens land ahead of the
   component). 143 CSS variables in total.
 
@@ -228,7 +228,7 @@
 - 1b7dc9d: Add the icon set — 163 icons extracted from the Figma icon set page, plus an
   `Icon` component.
 
-      import { Icon, IconLockFill, IconSearch } from '@uiuxjoseph/ui';
+      import { Icon, IconLockFill, IconSearch } from '@gigradar/ui';
 
       <Icon icon={IconSearch} size={16} />
 
@@ -260,7 +260,7 @@
 - Updated dependencies [87724db]
 - Updated dependencies [31dcde0]
 - Updated dependencies [54c8a9b]
-  - @uiuxjoseph/theme@1.0.0
+  - @gigradar/theme@1.0.0
 
 ## 0.2.0
 
@@ -268,11 +268,11 @@
 
 - f70ac86: Initial release.
 
-  - `@uiuxjoseph/theme` — design tokens extracted from the Figma guidebook, in two
+  - `@gigradar/theme` — design tokens extracted from the Figma guidebook, in two
     consumption formats: TS objects and CSS custom properties.
-  - `@uiuxjoseph/ui` — Button, Badge (including the nine CRM pipeline stages), Card,
+  - `@gigradar/ui` — Button, Badge (including the nine CRM pipeline stages), Card,
     and GigRadarProvider.
-  - `@uiuxjoseph/eslint-plugin` — `no-hardcoded-values` and `no-direct-antd-import`.
+  - `@gigradar/eslint-plugin` — `no-hardcoded-values` and `no-direct-antd-import`.
 
 ### Patch Changes
 
@@ -290,4 +290,4 @@
 - Updated dependencies [03667c9]
 - Updated dependencies [9b1ba7e]
 - Updated dependencies [caae3aa]
-  - @uiuxjoseph/theme@0.2.0
+  - @gigradar/theme@0.2.0

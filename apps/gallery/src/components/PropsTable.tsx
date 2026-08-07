@@ -1,4 +1,4 @@
-import { color, component, spacing, textStyle, typography } from '@uiuxjoseph/theme';
+import { color, component, spacing, textStyle, typography } from '@gigradar/theme';
 
 export type PropRow = {
   name: string;

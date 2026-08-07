@@ -1,5 +1,5 @@
-import { color, component, textStyle } from '@uiuxjoseph/theme';
-import { Switch, SwitchButton, HStack, VStack, type SwitchItem, type SwitchSize } from '@uiuxjoseph/ui';
+import { color, component, textStyle } from '@gigradar/theme';
+import { Switch, SwitchButton, HStack, VStack, type SwitchItem, type SwitchSize } from '@gigradar/ui';
 import { useState } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
@@ -61,7 +61,7 @@ export function SwitchPage() {
           <Live />
         </Preview>
         <CodeBlock
-          code={`import { Switch } from '@uiuxjoseph/ui';
+          code={`import { Switch } from '@gigradar/ui';
 
 const [period, setPeriod] = useState('annual');
 

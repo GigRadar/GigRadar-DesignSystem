@@ -1,4 +1,4 @@
-import { color, component, typography, type ButtonSize } from '@uiuxjoseph/theme';
+import { color, component, typography, type ButtonSize } from '@gigradar/theme';
 import { len, type CssLength } from '../../internal/length.js';
 
 export type { CssLength };

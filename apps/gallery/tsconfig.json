@@ -5,8 +5,8 @@
     "composite": false,
     "types": ["vite/client"],
     "paths": {
-      "@uiuxjoseph/theme": ["../../packages/theme/src/index.ts"],
-      "@uiuxjoseph/ui": ["../../packages/ui/src/index.ts"]
+      "@gigradar/theme": ["../../packages/theme/src/index.ts"],
+      "@gigradar/ui": ["../../packages/ui/src/index.ts"]
     }
   },
   "include": ["src/**/*", "vite.config.ts"]

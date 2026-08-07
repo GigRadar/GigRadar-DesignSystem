@@ -1,110 +1,67 @@
-# Handoff: moving to the GigRadar organization
+# Handoff to the GigRadar organization — complete
 
-The packages publish as `@uiuxjoseph/*` today. This is temporary.
+The repo now lives at `github.com/GigRadar/GigRadar-DesignSystem` and the
+packages publish under the `@gigradar` scope. This page is kept as a record of
+what moved and what to check if something still points at the old location.
 
-GitHub Packages requires the npm scope to match the repo owner, and at the time
-of setup there was no access to a GigRadar organization — so the scope follows
-the org that actually hosts the repo. `github.com/GigRadar` exists but was not
-accessible; whether it is the company's is unconfirmed.
+## What changed
 
-When GigRadar org access is available, do the handoff below.
+The packages were published as `@uiuxjoseph/*` up to `1.0.0`, because GitHub
+Packages requires the npm scope to match the repo owner and the GigRadar org
+was not available when the design system was set up. They are now `@gigradar/*`:
 
-## Before you start
+| Before | After |
+|---|---|
+| `@uiuxjoseph/theme` | `@gigradar/theme` |
+| `@uiuxjoseph/ui` | `@gigradar/ui` |
+| `@uiuxjoseph/eslint-plugin` | `@gigradar/eslint-plugin` |
+| `uiuxjoseph/GigRadar-DesignSystem` | `GigRadar/GigRadar-DesignSystem` |
 
-Confirm two things:
+The ESLint rule prefix follows the package name, so the rules are now
+`@gigradar/no-hardcoded-values` and `@gigradar/no-direct-antd-import`.
 
-1. You have **owner or admin** rights on the GigRadar org
-2. `github.com/GigRadar` is genuinely the company's org, not an unrelated
-   account that happens to hold the name
+## If an app still uses the old scope
 
-If the name is taken by someone else, the `@gigradar` scope is permanently
-unavailable on GitHub Packages, and the options are npmjs.com (where scopes are
-not tied to repo ownership) or keeping the current scope.
-
-## Steps
-
-### 1. Transfer the repo
-
-`uiuxjoseph/GigRadar-DesignSystem` → Settings → General → Danger Zone →
-Transfer ownership → `GigRadar`.
-
-GitHub redirects the old URL, but every existing clone should re-point:
+One find-and-replace covers it:
 
 ```bash
-git remote set-url origin https://github.com/GigRadar/GigRadar-DesignSystem.git
-```
-
-### 2. Restore Actions permissions
-
-**Repository settings do not survive a transfer, and org settings can override
-them.** After transferring, set at the org level
-(`github.com/organizations/GigRadar/settings/actions`):
-
-- Workflow permissions → **Read and write permissions**
-- Check **Allow GitHub Actions to create and approve pull requests**
-
-Then confirm at the repo level:
-
-```bash
-gh api repos/GigRadar/GigRadar-DesignSystem/actions/permissions/workflow
-# expect: {"default_workflow_permissions":"write","can_approve_pull_request_reviews":true}
-```
-
-### 3. Rename the scope
-
-```bash
-grep -rl "@uiuxjoseph" --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git . \
+grep -rl "@uiuxjoseph" --exclude-dir=node_modules . \
   | xargs perl -i -pe 's{\@uiuxjoseph}{\@gigradar}g'
+
+rm -rf node_modules package-lock.json && npm install
 ```
 
-This also renames the ESLint rule prefix, which derives from the package name
-(`@gigradar/no-hardcoded-values`). Then:
+Then update the app's `.npmrc` routing line:
 
-```bash
-rm -rf node_modules package-lock.json packages/*/dist
-npm install
-npm run typecheck
-npm run build --workspaces
+```ini
+@gigradar:registry=https://npm.pkg.github.com
 ```
 
-### 4. Publish as a major version
+The old `@uiuxjoseph/*` versions are still published and will keep resolving,
+so nothing breaks until an app chooses to move.
 
-The scope change is breaking for every consuming app. Ship it as a major:
+## Local clones
 
-```bash
-npm run changeset   # select all packages, choose "major"
-```
+`git remote set-url origin https://github.com/GigRadar/GigRadar-DesignSystem.git`
 
-Describe it plainly — the changelog is what a developer reads when their build
-breaks:
+GitHub redirects the old URL, but re-pointing avoids surprises later.
 
-> Renamed the package scope from `@uiuxjoseph` to `@gigradar`. Update imports
-> and your `.npmrc` registry line.
+## The Claude Code plugin
 
-### 5. Update the consuming apps
-
-Each app repo needs:
-
-- `.npmrc` → `@gigradar:registry=https://npm.pkg.github.com`
-- `package.json` → dependency names
-- Every import → `@uiuxjoseph/ui` becomes `@gigradar/ui`
-- ESLint config → the rule prefix
-
-A find-and-replace of `@uiuxjoseph` → `@gigradar` covers all of it.
-
-### 6. Update the Claude Code plugin
-
-`.claude-plugin/marketplace.json` and the install command developers run:
+The marketplace path changed with the org:
 
 ```
 /plugin marketplace add GigRadar/GigRadar-DesignSystem
+/plugin install design-system@gigradar
 ```
 
-Anyone who installed from the old path must re-add it.
+Anyone who added it from the old path should re-add it.
 
-## Doing this earlier is cheaper
+## Worth checking once
 
-The rename is a find-and-replace here and a find-and-replace in each app. The
-cost scales with how much app code imports the old scope — so the fewer apps
-that have adopted, the cheaper it is. If org access is close, consider holding
-off on broad adoption until after the move.
+- **Actions permissions do not survive a transfer.** Settings → Actions →
+  General → Workflow permissions must be **Read and write**, with
+  "Allow GitHub Actions to create and approve pull requests" checked, or the
+  release workflow cannot open its version PR.
+- **Repository visibility.** Confirm the repo's public/private setting matches
+  what the org intends — a transfer is a good moment for it to be wrong.

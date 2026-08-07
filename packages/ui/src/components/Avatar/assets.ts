@@ -2,7 +2,7 @@
  * Avatar image assets, exported from Figma (file HNZEuaniWtXmEINBodTtal,
  * node 456:8607) and inlined as data URIs.
  *
- * Why inline: `@uiuxjoseph/ui` builds with plain `tsc`, which copies no static
+ * Why inline: `@gigradar/ui` builds with plain `tsc`, which copies no static
  * files and rewrites no asset imports. A `.png` import would resolve at build
  * time but break at runtime for consumers. Data URIs keep the exact exported
  * bytes inside the emitted JS, so the package stays a single dependency-free

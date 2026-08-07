@@ -1,4 +1,4 @@
-import { color, textStyle } from '@uiuxjoseph/theme';
+import { color, textStyle } from '@gigradar/theme';
 import {
   CounterBadge,
   CreditBadge,
@@ -7,7 +7,7 @@ import {
   RankBadge,
   VStack,
   type BadgeSize,
-} from '@uiuxjoseph/ui';
+} from '@gigradar/ui';
 import type { ReactNode } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
@@ -50,7 +50,7 @@ export function BadgePage() {
           <CreditBadge>250</CreditBadge>
         </Preview>
         <CodeBlock
-          code={`import { CreditBadge } from '@uiuxjoseph/ui';
+          code={`import { CreditBadge } from '@gigradar/ui';
 
 // The amount is the child, so format it however your data needs —
 // the badge does not know your locale.
@@ -77,7 +77,7 @@ export function BadgePage() {
           <EyebrowBadge sparkles="none">Plain</EyebrowBadge>
         </Preview>
         <CodeBlock
-          code={`import { EyebrowBadge } from '@uiuxjoseph/ui';
+          code={`import { EyebrowBadge } from '@gigradar/ui';
 
 // Both sparkles by default — the drawn state. Drop one when the badge sits
 // in a tight row and the pair reads as noise.
@@ -102,7 +102,7 @@ export function BadgePage() {
           <CounterBadge dot label="Unread messages" />
         </Preview>
         <CodeBlock
-          code={`import { CounterBadge } from '@uiuxjoseph/ui';
+          code={`import { CounterBadge } from '@gigradar/ui';
 
 // count is a number, not text, so the overflow rule can apply.
 // Always pass a label — "3" alone tells a screen reader nothing.
@@ -131,7 +131,7 @@ export function BadgePage() {
           <RankBadge state="error" label="Rank unavailable" />
         </Preview>
         <CodeBlock
-          code={`import { RankBadge } from '@uiuxjoseph/ui';
+          code={`import { RankBadge } from '@gigradar/ui';
 
 // Drive the state from your data — the badge does not infer direction.
 <RankBadge state="up" rank={11} label="Rank 11, up from yesterday" />

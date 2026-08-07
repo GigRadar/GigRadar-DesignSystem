@@ -1,5 +1,5 @@
-import { color, radius, spacing, textStyle, typography } from '@uiuxjoseph/theme';
-import { Icon, IconFailedErrorStroke, IconSearch, IconSendPlaneFill } from '@uiuxjoseph/ui';
+import { color, radius, spacing, textStyle, typography } from '@gigradar/theme';
+import { Icon, IconFailedErrorStroke, IconSearch, IconSendPlaneFill } from '@gigradar/ui';
 import { useState } from 'react';
 import { fillIcons, strokeIcons } from '../../../../packages/ui/src/icons/registry';
 import { CodeBlock } from '../components/CodeBlock';
@@ -55,7 +55,7 @@ export function IconsPage() {
           </span>
         </Preview>
         <CodeBlock
-          code={`import { Icon, IconSearch, IconSendPlaneFill, IconFailedErrorStroke } from '@uiuxjoseph/ui';
+          code={`import { Icon, IconSearch, IconSendPlaneFill, IconFailedErrorStroke } from '@gigradar/ui';
 
 // Decorative (the default): hidden from screen readers —
 // the text beside it carries the meaning.
