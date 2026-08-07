@@ -39,7 +39,7 @@ function FeatureStates({
           <div style={{ ...textStyle.sSemibold, color: color.main.description }}>
             {variant === 'primary' ? 'Button (Main)' : 'Button (Secondary)'}
           </div>
-          <HStack gap="s">
+          <HStack gap="s" flexWrap="wrap">
             <Button variant={variant} tone={tone}>
               {label}
             </Button>
@@ -53,7 +53,11 @@ function FeatureStates({
             <Button variant={variant} tone={tone} loading>
               {label}
             </Button>
+            {/* The icon is optional, and goes on either side — or both. */}
             <Button variant={variant} tone={tone} startIcon={<Icon icon={icon} size={16} />}>
+              {label}
+            </Button>
+            <Button variant={variant} tone={tone} endIcon={<Icon icon={icon} size={16} />}>
               {label}
             </Button>
           </HStack>
@@ -123,8 +127,16 @@ export function ButtonPage() {
 <Button loading={isSending} onClick={send}>Send</Button>   // in flight
 <Button disabled={!form.isValid}>Apply</Button>            // not allowed yet
 
-// Icons come from the icon set — size 16 matches the slot:
-<Button startIcon={<Icon icon={IconPlus} size={16} />}>Add job</Button>`}
+// Icons are OPTIONAL, and go on the left, the right, or both.
+// Use the icon set — size 16 matches the slot:
+<Button startIcon={<Icon icon={IconPlus} size={16} />}>Add job</Button>
+<Button endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}>More</Button>
+<Button
+  startIcon={<Icon icon={IconPlus} size={16} />}
+  endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}
+>
+  Add job
+</Button>`}
         />
       </Section>
 
