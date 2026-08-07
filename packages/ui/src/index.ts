@@ -65,19 +65,44 @@ export type {
 export { SwitchButton } from './components/Switch/SwitchButton.js';
 export type { SwitchButtonProps, SwitchButtonStyleProps } from './components/Switch/SwitchButton.js';
 
+export { Pagination, pageSlots } from './components/Pagination/Pagination.js';
+export type {
+  PaginationProps,
+  PaginationStyleProps,
+  PaginationSize,
+  PageRenderProps,
+} from './components/Pagination/Pagination.js';
+
+export { PageNumber } from './components/Pagination/PageNumber.js';
+export type { PageNumberProps, PageNumberStyleProps } from './components/Pagination/PageNumber.js';
+
+export { PaginationDots } from './components/Pagination/PaginationDots.js';
+export type {
+  PaginationDotsProps,
+  PaginationDotsStyleProps,
+} from './components/Pagination/PaginationDots.js';
+
 export { Tooltip } from './components/Tooltip/Tooltip.js';
 export type {
   TooltipProps,
   TooltipStyleProps,
   TooltipPlacement,
   TooltipSize,
+  TooltipCardRenderProps,
 } from './components/Tooltip/Tooltip.js';
 
 export { ConfirmTooltip } from './components/Tooltip/ConfirmTooltip.js';
 export type {
   ConfirmTooltipProps,
   ConfirmTooltipStyleProps,
+  ConfirmCardRenderProps,
 } from './components/Tooltip/ConfirmTooltip.js';
+
+/**
+ * The render-prop convention shared by the higher-level components.
+ * See `internal/render.ts` for why only they take render props.
+ */
+export type { RenderProp, WithDefaultRender } from './internal/render.js';
 
 export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
 export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/AvatarGroup.js';

@@ -6,6 +6,7 @@ import { BadgePage } from './pages/BadgePage';
 import { ButtonPage } from './pages/ButtonPage';
 import { CheckboxPage } from './pages/CheckboxPage';
 import { IconsPage } from './pages/IconsPage';
+import { PaginationPage } from './pages/PaginationPage';
 import { SpinnerPage } from './pages/SpinnerPage';
 import { SwitchPage } from './pages/SwitchPage';
 import { TokensPage } from './pages/TokensPage';
@@ -18,6 +19,7 @@ const PAGES = [
   { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
   { id: 'button', label: 'Button', render: () => <ButtonPage /> },
   { id: 'checkbox', label: 'Checkbox', render: () => <CheckboxPage /> },
+  { id: 'pagination', label: 'Pagination', render: () => <PaginationPage /> },
   { id: 'spinner', label: 'Spinner', render: () => <SpinnerPage /> },
   { id: 'switch', label: 'Switch', render: () => <SwitchPage /> },
   { id: 'tooltip', label: 'Tooltip', render: () => <TooltipPage /> },

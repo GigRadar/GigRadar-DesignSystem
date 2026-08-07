@@ -160,6 +160,37 @@ from antd's — our `Button` uses `variant="primary"` where antd used
 - `color.deprecated.errorAlt` — use `color.status.error`. Figma had two
   near-duplicate reds; `#FA3737` is canonical.
 
+## Render props on higher-level components
+
+Higher-level components — `Tooltip`, `ConfirmTooltip`, `Pagination` — take a
+render prop for the part they compose:
+
+```tsx
+// Replace the composed part…
+<Tooltip content="Save" renderCard={({ content }) => <MyCard>{content}</MyCard>}>
+  <Button>Save</Button>
+</Tooltip>
+
+// …or call defaultRender() to decorate rather than replace.
+<Tooltip content="Save" renderCard={({ defaultRender }) => <Glow>{defaultRender()}</Glow>}>
+  <Button>Save</Button>
+</Tooltip>
+```
+
+The component keeps the parts that are hard to get right — positioning, hover
+and focus wiring, keyboard handling, ARIA relationships — and hands you the
+composition.
+
+**Low-level components do NOT take render props**, on purpose. `Button`,
+`Badge`, `Avatar`, `Checkbox`, `Switch`, and `Spinner` are settled decisions:
+there is one right way to draw a button. If one of those needs different
+markup, that is a new component or a new variant, not a hook into its
+internals.
+
+Before reaching for a render prop, check the existing props. A render prop that
+only reproduces the default is a copy that silently stops tracking the design
+system when the component changes.
+
 ## When something is missing
 
 If a component, variant, or token you need does not exist, do not work around it

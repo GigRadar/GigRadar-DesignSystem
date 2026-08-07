@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 
 export type { TooltipSize };
 
@@ -104,7 +105,33 @@ export type TooltipProps = {
   disabled?: boolean;
   /** Hides the arrow, leaving a detached card. */
   hideArrow?: boolean;
+  /**
+   * Replaces the card the tooltip draws, keeping its positioning, hover and
+   * focus wiring, and ARIA relationships.
+   *
+   * Reach for this when a tooltip needs to hold something the default card has
+   * no slot for — a thumbnail, a chart, a keyboard-shortcut row. For anything
+   * the existing props cover, use those instead: a render prop that only
+   * reproduces the default is a copy that stops tracking the design system.
+   *
+   * Call `defaultRender()` to wrap rather than replace.
+   */
+  renderCard?: RenderProp<TooltipCardRenderProps>;
 } & TooltipStyleProps;
+
+/**
+ * What a `renderCard` function receives — the resolved content the default
+ * card would have drawn, plus the default renderer itself.
+ */
+export type TooltipCardRenderProps = WithDefaultRender & {
+  title: ReactNode;
+  content: ReactNode;
+  actions: ReactNode;
+  size: TooltipSize;
+  placement: TooltipPlacement;
+  /** Whether the tooltip is open. Always true while the card renders. */
+  open: boolean;
+};
 
 /**
  * A tooltip.
@@ -140,6 +167,7 @@ export function Tooltip({
   openDelay,
   disabled = false,
   hideArrow = false,
+  renderCard,
   paddingX,
   paddingY,
   radius,
@@ -265,21 +293,28 @@ export function Tooltip({
             ...placementStyle(placement, gapToAnchor),
           }}
         >
-          <Card
-            title={title}
-            content={content}
-            actions={actions}
-            size={size}
-            paddingX={paddingX}
-            paddingY={paddingY}
-            radius={radius}
-            gap={gap}
-            fontSize={fontSize}
-            titleFontSize={titleFontSize}
-            background={background}
-            textColor={textColor}
-            titleColor={titleColor}
-          />
+          {(() => {
+            const defaultRender = () => (
+              <Card
+                title={title}
+                content={content}
+                actions={actions}
+                size={size}
+                paddingX={paddingX}
+                paddingY={paddingY}
+                radius={radius}
+                gap={gap}
+                fontSize={fontSize}
+                titleFontSize={titleFontSize}
+                background={background}
+                textColor={textColor}
+                titleColor={titleColor}
+              />
+            );
+            return renderCard
+              ? renderCard({ title, content, actions, size, placement, open: true, defaultRender })
+              : defaultRender();
+          })()}
           {!hideArrow && (
             <Arrow placement={placement} background={background} offset={gapToAnchor} />
           )}

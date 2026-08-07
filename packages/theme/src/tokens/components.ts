@@ -592,6 +592,107 @@ export const confirm = {
 } as const;
 
 /**
+ * Pagination metrics.
+ *
+ * From Figma: the page number (node 189:701) is a 24px round cell holding 12px
+ * semibold text, and the bar it sits in (node 189:504) is a white pill with
+ * 12/6 padding and a 12px gap between the arrows and the number row. The dot
+ * indicator (node 527:13264) is a separate control — 8px dots, a 6px gap, and
+ * 8/4 padding.
+ *
+ * The 24px cell anchors the `medium` step. Figma draws one size, so `small` and
+ * `large` extend the scale proportionally — the part of this block not
+ * traceable to a Figma value.
+ *
+ * Note the number row itself has NO gap in Figma: the cells butt together, and
+ * the 24px cell around 12px text is what separates the numbers. Encoded as 0
+ * rather than dropped so it stays overridable.
+ */
+export const pagination = {
+  /** The round cell holding one page number. Figma draws 24px. */
+  itemSize: {
+    small: 20,
+    medium: 24,
+    large: 32,
+  },
+  /** Page number type size. Figma draws 12px semibold. */
+  fontSize: {
+    small: 10,
+    medium: fontSize.s,
+    large: fontSize.m,
+  },
+  /** The arrow glyphs flanking the row. */
+  iconSize: {
+    small: 10,
+    medium: 12,
+    large: 16,
+  },
+  /**
+   * Space between cells in the number row. Zero, as drawn — the cells are wide
+   * enough that their padding does the separating.
+   */
+  itemGap: {
+    small: 0,
+    medium: 0,
+    large: 0,
+  },
+  /** Space between the arrows and the number row. Figma draws 12px. */
+  gap: {
+    small: 8,
+    medium: spacing.s,
+    large: spacing.m,
+  },
+  /** Horizontal padding of the surrounding bar. */
+  paddingX: {
+    small: 8,
+    medium: spacing.s,
+    large: spacing.m,
+  },
+  /** Vertical padding of the surrounding bar. */
+  paddingY: {
+    small: spacing.xxs,
+    medium: spacing.xs,
+    large: 8,
+  },
+  /** Both the bar and its cells are fully round. */
+  radius: radius.round,
+
+  /**
+   * The dot indicator (node 527:13264) — Figma's "Pagination Auto".
+   *
+   * A separate control rather than a size step of the numbered bar: it shows
+   * position without page numbers, the way a carousel does, so it carries its
+   * own metrics instead of bending the 24px cell scale down to 8px.
+   */
+  dot: {
+    /** Dot diameter. Figma draws 8px. */
+    size: {
+      small: 6,
+      medium: 8,
+      large: 10,
+    },
+    /** Space between dots. Figma draws 6px. */
+    gap: {
+      small: spacing.xxs,
+      medium: spacing.xs,
+      large: 8,
+    },
+    paddingX: {
+      small: spacing.xs,
+      medium: 8,
+      large: spacing.s,
+    },
+    paddingY: {
+      small: 2,
+      medium: spacing.xxs,
+      large: spacing.xs,
+    },
+  },
+} as const;
+
+export type PaginationSize = keyof typeof pagination.itemSize;
+
+/**
  * Documentation chrome.
  *
  * The gallery's own surfaces — preview panels, prop tables, code blocks. These
@@ -626,6 +727,7 @@ export const component = {
   button,
   checkbox,
   confirm,
+  pagination,
   spinner,
   switchControl,
   tooltip,

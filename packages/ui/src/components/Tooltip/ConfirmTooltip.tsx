@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { Button } from '../Button/Button.js';
 import type { TooltipPlacement } from './Tooltip.js';
 
@@ -68,7 +69,40 @@ export type ConfirmTooltipProps = {
   onOpenChange?: (open: boolean) => void;
   /** Renders the anchor with no confirmation at all. */
   disabled?: boolean;
+  /**
+   * Replaces the confirmation card, keeping the popover's positioning, its
+   * open/close behaviour, the Escape and outside-click handling, and the
+   * dialog ARIA wiring.
+   *
+   * The usual reason is a card the three bands cannot express — a list of what
+   * will be deleted, a typed-confirmation field. `confirm` and `cancel` are
+   * passed through so a replacement still drives the same handlers, including
+   * the async `onConfirm` and its busy state.
+   */
+  renderCard?: RenderProp<ConfirmCardRenderProps>;
 } & ConfirmTooltipStyleProps;
+
+/**
+ * What a `renderCard` function receives.
+ *
+ * `confirm` and `cancel` are the component's own handlers rather than the raw
+ * props: calling `confirm()` runs `onConfirm`, awaits it if it returns a
+ * promise, holds `busy` while it settles, and closes on success — behaviour a
+ * replacement card should not have to reimplement.
+ */
+export type ConfirmCardRenderProps = WithDefaultRender & {
+  title: ReactNode;
+  description: ReactNode;
+  confirmLabel: ReactNode;
+  cancelLabel: ReactNode;
+  /** Runs `onConfirm`, showing the busy state until it settles. */
+  confirm: () => void;
+  /** Runs `onCancel` and closes. */
+  cancel: () => void;
+  /** True while an async `onConfirm` is in flight. */
+  busy: boolean;
+  placement: TooltipPlacement;
+};
 
 /**
  * A confirmation popover — the "are you sure" step before a destructive action.
@@ -100,6 +134,7 @@ export function ConfirmTooltip({
   defaultOpen = false,
   onOpenChange,
   disabled = false,
+  renderCard,
   width,
   radius,
   paddingX,
@@ -203,94 +238,111 @@ export function ConfirmTooltip({
             ...placementStyle(placement, offset ?? 8),
           }}
         >
+          {(() => {
+            const defaultRender = () => (
+        <span
+          style={{
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            width: '100%',
+            // Figma clips the bands to the card's radius, which is what keeps
+            // the head and footer fills from squaring off its corners.
+            overflow: 'hidden',
+            borderRadius: len(radius) ?? `${confirm.radius}px`,
+            backgroundColor: surface,
+            // The popup shadow rather than the ambient one: this floats above
+            // the page and needs a crisp edge to read as detached.
+            boxShadow: shadow.popup,
+            fontFamily: typography.fontFamily.base,
+            textAlign: 'left',
+          }}
+        >
           <span
+            id={labelId}
             style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'stretch',
-              width: '100%',
-              // Figma clips the bands to the card's radius, which is what keeps
-              // the head and footer fills from squaring off its corners.
-              overflow: 'hidden',
-              borderRadius: len(radius) ?? `${confirm.radius}px`,
-              backgroundColor: surface,
-              // The popup shadow rather than the ambient one: this floats above
-              // the page and needs a crisp edge to read as detached.
-              boxShadow: shadow.popup,
-              fontFamily: typography.fontFamily.base,
-              textAlign: 'left',
+              display: 'block',
+              paddingLeft: padX,
+              paddingRight: padX,
+              paddingTop: confirm.headPaddingY,
+              paddingBottom: description == null ? confirm.headPaddingY : 0,
+              fontSize: len(titleFontSize) ?? `${confirm.titleFontSize}px`,
+              fontWeight: typography.fontWeight.medium,
+              letterSpacing: typography.letterSpacing.m,
+              lineHeight: 1.4,
+              color: titleColor ?? color.navbar.textActive,
             }}
           >
+            {title}
+          </span>
+
+          {description != null && (
             <span
-              id={labelId}
               style={{
                 display: 'block',
                 paddingLeft: padX,
                 paddingRight: padX,
-                paddingTop: confirm.headPaddingY,
-                paddingBottom: description == null ? confirm.headPaddingY : 0,
-                fontSize: len(titleFontSize) ?? `${confirm.titleFontSize}px`,
-                fontWeight: typography.fontWeight.medium,
+                paddingTop: 4,
+                paddingBottom: confirm.bodyPaddingBottom,
+                fontSize: len(fontSize) ?? `${confirm.fontSize}px`,
+                fontWeight: typography.fontWeight.regular,
                 letterSpacing: typography.letterSpacing.m,
                 lineHeight: 1.4,
-                color: titleColor ?? color.navbar.textActive,
+                color: textColor ?? color.main.black,
               }}
             >
-              {title}
+              {description}
             </span>
+          )}
 
-            {description != null && (
-              <span
-                style={{
-                  display: 'block',
-                  paddingLeft: padX,
-                  paddingRight: padX,
-                  paddingTop: 4,
-                  paddingBottom: confirm.bodyPaddingBottom,
-                  fontSize: len(fontSize) ?? `${confirm.fontSize}px`,
-                  fontWeight: typography.fontWeight.regular,
-                  letterSpacing: typography.letterSpacing.m,
-                  lineHeight: 1.4,
-                  color: textColor ?? color.main.black,
-                }}
-              >
-                {description}
-              </span>
-            )}
-
-            <span
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                gap: confirm.footerGap,
-                paddingLeft: padX,
-                paddingRight: padX,
-                paddingTop: confirm.footerPaddingY,
-                paddingBottom: confirm.footerPaddingY,
-              }}
+          <span
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: confirm.footerGap,
+              paddingLeft: padX,
+              paddingRight: padX,
+              paddingTop: confirm.footerPaddingY,
+              paddingBottom: confirm.footerPaddingY,
+            }}
+          >
+            {/* Cancel is drawn as bare text rather than an outlined button —
+                the two actions should not look equally weighted when one of
+                them deletes something. */}
+            <Button
+              variant="secondary"
+              onClick={dismiss}
+              disabled={busy}
+              background="transparent"
+              borderColor="transparent"
+              textColor={color.navbar.text}
+              paddingX={8}
+              paddingY={6}
             >
-              {/* Cancel is drawn as bare text rather than an outlined button —
-                  the two actions should not look equally weighted when one of
-                  them deletes something. */}
-              <Button
-                variant="secondary"
-                onClick={dismiss}
-                disabled={busy}
-                background="transparent"
-                borderColor="transparent"
-                textColor={color.navbar.text}
-                paddingX={8}
-                paddingY={6}
-              >
-                {cancelLabel}
-              </Button>
-              <Button tone="remove" onClick={handleConfirm} loading={busy} paddingX={8} paddingY={6}>
-                {confirmLabel}
-              </Button>
-            </span>
+              {cancelLabel}
+            </Button>
+            <Button tone="remove" onClick={handleConfirm} loading={busy} paddingX={8} paddingY={6}>
+              {confirmLabel}
+            </Button>
           </span>
+        </span>
+            );
+            return renderCard
+              ? renderCard({
+                  title,
+                  description,
+                  confirmLabel,
+                  cancelLabel,
+                  confirm: handleConfirm,
+                  cancel: dismiss,
+                  busy,
+                  placement,
+                  defaultRender,
+                })
+              : defaultRender();
+          })()}
         </span>
       )}
     </span>

@@ -51,6 +51,7 @@ export type {
   BadgeSize,
   ButtonSize,
   CheckboxSize,
+  PaginationSize,
   SpinnerSize,
   SwitchSize,
   TooltipSize,

@@ -1,4 +1,4 @@
-import { color, spacing, textStyle } from '@gigradar/theme';
+import { color, textStyle } from '@gigradar/theme';
 import {
   Button,
   ConfirmTooltip,
@@ -6,6 +6,7 @@ import {
   Tooltip,
   VStack,
   type TooltipPlacement,
+  type TooltipCardRenderProps,
 } from '@gigradar/ui';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
@@ -14,76 +15,66 @@ import { PageHeader, Preview, Section } from '../layout';
 const PLACEMENTS: TooltipPlacement[] = ['top', 'bottom', 'left', 'right'];
 
 /**
- * Space a pinned-open placement example reserves on the side it opens toward.
+ * Room reserved around the placement examples.
  *
- * A tooltip is absolutely positioned and contributes no layout space, so the
- * gallery has to hold the room open by hand or the cards collide.
- *
- * `block` clears a title + description card (~76px) plus its 8px offset;
- * `inline` clears the widest the card gets before `maxWidth` wraps it. Both are
- * docs-layout numbers rather than component metrics, which is why they live
- * here and not in the theme.
+ * A tooltip is absolutely positioned and takes no layout space, so an open one
+ * can overlap whatever sits next to it. The examples here open on hover rather
+ * than staying pinned, but the placement row still holds space on all four
+ * sides — otherwise hovering a card makes it collide with its neighbours, which
+ * misrepresents how the component behaves in a real layout.
  */
-const PLACEMENT_ROOM = { block: 96, inline: 200 } as const;
+const PLACEMENT_ROOM = 92;
 
 /**
- * A tooltip pinned open, for the gallery only.
+ * A tooltip example behaving exactly as it would in an app — closed until you
+ * hover it.
  *
- * Every preview on this page stays open — a docs page whose examples are
- * invisible until you hover each one is a page you cannot scan.
- *
- * `open` rather than `defaultOpen`: the latter is only an INITIAL state, so a
- * stray click or Escape would dismiss the example and leave the section blank
- * for the rest of the visit. Passing `open` with no `onOpenChange` makes the
- * tooltip fully controlled by a value that never changes, so nothing can close
- * it. `trigger="click"` keeps the anchor from fighting it on hover.
- *
- * Product code should NOT do this: the real default is closed-on-hover, which
- * is what every snippet in the code blocks below shows.
+ * The examples on this page are deliberately NOT pinned open. A docs page that
+ * forces them open shows you a picture of a tooltip; leaving them live lets you
+ * feel the open delay, the focus behavior, and the dismissal, which is most of
+ * what there is to evaluate. The captions say how to trigger each one, so
+ * nothing is hidden — see `Hint`.
  */
-function Shown(props: React.ComponentProps<typeof Tooltip>) {
-  return <Tooltip trigger="click" {...props} open />;
-}
+const Shown = Tooltip;
 
 /**
- * Reserves blank space on the side a pinned-open tooltip opens toward.
+ * A caption telling the reader how to open the example beneath it.
  *
- * The card is absolutely positioned and takes no layout space, so on this page
- * — where every example stays open — neighbouring previews would otherwise
- * overlap each other and the section headings. Wrapping an example in the
- * direction it opens holds that room open.
+ * Every preview here is live rather than pinned open, so each one needs to say
+ * what to do — otherwise the section looks empty and the reader moves on
+ * without ever seeing the component.
  */
-function Room({ toward, children }: { toward: TooltipPlacement; children: React.ReactNode }) {
+function Hint({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
+        ...textStyle.sMedium,
+        color: color.main.description,
         display: 'inline-flex',
-        paddingTop: toward === 'top' ? PLACEMENT_ROOM.block : 0,
-        paddingBottom: toward === 'bottom' ? PLACEMENT_ROOM.block : 0,
-        paddingLeft: toward === 'left' ? PLACEMENT_ROOM.inline : 0,
-        paddingRight: toward === 'right' ? PLACEMENT_ROOM.inline : 0,
+        alignItems: 'center',
+        gap: 6,
       }}
     >
+      <span aria-hidden>↓</span>
       {children}
     </div>
   );
 }
 
-/** A caption below an example — for tooltips that open upward or sideways. */
+/**
+ * Holds space around a placement example so an opened card does not land on
+ * its neighbours. Only the placement row needs this — the other previews have
+ * room to open into already.
+ */
+function Room({ children }: { children: React.ReactNode }) {
+  return <div style={{ display: 'inline-flex', padding: PLACEMENT_ROOM }}>{children}</div>;
+}
+
+/** A caption above an example, so variants can be compared side by side. */
 function Labeled({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <VStack gap="xs" alignItems="center">
-      {children}
       <div style={{ ...textStyle.sSemibold, color: color.main.description }}>{label}</div>
-    </VStack>
-  );
-}
-
-/** A caption above an example — for tooltips that open downward. */
-function Captioned({ caption, children }: { caption: string; children: React.ReactNode }) {
-  return (
-    <VStack gap="xs" alignItems="center">
-      <div style={{ ...textStyle.sSemibold, color: color.main.description }}>{caption}</div>
       {children}
     </VStack>
   );
@@ -102,18 +93,19 @@ export function TooltipPage() {
         description="Wrap the control you want to explain. The tooltip attaches its hover, focus, and aria wiring to that element rather than wrapping it in a div, so it never disturbs your layout."
       >
         <Preview>
-          <HStack gap="xl" alignItems="center">
-            <Room toward="top">
-              <Shown content="Applies your filters to the search">
-                <Button>Apply</Button>
-              </Shown>
-            </Room>
-            <Room toward="bottom">
-              <Shown content="Discards this draft. This cannot be undone." placement="bottom">
-                <Button variant="secondary">Cancel</Button>
-              </Shown>
-            </Room>
-          </HStack>
+          <VStack gap="s" alignItems="flex-start">
+            <Hint>Hover either button to show its tooltip.</Hint>
+            <div style={{ padding: '60px 0' }}>
+              <HStack gap="xl" alignItems="center">
+                <Shown content="Applies your filters to the search">
+                  <Button>Apply</Button>
+                </Shown>
+                <Shown content="Discards this draft. This cannot be undone." placement="bottom">
+                  <Button variant="secondary">Cancel</Button>
+                </Shown>
+              </HStack>
+            </div>
+          </VStack>
         </Preview>
         <CodeBlock
           code={`import { Tooltip, Button } from '@gigradar/ui';
@@ -130,26 +122,27 @@ export function TooltipPage() {
         description="The title is OPTIONAL, and most tooltips should not have one. Reach for content alone when you are answering 'what does this control do' — that is the overwhelming majority of tooltips, and a title turns a one-line label into a small dialog that takes longer to read. Add a title only when the tooltip explains a NAMED thing worth repeating: a feature callout, an onboarding hint, a term the user may not know. If you cannot say what the title adds beyond the first few words of the content, it does not belong."
       >
         <Preview>
-          <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
-            <Captioned caption="No title — the default">
-              <Room toward="bottom">
-                <Shown content="Applies your filters to the search" placement="bottom">
-                  <Button variant="secondary">Apply</Button>
-                </Shown>
-              </Room>
-            </Captioned>
-            <Captioned caption="With a title — the exception">
-              <Room toward="bottom">
-                <Shown
-                  title="Smart Filters"
-                  content="Narrows results using the criteria you saved earlier."
-                  placement="bottom"
-                >
-                  <Button variant="secondary">Smart Filters</Button>
-                </Shown>
-              </Room>
-            </Captioned>
-          </HStack>
+          <VStack gap="s" alignItems="flex-start">
+            <Hint>Hover each button to compare them.</Hint>
+            <div style={{ paddingBottom: 110 }}>
+              <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
+                <Labeled label="No title — the default">
+                  <Shown content="Applies your filters to the search" placement="bottom">
+                    <Button variant="secondary">Apply</Button>
+                  </Shown>
+                </Labeled>
+                <Labeled label="With a title — the exception">
+                  <Shown
+                    title="Smart Filters"
+                    content="Narrows results using the criteria you saved earlier."
+                    placement="bottom"
+                  >
+                    <Button variant="secondary">Smart Filters</Button>
+                  </Shown>
+                </Labeled>
+              </HStack>
+            </div>
+          </VStack>
         </Preview>
         <CodeBlock
           code={`// ── DEFAULT: no title. Use this unless you have a reason not to. ──────
@@ -182,34 +175,34 @@ export function TooltipPage() {
         description="Four positions, named for where the TOOLTIP sits — top puts the card above the anchor with its arrow pointing down. Figma names the same four from the arrow's side (Up, Bottom, Left, Right); these names match what every popover library uses, so placement='top' does what you expect."
       >
         <Preview>
-          {/* Each cell reserves room on the side its tooltip opens toward. The
-              card is absolutely positioned, so it contributes no layout space
-              of its own — without this the four overlap each other and their
-              captions. The label sits BELOW the anchor for the same reason:
-              above is where the `top` tooltip lands. */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: spacing.l,
-              width: '100%',
-            }}
-          >
-            {PLACEMENTS.map((placement) => (
-              <div
-                key={placement}
-                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-              >
-                <Room toward={placement}>
-                  <Labeled label={placement}>
-                    <Shown content="Description" title="Title" placement={placement}>
-                      <Button variant="secondary">{placement}</Button>
-                    </Shown>
-                  </Labeled>
-                </Room>
-              </div>
-            ))}
-          </div>
+          <VStack gap="s" alignItems="flex-start">
+            <Hint>Hover each button to see where its card opens.</Hint>
+            {/* Every cell holds room on all four sides. The card is absolutely
+                positioned and takes no layout space, so without this an opened
+                tooltip lands on its neighbours. */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                width: '100%',
+              }}
+            >
+              {PLACEMENTS.map((placement) => (
+                <div
+                  key={placement}
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                >
+                  <Room>
+                    <Labeled label={placement}>
+                      <Shown content="Description" title="Title" placement={placement}>
+                        <Button variant="secondary">{placement}</Button>
+                      </Shown>
+                    </Labeled>
+                  </Room>
+                </div>
+              ))}
+            </div>
+          </VStack>
         </Preview>
         <CodeBlock
           code={`<Tooltip content="…" placement="top">    {/* default */}
@@ -224,33 +217,37 @@ export function TooltipPage() {
         description="Pass actions and the tooltip stops being a hover label: it opens on click and stays open, because the pointer has to travel to the buttons and any gap on the way would close it. This is Figma's Apply / Later pair — an onboarding nudge rather than a description."
       >
         <Preview>
-          {/* Taller than the other cards — title, body, and a row of buttons —
-              so it reserves more room than the shared block step. */}
-          <div style={{ paddingBottom: 170 }}>
-            <Shown
-              title="New: Saved Views"
-              content="Pin the filters you use most and jump back to them in one click."
-              placement="bottom"
-              actions={
-                <>
-                  <Button size="small" onClick={() => {}}>
-                    Apply
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="secondary"
-                    background={color.navbar.disabledBackground}
-                    borderColor={color.navbar.disabledBackground}
-                    textColor={color.navbar.textActive}
-                  >
-                    Later
-                  </Button>
-                </>
-              }
-            >
-              <Button variant="secondary">Show me</Button>
-            </Shown>
-          </div>
+          <VStack gap="s" alignItems="flex-start">
+            <Hint>
+              Click “Show me” — this one opens on click, because it has buttons to reach.
+            </Hint>
+            {/* Taller than the other cards — title, body, and a row of buttons. */}
+            <div style={{ paddingBottom: 180 }}>
+              <Shown
+                title="New: Saved Views"
+                content="Pin the filters you use most and jump back to them in one click."
+                placement="bottom"
+                actions={
+                  <>
+                    <Button size="small" onClick={() => {}}>
+                      Apply
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="secondary"
+                      background={color.navbar.disabledBackground}
+                      borderColor={color.navbar.disabledBackground}
+                      textColor={color.navbar.textActive}
+                    >
+                      Later
+                    </Button>
+                  </>
+                }
+              >
+                <Button variant="secondary">Show me</Button>
+              </Shown>
+            </div>
+          </VStack>
         </Preview>
         <CodeBlock
           code={`// Actions flip the trigger to click automatically — a hover tooltip you
@@ -296,37 +293,42 @@ export function TooltipPage() {
         description="Deleting something uses ConfirmTooltip, not Tooltip. Figma draws it differently (node 1272:11979): a wider card built as three bands — a title, a message, and a right-aligned footer holding Cancel and Remove — with no arrow and a tighter shadow. The behavior differs more than the look does. A tooltip is passive, appears on hover, and is inert to the pointer; this is a small dialog that opens on click and traps a decision. Folding them together would mean a component whose most important behaviors flip on whether a prop was passed."
       >
         <Preview>
-          <HStack gap="xxl" alignItems="flex-start" flexWrap="wrap">
-            <Captioned caption="Shown open">
-              {/* The confirm card is taller than a tooltip — three bands plus a
-                  footer — so it reserves more room than the shared step. */}
-              <div style={{ paddingBottom: 150 }}>
-                <ConfirmTooltip
-                  title="Delete this proposal?"
-                  description="This cannot be undone."
-                  open
-                  onConfirm={() => {}}
-                >
-                  <Button variant="secondary" tone="danger">
-                    Delete proposal
-                  </Button>
-                </ConfirmTooltip>
-              </div>
-            </Captioned>
+          <VStack gap="s" alignItems="flex-start">
+            <Hint>
+              Click a delete button to open its confirmation. Escape or a click outside dismisses
+              it.
+            </Hint>
+            {/* The confirm card is taller than a tooltip — three bands plus a
+                footer — so it holds more room than a plain example. */}
+            <div style={{ paddingBottom: 170 }}>
+              <HStack gap="xxl" alignItems="flex-start" flexWrap="wrap">
+                <Labeled label="Sync — closes on confirm">
+                  <ConfirmTooltip
+                    title="Delete this proposal?"
+                    description="This cannot be undone."
+                    onConfirm={() => {}}
+                  >
+                    <Button variant="secondary" tone="danger">
+                      Delete proposal
+                    </Button>
+                  </ConfirmTooltip>
+                </Labeled>
 
-            <Captioned caption="Click it — async confirm">
-              <ConfirmTooltip
-                title="Remove member?"
-                description="They will lose access immediately."
-                confirmLabel="Remove"
-                onConfirm={() => new Promise((resolve) => setTimeout(resolve, 1200))}
-              >
-                <Button variant="secondary" tone="danger">
-                  Remove member
-                </Button>
-              </ConfirmTooltip>
-            </Captioned>
-          </HStack>
+                <Labeled label="Async — spins until it settles">
+                  <ConfirmTooltip
+                    title="Remove member?"
+                    description="They will lose access immediately."
+                    confirmLabel="Remove"
+                    onConfirm={() => new Promise((resolve) => setTimeout(resolve, 1200))}
+                  >
+                    <Button variant="secondary" tone="danger">
+                      Remove member
+                    </Button>
+                  </ConfirmTooltip>
+                </Labeled>
+              </HStack>
+            </div>
+          </VStack>
         </Preview>
         <CodeBlock
           code={`import { ConfirmTooltip, Button } from '@gigradar/ui';
@@ -398,32 +400,116 @@ export function TooltipPage() {
       </Section>
 
       <Section
+        title="Custom card"
+        description="renderCard replaces the card while the tooltip keeps its positioning, its hover and focus wiring, and its ARIA relationships. This is the render-prop convention the higher-level components share — the parts that are hard to get right stay with the component, and the composition becomes yours. Low-level components like Button and Badge deliberately do not have this."
+      >
+        <Preview>
+          <VStack gap="s" alignItems="flex-start">
+            <Hint>Hover each button.</Hint>
+            <div style={{ paddingBottom: 90 }}>
+              <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
+                <Shown
+                  content="Save changes"
+                  placement="bottom"
+                  renderCard={({ content }: TooltipCardRenderProps) => (
+                    <HStack
+                      gap="xs"
+                      alignItems="center"
+                      px="s"
+                      py="xs"
+                      radius="xs"
+                      background={color.navbar.textActive}
+                    >
+                      <span style={{ ...textStyle.sMedium, color: color.main.white }}>{content}</span>
+                      <kbd
+                        style={{
+                          ...textStyle.sMedium,
+                          color: color.main.white,
+                          background: 'rgba(255,255,255,0.18)',
+                          borderRadius: 4,
+                          padding: '2px 6px',
+                          fontFamily: 'inherit',
+                        }}
+                      >
+                        ⌘S
+                      </kbd>
+                    </HStack>
+                  )}
+                >
+                  <Button variant="secondary">Replaced</Button>
+                </Shown>
+                <Shown
+                  content="Wrapped, not replaced"
+                  placement="bottom"
+                  renderCard={({ defaultRender }: TooltipCardRenderProps) => (
+                    <span style={{ display: 'block', outline: `2px dashed ${color.main.brand}`, borderRadius: 8 }}>
+                      {defaultRender()}
+                    </span>
+                  )}
+                >
+                  <Button variant="secondary">Wrapped</Button>
+                </Shown>
+              </HStack>
+            </div>
+          </VStack>
+        </Preview>
+        <CodeBlock
+          code={`// Replace the card when it must hold something the props have no slot for
+// — a keyboard shortcut, a thumbnail, a chart.
+<Tooltip
+  content="Save changes"
+  renderCard={({ content }) => (
+    <HStack gap="xs" px="s" py="xs" radius="xs" background={color.navbar.textActive}>
+      <Text>{content}</Text>
+      <kbd>⌘S</kbd>
+    </HStack>
+  )}
+>
+  <Button>Save</Button>
+</Tooltip>
+
+// Or call defaultRender() to DECORATE rather than replace — the common case,
+// and the one that keeps tracking the design system as the card evolves.
+<Tooltip
+  content="Wrapped"
+  renderCard={({ defaultRender }) => <Highlight>{defaultRender()}</Highlight>}
+>
+  <Button>Save</Button>
+</Tooltip>
+
+// If the existing props already cover it, use them. A render prop that only
+// reproduces the default is a copy that stops receiving design updates.`}
+        />
+      </Section>
+
+      <Section
         title="Style props"
         description="The tooltip's own metrics and colors, as typed props — the same mechanism the other components use. Reach for size first; these are for genuine one-offs. Note the arrow follows background automatically, so recoloring a tooltip never leaves a white arrow behind."
       >
         <Preview>
-          <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
-            <Room toward="bottom">
-              <Shown
-                content="On a dark surface"
-                placement="bottom"
-                background={color.navbar.textActive}
-                textColor={color.main.white}
-              >
-                <Button variant="secondary">Dark</Button>
-              </Shown>
-            </Room>
-            <Room toward="bottom">
-              <Shown
-                content="A title in the heading color"
-                title="Neutral"
-                titleColor={color.navbar.textActive}
-                placement="bottom"
-              >
-                <Button variant="secondary">Neutral title</Button>
-              </Shown>
-            </Room>
-          </HStack>
+          <VStack gap="s" alignItems="flex-start">
+            <Hint>Hover each button.</Hint>
+            <div style={{ paddingBottom: 110 }}>
+              <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
+                <Shown
+                  content="On a dark surface"
+                  placement="bottom"
+                  background={color.navbar.textActive}
+                  textColor={color.main.white}
+                >
+                  <Button variant="secondary">Dark</Button>
+                </Shown>
+                <Shown
+                  content="A title in the heading color"
+                  title="Neutral"
+                  titleColor={color.navbar.textActive}
+                  placement="bottom"
+                >
+                  <Button variant="secondary">Neutral title</Button>
+                </Shown>
+              </HStack>
+            </div>
+          </VStack>
         </Preview>
         <CodeBlock
           code={`// One-offs only. If the same override recurs, it belongs in the theme.
