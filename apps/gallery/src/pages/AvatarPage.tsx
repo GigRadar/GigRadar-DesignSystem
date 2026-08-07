@@ -1,5 +1,6 @@
 import { color, component, radius, type AvatarToneName } from '@uiuxjoseph/theme';
 import { Avatar, AvatarGroup, HStack, VStack } from '@uiuxjoseph/ui';
+import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
 
@@ -36,6 +37,16 @@ export function AvatarPage() {
         description="The packages are private and hosted on GitHub Packages, so npm needs to know where to look. The repo .npmrc holds routing only — the auth token goes in your global ~/.npmrc and is never committed."
       >
         <VStack gap="s">
+          <CodeBlock
+            label="Once per developer — ~/.npmrc (global, never committed)"
+            code={`# a classic GitHub PAT with the read:packages scope
+//npm.pkg.github.com/:_authToken=ghp_xxxxxxxxxxxx`}
+          />
+          <CodeBlock
+            label="Once per app repo — .npmrc (committed, no secret)"
+            code={`@uiuxjoseph:registry=https://npm.pkg.github.com`}
+          />
+          <CodeBlock label="Then install" code={`npm install @uiuxjoseph/ui`} />
         </VStack>
       </Section>
 
@@ -51,6 +62,19 @@ export function AvatarPage() {
             <Avatar type="placeholder" />
           </HStack>
         </Preview>
+        <CodeBlock
+          code={`import { GigRadarProvider, Avatar, HStack } from '@uiuxjoseph/ui';
+
+// Provider once at the root; then pass what you have — a photo when there is
+// one, a name always. The avatar works out the rest.
+<GigRadarProvider>
+  <HStack gap="s">
+    <Avatar name={user.fullName} src={user.photoUrl} badge="gigradar" />
+    <Avatar name={user.fullName} />   {/* no photo → tinted initials */}
+    <Avatar type="placeholder" />     {/* nobody yet → placeholder    */}
+  </HStack>
+</GigRadarProvider>`}
+        />
       </Section>
 
       <Section
@@ -110,6 +134,13 @@ export function AvatarPage() {
             }
           />
         </Preview>
+        <CodeBlock
+          code={`// The two Figma marks by name; any node works in the same slot — it is
+// sized and ringed for you.
+<Avatar name={user.fullName} badge="gigradar" />
+<Avatar name={user.fullName} badge="upworkApi" />
+<Avatar name={user.fullName} badge={<OnlineDot />} />`}
+        />
       </Section>
 
       <Section
@@ -132,6 +163,14 @@ export function AvatarPage() {
             <Avatar key={name} name={name} />
           ))}
         </Preview>
+        <CodeBlock
+          code={`// Best practice: pass the name and let the tone hash itself. The same
+// person keeps the same color on every screen. Reach for an explicit
+// tone only when the color IS the meaning (a legend, a fixed brand).
+{team.map((member) => (
+  <Avatar key={member.id} name={member.fullName} />
+))}`}
+        />
       </Section>
 
       <Section
@@ -155,6 +194,15 @@ export function AvatarPage() {
             ))}
           </AvatarGroup>
         </Preview>
+        <CodeBlock
+          code={`// Cap long lists with max — the rest becomes a +N count. Render the people
+// in reading order; the group handles stacking so the first sits on top.
+<AvatarGroup max={3}>
+  {team.map((member) => (
+    <Avatar key={member.id} name={member.fullName} />
+  ))}
+</AvatarGroup>`}
+        />
       </Section>
 
       <Section
@@ -179,12 +227,6 @@ export function AvatarPage() {
           <Avatar tone="cyan" initials="GR" radius={12} borderWidth={2} />
           <Avatar tone="volcano" initials="GR" diameter={48} fontSize={20} radius="30%" />
           <Avatar name="Grace Hopper" badge="gigradar" badgeRingWidth={3} diameter={48} />
-
-      {/* colours are props too — no style prop needed, or accepted */}
-      <Avatar initials="GR" background="#101820" borderColor="#FFB000"
-              textColor="#FFB000" fontWeight={700} />
-      <Avatar name="Ada Lovelace" badge="gigradar"
-              badgeRingColor={color.main.brand} badgeRingWidth={2} />
           <Avatar
             initials="GR"
             background="#101820"
@@ -204,6 +246,12 @@ export function AvatarPage() {
             ))}
           </AvatarGroup>
         </Preview>
+        <CodeBlock
+          code={`// Escape hatch for one-offs — colors are props too; there is no style prop.
+// If the same override recurs, it belongs in the theme, not in app code.
+<Avatar name="Ada Lovelace" badge="gigradar" diameter={56} badgeSize={20} />
+<Avatar initials="GR" background="#101820" textColor="#FFB000" fontWeight={700} />`}
+        />
       </Section>
 
       <Section

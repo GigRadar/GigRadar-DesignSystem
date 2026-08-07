@@ -1,31 +1,93 @@
 import { color, textStyle } from '@uiuxjoseph/theme';
-import { Button, ComposerButton, HStack, VStack } from '@uiuxjoseph/ui';
+import {
+  Button,
+  ComposerButton,
+  HStack,
+  Icon,
+  IconLazizaSparkleStroke,
+  IconMeetingsStroke,
+  IconPlus,
+  IconScheduleClockStroke,
+  IconXClose,
+  VStack,
+  type ButtonProps,
+  type IconDef,
+} from '@uiuxjoseph/ui';
+import { useState } from 'react';
+import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
 
-/** A stand-in glyph, so the icon slots have something to show. */
-const PlusIcon = () => (
-  <svg viewBox="0 0 16 16" width="100%" height="100%" fill="none" aria-hidden>
-    <path
-      d="M8 3.5v9M3.5 8h9"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-    />
-  </svg>
-);
+/**
+ * One feature, complete: both variants (Figma's Main and 2nd), all four
+ * states (Active, Hover, Disable, Syncing), and the icon slot — so a
+ * developer building that feature sees everything it can do in one place.
+ */
+function FeatureStates({
+  tone,
+  label,
+  icon,
+}: {
+  tone: ButtonProps['tone'];
+  label: string;
+  icon: IconDef;
+}) {
+  return (
+    <VStack gap="m">
+      {(['primary', 'secondary'] as const).map((variant) => (
+        <VStack key={variant} gap="xxs">
+          <div style={{ ...textStyle.sSemibold, color: color.main.description }}>
+            {variant === 'primary' ? 'Main' : '2nd'}
+          </div>
+          <HStack gap="s">
+            <Button variant={variant} tone={tone}>
+              {label}
+            </Button>
+            {/* Hover is a real pointer state — point at it rather than a frozen fake. */}
+            <Button variant={variant} tone={tone}>
+              Hover me
+            </Button>
+            <Button variant={variant} tone={tone} disabled>
+              {label}
+            </Button>
+            <Button variant={variant} tone={tone} loading>
+              {label}
+            </Button>
+            <Button variant={variant} tone={tone} startIcon={<Icon icon={icon} size={16} />}>
+              {label}
+            </Button>
+          </HStack>
+        </VStack>
+      ))}
+    </VStack>
+  );
+}
+
+function ComposerDemo() {
+  const [tab, setTab] = useState<'message' | 'note'>('message');
+  return (
+    <HStack gap="xxs">
+      <ComposerButton selected={tab === 'message'} info onClick={() => setTab('message')}>
+        Message
+      </ComposerButton>
+      <ComposerButton laziza selected={tab === 'note'} info onClick={() => setTab('note')}>
+        Note
+      </ComposerButton>
+    </HStack>
+  );
+}
 
 export function ButtonPage() {
   return (
     <>
       <PageHeader
         title="Button"
-        description="The application button — a 6px-radius control with 16/8 padding and 14px medium text, in a filled primary and an outlined secondary, across five tones. Covers the eight Figma button components: Main, Secondary, Cancel, Meeting, Schedule, Laziza AI, and the two composer tabs."
+        description="The application button, organised by feature the way Figma draws them — each feature is the same control in its own tone, shown with both variants, all four states, and the icon slot."
       />
 
       <Section
         title="Quick start"
-        description="Everything on this page is imported from @uiuxjoseph/ui — components, layout primitives, and tokens all come from the one entry point."
+        description="Everything comes from @uiuxjoseph/ui — components, icons, layout, and tokens through one entry point. Mount GigRadarProvider once at the app root."
       >
         <Preview>
           <HStack gap="s">
@@ -34,159 +96,132 @@ export function ButtonPage() {
             <Button loading>Send</Button>
           </HStack>
         </Preview>
+        <CodeBlock
+          code={`import { GigRadarProvider, Button, HStack } from '@uiuxjoseph/ui';
+
+// Mount the provider ONCE at the app root — it delivers the design tokens.
+<GigRadarProvider>
+  <HStack gap="s">
+    <Button onClick={apply}>Apply</Button>
+    <Button variant="secondary" onClick={cancel}>Cancel</Button>
+  </HStack>
+</GigRadarProvider>`}
+        />
       </Section>
 
       <Section
-        title="Variants"
-        description="Two kinds. primary is the blue filled button and secondary the white outlined one."
+        title="Main + 2nd"
+        description="The default button — Figma's Main (filled) and 2nd (outlined). One Main per view: the action you want taken. Everything beside it is the 2nd variant."
+      >
+        <FeatureStates tone="brand" label="Apply" icon={IconPlus} />
+        <CodeBlock
+          code={`// Pick by hierarchy: ONE Main per view, 2nd for everything beside it.
+<Button onClick={apply}>Apply</Button>
+<Button variant="secondary" onClick={saveDraft}>Save draft</Button>
+
+// States come from your data, not from styling:
+<Button loading={isSending} onClick={send}>Send</Button>   // in flight
+<Button disabled={!form.isValid}>Apply</Button>            // not allowed yet
+
+// Icons come from the icon set — size 16 matches the slot:
+<Button startIcon={<Icon icon={IconPlus} size={16} />}>Add job</Button>`}
+        />
+      </Section>
+
+      <Section
+        title="Schedule message + 2nd"
+        description="The Schedule Messages feature button — purple, per the schedule accent tokens. Same control, same states; only the tone changes."
+      >
+        <FeatureStates tone="schedule" label="Schedule message" icon={IconScheduleClockStroke} />
+        <CodeBlock
+          code={`// Pick the tone by FEATURE, not by color — scheduling is purple because
+// the design system says so, not because this call site chose purple.
+<Button tone="schedule" startIcon={<Icon icon={IconScheduleClockStroke} size={16} />}>
+  Schedule message
+</Button>
+<Button variant="secondary" tone="schedule">Reschedule</Button>`}
+        />
+      </Section>
+
+      <Section
+        title="Meetings + 2nd"
+        description="The Meetings feature button — green, per the meetings accent tokens."
+      >
+        <FeatureStates tone="meeting" label="Book a meeting" icon={IconMeetingsStroke} />
+        <CodeBlock
+          code={`<Button tone="meeting" startIcon={<Icon icon={IconMeetingsStroke} size={16} />}>
+  Book a meeting
+</Button>
+<Button variant="secondary" tone="meeting" loading={isBooking}>
+  Booking…
+</Button>`}
+        />
+      </Section>
+
+      <Section
+        title="Laziza AI + 2nd"
+        description="The Laziza AI feature button — amber, per the laziza accent tokens."
+      >
+        <FeatureStates tone="laziza" label="Ask Laziza AI" icon={IconLazizaSparkleStroke} />
+        <CodeBlock
+          code={`<Button tone="laziza" startIcon={<Icon icon={IconLazizaSparkleStroke} size={16} />}>
+  Ask Laziza AI
+</Button>
+<Button variant="secondary" tone="laziza" loading={isGenerating}>
+  Generating…
+</Button>`}
+        />
+      </Section>
+
+      <Section
+        title="Cancel / negative + 2nd"
+        description="Destructive actions. Unlike the other outlined tones, the 2nd variant carries its red outline at rest — a destructive action should read as destructive before it is hovered."
+      >
+        <FeatureStates tone="danger" label="Cancel proposal" icon={IconXClose} />
+        <CodeBlock
+          code={`// Destructive: reads red at rest, on purpose. Confirm before acting when
+// the action is not undoable — the color warns, it does not protect.
+<Button variant="secondary" tone="danger" onClick={confirmCancel}>
+  Cancel proposal
+</Button>
+<Button tone="danger" loading={isCancelling}>Cancelling…</Button>`}
+        />
+      </Section>
+
+      <Section
+        title="Composer text"
+        description="The Message / Note toggle above a message box. A separate component because the shape genuinely differs: no border, transparent until hovered or selected, 12px semibold — and its state is selected or not. Figma draws no disabled or loading state for it. Click the live example."
       >
         <Preview>
-          <Button variant="primary">Apply</Button>
-          <Button variant="secondary">Apply</Button>
+          <ComposerDemo />
         </Preview>
-      </Section>
+        <CodeBlock
+          code={`// A toggle, not an action — drive selected from state, one selected per row.
+const [tab, setTab] = useState<'message' | 'note'>('message');
 
-      <Section
-        title="All 8 variants"
-        description="Each feature button in Figma is drawn as eight named variants — Main and 2nd, each in Active, Hover, Disable, and Syncing. They are the two variants crossed with the four states, so the component reaches all eight through variant plus disabled/loading rather than eight separate names."
-      >
-        <VStack gap="m">
-          {(['primary', 'secondary'] as const).map((variant) => (
-            <VStack key={variant} gap="xxs">
-              <div style={{ ...textStyle.sSemibold, color: color.main.description }}>
-                {variant === 'primary' ? 'Main' : '2nd'}
-              </div>
-              <HStack gap="s">
-                <Button variant={variant}>Active</Button>
-                {/* Hover is a real pointer state, so this one is shown by
-                    pointing at it rather than faked with a frozen style. */}
-                <Button variant={variant}>Hover me</Button>
-                <Button variant={variant} disabled>
-                  Disable
-                </Button>
-                <Button variant={variant} loading>
-                  Syncing
-                </Button>
-              </HStack>
-            </VStack>
-          ))}
-        </VStack>
-      </Section>
-
-      <Section
-        title="Tones"
-        description="Figma draws one button per feature — Meeting, Schedule, Laziza AI, Cancel — and they are the same control in a different color: identical padding, radius, gap, and type. So the feature is a tone rather than a component, and a new one is a row in a table instead of a new file."
-      >
-        <Preview>
-          <VStack gap="s">
-            <HStack gap="s">
-              <Button tone="brand">Send</Button>
-              <Button tone="meeting">Send</Button>
-              <Button tone="schedule">Send</Button>
-              <Button tone="laziza">Send</Button>
-              <Button tone="danger">Cancel</Button>
-            </HStack>
-            <HStack gap="s">
-              <Button variant="secondary" tone="brand">
-                Send
-              </Button>
-              <Button variant="secondary" tone="meeting">
-                Send
-              </Button>
-              <Button variant="secondary" tone="schedule">
-                Send
-              </Button>
-              <Button variant="secondary" tone="laziza">
-                Send
-              </Button>
-              <Button variant="secondary" tone="danger">
-                Cancel
-              </Button>
-            </HStack>
-          </VStack>
-        </Preview>
-      </Section>
-
-      <Section
-        title="Tone hover"
-        description="The outlined feature buttons stay neutral at rest and pick up their tone on hover — border and label together — so a row of them is quiet until you point at one. Cancel is the exception: it carries its red outline from the start, because a destructive action should read as destructive before it is hovered."
-      >
-        <Preview>
-          <Button variant="secondary" tone="meeting">
-            Hover me
-          </Button>
-          <Button variant="secondary" tone="schedule">
-            Hover me
-          </Button>
-          <Button variant="secondary" tone="laziza">
-            Hover me
-          </Button>
-          <Button variant="secondary" tone="danger">
-            Cancel
-          </Button>
-        </Preview>
-      </Section>
-
-      <Section
-        title="States"
-        description="Hover is drawn in Figma for both variants. Disabled turns the primary grey on grey, while the secondary keeps its white fill and fades the label — that ghosted look is what stops a row of outlined buttons becoming a row of grey blocks. Hover the live examples to see the transition."
-      >
-        <Preview>
-          <VStack gap="s">
-            <HStack gap="s">
-              <Button>Apply</Button>
-              <Button disabled>Apply</Button>
-              <Button loading>Send</Button>
-            </HStack>
-            <HStack gap="s">
-              <Button variant="secondary">Apply</Button>
-              <Button variant="secondary" disabled>
-                Apply
-              </Button>
-              <Button variant="secondary" loading>
-                Send
-              </Button>
-            </HStack>
-          </VStack>
-        </Preview>
-      </Section>
-
-      <Section
-        title="Loading"
-        description="Figma's Syncing variant. The button keeps its label and takes the disabled palette, so it does not change width as the work starts and does not look pressable while it runs. It is inert for the same reason a disabled button is, and carries aria-busy for screen readers."
-      >
-        <Preview>
-          <Button loading>Send</Button>
-          <Button variant="secondary" loading>
-            Send
-          </Button>
-        </Preview>
-      </Section>
-
-      <Section
-        title="With icons"
-        description="An icon can sit on either side of the label. Each slot is a fixed square that never shrinks, so an SVG sized in percent fills it and one with an intrinsic size is contained rather than stretching the button. A loading spinner takes the endIcon slot."
-      >
-        <Preview>
-          <Button startIcon={<PlusIcon />}>Add job</Button>
-          <Button variant="secondary" endIcon={<PlusIcon />}>
-            Add job
-          </Button>
-          <Button startIcon={<PlusIcon />} endIcon={<PlusIcon />}>
-            Add job
-          </Button>
-        </Preview>
+<HStack gap="xxs">
+  <ComposerButton selected={tab === 'message'} onClick={() => setTab('message')}>
+    Message
+  </ComposerButton>
+  <ComposerButton laziza selected={tab === 'note'} onClick={() => setTab('note')}>
+    Note
+  </ComposerButton>
+</HStack>`}
+        />
       </Section>
 
       <Section
         title="Size"
-        description="Three steps. medium is the size drawn in Figma — the other two extend the scale proportionally."
+        description="Three steps. medium is the size drawn in Figma — the other two extend the scale proportionally. Size is orthogonal to feature: every tone comes in all three."
       >
         <Preview>
           <Button size="small">Apply</Button>
           <Button size="medium">Apply</Button>
           <Button size="large">Apply</Button>
         </Preview>
+        <CodeBlock code={`<Button size="small">Apply</Button>   // dense tables and toolbars
+<Button>Apply</Button>                // default — the Figma size
+<Button size="large">Apply</Button>   // hero moments`} />
       </Section>
 
       <Section
@@ -201,6 +236,7 @@ export function ButtonPage() {
             </Button>
           </VStack>
         </Preview>
+        <CodeBlock code={`<Button fullWidth>Apply now</Button>`} />
       </Section>
 
       <Section
@@ -217,7 +253,7 @@ export function ButtonPage() {
           <Button fontSize={18} paddingY={14}>
             Roomy
           </Button>
-          <Button startIcon={<PlusIcon />} iconSize={24} gap={16}>
+          <Button startIcon={<Icon icon={IconPlus} size={24} />} iconSize={24} gap={16}>
             Big icon
           </Button>
           <Button background="#2E1065" textColor="#FDE68A" fontWeight={700}>
@@ -227,28 +263,13 @@ export function ButtonPage() {
             Custom outline
           </Button>
         </Preview>
-      </Section>
-
-      <Section
-        title="Composer tabs"
-        description="The Message / Note toggle above a message box. A separate component because the shape genuinely differs rather than just the color: no border, transparent until hovered or selected, 12px semibold rather than 14px medium, and its state is selected or not — Figma draws no disabled or loading state for it."
-      >
-        <Preview>
-          <HStack gap="xxs">
-            <ComposerButton selected info>
-              Message
-            </ComposerButton>
-            <ComposerButton laziza info>
-              Note
-            </ComposerButton>
-          </HStack>
-          <HStack gap="xxs">
-            <ComposerButton info>Message</ComposerButton>
-            <ComposerButton selected laziza info>
-              Note
-            </ComposerButton>
-          </HStack>
-        </Preview>
+        <CodeBlock
+          code={`// Escape hatch for genuine one-offs — reach for variant / tone / size FIRST.
+// If you set the same override in more than one place, it is not a one-off:
+// ask for a token or variant instead of repeating it.
+<Button radius={9999} paddingX={24}>Pill</Button>
+<Button variant="secondary" radius={0} borderWidth={2}>Square</Button>`}
+        />
       </Section>
 
       <Section title="Button props">

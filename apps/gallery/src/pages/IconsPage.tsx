@@ -1,8 +1,9 @@
 import { color, radius, spacing, textStyle, typography } from '@uiuxjoseph/theme';
-import { Icon } from '@uiuxjoseph/ui';
+import { Icon, IconFailedErrorStroke, IconSearch, IconSendPlaneFill } from '@uiuxjoseph/ui';
 import { useState } from 'react';
 import { fillIcons, strokeIcons } from '../../../../packages/ui/src/icons/registry';
-import { PageHeader, Section } from '../layout';
+import { CodeBlock } from '../components/CodeBlock';
+import { PageHeader, Preview, Section } from '../layout';
 
 /**
  * The icon set, straight from the registry. The registry module imports every
@@ -33,6 +34,45 @@ export function IconsPage() {
         title="Icons"
         description={`${total} icons from the Figma icon set, drawn on a 24×24 grid in fill and stroke weights. All are monochrome and follow the surrounding text color. Click an icon to copy its name.`}
       />
+
+      <Section
+        title="How to use"
+        description="Each icon is a named export — the icon's kebab-case name in PascalCase with an Icon prefix, so send-plane-fill becomes IconSendPlaneFill. Click any icon below to copy its name. Import icons individually; your bundle carries only the ones you name."
+      >
+        <Preview>
+          <Icon icon={IconSearch} size={16} />
+          <Icon icon={IconSendPlaneFill} label="Send message" />
+          <span
+            style={{
+              ...textStyle.mRegular,
+              color: color.status.error.text,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: spacing.xxs,
+            }}
+          >
+            <Icon icon={IconFailedErrorStroke} size={16} /> Failed to send
+          </span>
+        </Preview>
+        <CodeBlock
+          code={`import { Icon, IconSearch, IconSendPlaneFill, IconFailedErrorStroke } from '@uiuxjoseph/ui';
+
+// Decorative (the default): hidden from screen readers —
+// the text beside it carries the meaning.
+<Icon icon={IconSearch} size={16} />
+
+// Standing alone (an icon-only button, a status glyph): give it a label.
+<Icon icon={IconSendPlaneFill} label="Send message" />
+
+// Color: icons inherit the surrounding text color, so tint the text and
+// the icon follows — one source of truth for both.
+<span style={{ color: color.status.error.text }}>
+  <Icon icon={IconFailedErrorStroke} size={16} /> Failed to send
+</span>
+
+// Sizes: 24 is the drawn grid; 16 matches button icon slots and body text.`}
+        />
+      </Section>
 
       <div style={{ marginBottom: spacing.l }}>
         <input
