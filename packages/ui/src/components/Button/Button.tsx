@@ -1,4 +1,7 @@
 import { color, component, typography, type ButtonSize } from '@uiuxjoseph/theme';
+import { len, type CssLength } from '../../internal/length.js';
+
+export type { CssLength };
 import {
   forwardRef,
   useState,
@@ -9,11 +12,6 @@ import {
 
 export type { ButtonSize };
 
-/**
- * A CSS length. Numbers are treated as px, so `radius={8}` and `radius="8px"`
- * are the same; any other unit passes through verbatim (`"50%"`, `"2rem"`).
- */
-export type CssLength = number | string;
 
 /**
  * The two button kinds drawn in Figma.
@@ -109,15 +107,6 @@ export type ButtonProps = {
 
 const { button } = component;
 
-/**
- * Formats a length prop for CSS. A bare number means px — the unit every
- * button metric is expressed in — while a string is passed through so `"50%"`
- * or `"2rem"` still work.
- */
-function len(value: CssLength | undefined): string | undefined {
-  if (value == null) return undefined;
-  return typeof value === 'number' ? `${value}px` : value;
-}
 
 /**
  * Builds the CSS variables for whichever style props were passed.

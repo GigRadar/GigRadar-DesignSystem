@@ -35,6 +35,18 @@ export type {
   CssLength,
 } from './components/Avatar/Avatar.js';
 
+export { CreditBadge } from './components/Badge/CreditBadge.js';
+export type { CreditBadgeProps, CreditBadgeStyleProps, BadgeSize } from './components/Badge/CreditBadge.js';
+
+export { EyebrowBadge } from './components/Badge/EyebrowBadge.js';
+export type { EyebrowBadgeProps, EyebrowBadgeStyleProps } from './components/Badge/EyebrowBadge.js';
+
+export { CounterBadge } from './components/Badge/CounterBadge.js';
+export type { CounterBadgeProps, CounterBadgeStyleProps } from './components/Badge/CounterBadge.js';
+
+export { RankBadge } from './components/Badge/RankBadge.js';
+export type { RankBadgeProps, RankBadgeStyleProps, RankState } from './components/Badge/RankBadge.js';
+
 export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
 export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/AvatarGroup.js';
 

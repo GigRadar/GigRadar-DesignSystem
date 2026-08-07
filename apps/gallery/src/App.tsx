@@ -2,6 +2,7 @@ import { color, radius, spacing, textStyle } from '@uiuxjoseph/theme';
 import { useState } from 'react';
 import { Section, Shell } from './layout';
 import { AvatarPage } from './pages/AvatarPage';
+import { BadgePage } from './pages/BadgePage';
 import { ButtonPage } from './pages/ButtonPage';
 import { IconsPage } from './pages/IconsPage';
 import { TokensPage } from './pages/TokensPage';
@@ -10,6 +11,7 @@ const PAGES = [
   { id: 'tokens', label: 'Tokens', render: () => <TokensPage /> },
   { id: 'icons', label: 'Icons', render: () => <IconsPage /> },
   { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
+  { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
   { id: 'button', label: 'Button', render: () => <ButtonPage /> },
 ] as const;
 

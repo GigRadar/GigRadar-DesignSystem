@@ -138,6 +138,118 @@ export const avatar = {
 export type AvatarSize = keyof typeof avatar.size;
 
 /**
+ * Badge metrics.
+ *
+ * Four badges are drawn in Figma, and all of them are pills built from the
+ * same three decisions — a horizontal pad, a vertical pad, and a type size —
+ * so they share one token block rather than four near-identical ones.
+ *
+ * `medium` is the size Figma draws in each case:
+ *   credit  (1282:28608) 4/2 padding, 12px text, 16px credit mark
+ *   eyebrow (163:10)     9/6 padding, 12px text, 18px sparkles, 9px gap
+ *   counter (313:6469)   24px circle, 12px text
+ *   rank    (333:15163)  6/2 padding, 12px text
+ *
+ * `small` and `large` extend each scale proportionally; Figma draws only the
+ * medium step, so those two are inference rather than extraction.
+ */
+export const badge = {
+  /** Horizontal padding of the pill badges (credit, rank). */
+  paddingX: {
+    small: spacing.xxs,
+    medium: spacing.xxs,
+    large: spacing.xs,
+  },
+  paddingY: {
+    small: 1,
+    medium: 2,
+    large: 3,
+  },
+  fontSize: {
+    small: 10,
+    medium: fontSize.s,
+    large: fontSize.m,
+  },
+  /** Space between a badge's icon and its label. */
+  gap: {
+    small: 1,
+    medium: 2,
+    large: 3,
+  },
+  radius: radius.round,
+
+  /** The eyebrow badge is roomier than the others — it is a standalone pill. */
+  eyebrow: {
+    paddingX: {
+      small: 6,
+      medium: 9,
+      large: 12,
+    },
+    paddingY: {
+      small: 4,
+      medium: 6,
+      large: 8,
+    },
+    fontSize: {
+      small: 10,
+      medium: fontSize.s,
+      large: fontSize.m,
+    },
+    /** Sparkle glyph edge length. */
+    iconSize: {
+      small: 14,
+      medium: 18,
+      large: 22,
+    },
+    gap: {
+      small: 6,
+      medium: 9,
+      large: 12,
+    },
+  },
+
+  /** The counter is a circle, so one diameter replaces padding. */
+  counter: {
+    size: {
+      small: 18,
+      medium: 24,
+      large: 30,
+    },
+    fontSize: {
+      small: 10,
+      medium: fontSize.s,
+      large: fontSize.m,
+    },
+  },
+
+  /** The credit mark — the dark circular "G" inside the credit badge. */
+  credit: {
+    markSize: {
+      small: 12,
+      medium: 16,
+      large: 20,
+    },
+  },
+
+  /** The rank badge sits a step wider than the credit badge — Figma draws 6px. */
+  rank: {
+    paddingX: {
+      small: spacing.xxs,
+      medium: spacing.xs,
+      large: spacing.s,
+    },
+    /** The up/down triangle. */
+    triangleSize: {
+      small: 6,
+      medium: 8,
+      large: 10,
+    },
+  },
+} as const;
+
+export type BadgeSize = keyof typeof badge.fontSize;
+
+/**
  * Documentation chrome.
  *
  * The gallery's own surfaces — preview panels, prop tables, code blocks. These
@@ -168,6 +280,7 @@ export const docs = {
 
 export const component = {
   avatar,
+  badge,
   button,
   docs,
 } as const;
