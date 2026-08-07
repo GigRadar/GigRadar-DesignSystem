@@ -4,7 +4,10 @@ import { Section, Shell } from './layout';
 import { AvatarPage } from './pages/AvatarPage';
 import { BadgePage } from './pages/BadgePage';
 import { ButtonPage } from './pages/ButtonPage';
+import { CheckboxPage } from './pages/CheckboxPage';
 import { IconsPage } from './pages/IconsPage';
+import { SpinnerPage } from './pages/SpinnerPage';
+import { SwitchPage } from './pages/SwitchPage';
 import { TokensPage } from './pages/TokensPage';
 
 const PAGES = [
@@ -13,6 +16,9 @@ const PAGES = [
   { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
   { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
   { id: 'button', label: 'Button', render: () => <ButtonPage /> },
+  { id: 'checkbox', label: 'Checkbox', render: () => <CheckboxPage /> },
+  { id: 'spinner', label: 'Spinner', render: () => <SpinnerPage /> },
+  { id: 'switch', label: 'Switch', render: () => <SwitchPage /> },
 ] as const;
 
 type PageId = (typeof PAGES)[number]['id'];

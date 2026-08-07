@@ -50,6 +50,9 @@ export type {
   AvatarSize,
   BadgeSize,
   ButtonSize,
+  CheckboxSize,
+  SpinnerSize,
+  SwitchSize,
 } from './tokens/components.js';
 
 export { buildCssVars, renderCssVars } from './css-vars.js';

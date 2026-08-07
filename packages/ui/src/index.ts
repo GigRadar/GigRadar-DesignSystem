@@ -47,6 +47,23 @@ export type { CounterBadgeProps, CounterBadgeStyleProps } from './components/Bad
 export { RankBadge } from './components/Badge/RankBadge.js';
 export type { RankBadgeProps, RankBadgeStyleProps, RankState } from './components/Badge/RankBadge.js';
 
+export { Checkbox } from './components/Checkbox/Checkbox.js';
+export type { CheckboxProps, CheckboxStyleProps, CheckboxSize } from './components/Checkbox/Checkbox.js';
+
+export { Spinner } from './components/Spinner/Spinner.js';
+export type { SpinnerProps, SpinnerStyleProps, SpinnerSize } from './components/Spinner/Spinner.js';
+
+export { Switch } from './components/Switch/Switch.js';
+export type {
+  SwitchProps,
+  SwitchItem,
+  SwitchStyleProps,
+  SwitchSize,
+} from './components/Switch/Switch.js';
+
+export { SwitchButton } from './components/Switch/SwitchButton.js';
+export type { SwitchButtonProps, SwitchButtonStyleProps } from './components/Switch/SwitchButton.js';
+
 export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
 export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/AvatarGroup.js';
 

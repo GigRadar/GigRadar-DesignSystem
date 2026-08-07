@@ -5,10 +5,11 @@ export type IconProps = {
   /** Which icon to draw — import from the icon set, e.g. `IconLockFill`. */
   icon: IconDef;
   /**
-   * Rendered size in px. Icons are drawn on a 24×24 grid; other sizes scale.
+   * Rendered size. A number is px; a string passes through to the SVG, so
+   * `'100%'` fills a sized parent. Icons are drawn on a 24×24 grid and scale.
    * @default 24
    */
-  size?: number;
+  size?: number | string;
   /**
    * Icon color. Defaults to inheriting the surrounding text color, which is
    * usually what you want — a label's icon should match its text.

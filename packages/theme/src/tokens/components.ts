@@ -250,6 +250,222 @@ export const badge = {
 export type BadgeSize = keyof typeof badge.fontSize;
 
 /**
+ * Checkbox metrics.
+ *
+ * Figma draws one size (node 538:9016): a 22px square with a full radius, a
+ * 1.5px ring when unchecked, and a checkmark filling most of the box.
+ * `small` and `large` extend that proportionally, as the badges do.
+ *
+ * Unlike the rest of this file the medium step IS extracted from Figma, so it
+ * should not be re-derived when component specs land.
+ */
+export const checkbox = {
+  /** Box edge length. Figma draws 22px. */
+  size: {
+    small: 18,
+    medium: 22,
+    large: 26,
+  },
+  /**
+   * The checkmark's slot — a little under the box's own edge.
+   *
+   * Read this as a slot, not the glyph: `IconCheck` is drawn inset on its
+   * 24×24 grid, occupying about 59% of the viewBox with roughly 5px of padding
+   * on every side. So the visible tick is ~59% of whatever this value is, and
+   * these numbers put it at just over half the box — a mark that reads clearly
+   * as a checkmark with a comfortable margin inside the disc.
+   *
+   * Sizing by the glyph's own bounds rather than the slot is the trap here: a
+   * slot of two thirds the edge, which looks right on paper, draws a tick
+   * around a third of the box and reads as a dot.
+   */
+  iconSize: {
+    small: 15,
+    medium: 19,
+    large: 22,
+  },
+  /** The ring drawn in the unchecked state. */
+  borderWidth: 1.5,
+  /**
+   * Figma draws a 19.25px radius on a 22px box — past half the edge, so the
+   * box is a circle. `round` says that intent without carrying the arithmetic.
+   */
+  radius: radius.round,
+  /** Space between the box and its label. */
+  gap: {
+    small: spacing.xxs,
+    medium: spacing.xs,
+    large: spacing.s,
+  },
+  /** Label type size, matched to the box. */
+  fontSize: {
+    small: fontSize.s,
+    medium: fontSize.s,
+    large: fontSize.m,
+  },
+} as const;
+
+export type CheckboxSize = keyof typeof checkbox.size;
+
+/**
+ * System loading spinner metrics.
+ *
+ * Figma node 1252:11907 draws a 16px ring with a 2px stroke, swept by an
+ * angular gradient that runs from a dark blue through the brand blue and fades
+ * to nothing — so the arc reads as a comet tail rather than a solid quarter.
+ * The tail is what makes the direction of travel legible; a uniform arc spins
+ * ambiguously.
+ *
+ * Only the 16px step is extracted; the rest of the scale extends it
+ * proportionally at a constant stroke-to-size ratio, so a large spinner does
+ * not read as a thicker ring.
+ *
+ * Distinct from the button's spinner (`Button`'s own `loading` prop), which is
+ * a monochrome `currentColor` ring so it fades with the label it sits beside.
+ * This one is a system-level indicator and always carries the brand gradient.
+ */
+export const spinner = {
+  /** Ring diameter. Figma draws 16px. */
+  size: {
+    small: 12,
+    medium: 16,
+    large: 24,
+    xlarge: 32,
+  },
+  /**
+   * Stroke width, kept at 1/8 of the diameter — the ratio Figma's 2px-on-16px
+   * ring sets. Held as explicit steps rather than computed so a step can be
+   * nudged without the others moving.
+   */
+  strokeWidth: {
+    small: 1.5,
+    medium: 2,
+    large: 3,
+    xlarge: 4,
+  },
+  /**
+   * One full turn, in milliseconds. Slower than the button's 700ms: that one
+   * accompanies a click the user just made, while this one often sits alone on
+   * a page and a fast spin reads as frantic.
+   */
+  duration: 900,
+  /** Space between the ring and its adjacent label. */
+  gap: {
+    small: spacing.xxs,
+    medium: spacing.xs,
+    large: spacing.xs,
+    xlarge: spacing.s,
+  },
+  /** Label type size, matched to the ring. */
+  fontSize: {
+    small: fontSize.s,
+    medium: fontSize.s,
+    large: fontSize.m,
+    xlarge: fontSize.m,
+  },
+  /**
+   * The gradient sweep. `head` is the dense end of the tail and `tail` the end
+   * that fades out — both drawn from the same brand blue the rest of the system
+   * uses, with the head darkened so the ring has a leading edge.
+   */
+  gradient: {
+    head: '#205194',
+    body: '#378AFA',
+  },
+} as const;
+
+export type SpinnerSize = keyof typeof spinner.size;
+
+/**
+ * Segmented switch metrics.
+ *
+ * From Figma: the track (node 977:11153) is a `D6DFE7` pill with 4px of
+ * padding, and each segment (node 3913:24775) is 26px tall with 8px of
+ * horizontal padding, 4px vertical, a 4px gap to its badge, and 14px text —
+ * regular when idle, medium when selected.
+ *
+ * Those measurements anchor the `medium` step. Figma draws only one size, so
+ * `small` and `large` extend the scale proportionally — the one part of this
+ * block not traceable to a Figma value.
+ *
+ * The discount badge inside a segment is drawn smaller than any step of the
+ * shared `badge` scale above (6px/2px padding, 12px text), so it carries its
+ * own numbers rather than bending that scale to fit.
+ */
+export const switchControl = {
+  /** Segment height. Figma draws 26px. */
+  height: {
+    small: 22,
+    medium: 26,
+    large: 32,
+  },
+  /** Horizontal padding inside a segment. */
+  paddingX: {
+    small: spacing.xs,
+    medium: 8,
+    large: spacing.s,
+  },
+  /** Vertical padding inside a segment. */
+  paddingY: {
+    small: 2,
+    medium: spacing.xxs,
+    large: spacing.xs,
+  },
+  /** Label type size, paired to each size. */
+  fontSize: {
+    small: fontSize.s,
+    medium: fontSize.m,
+    large: fontSize.l,
+  },
+  /** Gap between a segment's label and its badge. */
+  gap: {
+    small: 2,
+    medium: spacing.xxs,
+    large: spacing.xxs,
+  },
+  /** Icon edge length, matched to the label's type size. */
+  iconSize: {
+    small: 12,
+    medium: 14,
+    large: 16,
+  },
+  /** The track's padding — the inset that makes the selected segment read as raised. */
+  trackPadding: {
+    small: 3,
+    medium: spacing.xxs,
+    large: spacing.xxs,
+  },
+  /**
+   * Both the track and its segments are fully round. Figma draws 31.5px on a
+   * 34px-tall track, which is past half the height — `round` says that intent
+   * without carrying the arithmetic.
+   */
+  radius: radius.round,
+
+  /** The "Save 20%" pill inside a segment. Smaller than the shared badge scale. */
+  badge: {
+    paddingX: {
+      small: spacing.xxs,
+      medium: spacing.xs,
+      large: 8,
+    },
+    paddingY: {
+      small: 1,
+      medium: 2,
+      large: 3,
+    },
+    fontSize: {
+      small: 10,
+      medium: fontSize.s,
+      large: fontSize.m,
+    },
+    radius: radius.round,
+  },
+} as const;
+
+export type SwitchSize = keyof typeof switchControl.height;
+
+/**
  * Documentation chrome.
  *
  * The gallery's own surfaces — preview panels, prop tables, code blocks. These
@@ -282,6 +498,9 @@ export const component = {
   avatar,
   badge,
   button,
+  checkbox,
+  spinner,
+  switchControl,
   docs,
 } as const;
 

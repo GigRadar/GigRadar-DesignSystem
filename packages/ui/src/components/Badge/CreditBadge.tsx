@@ -97,10 +97,15 @@ export const CreditBadge = forwardRef<HTMLSpanElement, CreditBadgeProps>(functio
 });
 
 /**
- * The credit mark: a dark disc with a "G" and an underline beneath it.
+ * The GigRadar credit mark, exported from Figma: a dark disc holding a "G"
+ * under the radar arc.
  *
- * Drawn as an SVG rather than text so the glyph does not depend on SF Pro
- * being installed — the same reason the icon set ships outlined paths.
+ * The "G" is an outlined path rather than a `<text>` node, so the mark does not
+ * depend on SF Pro being installed — the same reason the icon set ships
+ * outlined paths.
+ *
+ * The arc keeps its own amber; it is the GigRadar mark rather than a themeable
+ * surface, so only the disc and the "G" take `markBackground` / `markColor`.
  */
 function CreditMark({
   size,
@@ -120,20 +125,18 @@ function CreditMark({
       aria-hidden
       style={{ flexShrink: 0, display: 'block' }}
     >
-      <circle cx="8" cy="8" r="8" fill={background ?? color.navbar.textActive} />
-      <text
-        x="8"
-        y="8"
-        textAnchor="middle"
-        dominantBaseline="central"
+      <rect
+        width="16"
+        height="16"
+        rx="8"
+        transform="matrix(1 0 0 -1 0 16)"
+        fill={background ?? color.navbar.textActive}
+      />
+      <path d="M3.5 6.75C5 2.75 11 2.75 12.5 6.74999" stroke="#FFAC33" strokeLinecap="round" />
+      <path
+        d="M8.1123 12.3672C6.0957 12.3672 4.82617 10.9609 4.82617 8.69531V8.69043C4.82617 6.46875 6.0957 5.08691 8.09766 5.08691C9.74805 5.08691 10.7832 6.03906 11.0762 7.30859L11.0957 7.39648H9.97266L9.95801 7.34277C9.66016 6.52734 9.02051 6.05371 8.10254 6.05371C6.75488 6.05371 5.93945 7.03516 5.93945 8.68555V8.69043C5.93945 10.375 6.7793 11.4004 8.12207 11.4004C9.26465 11.4004 10.0557 10.6777 10.0703 9.6084V9.49121H8.21973V8.59766H11.1494V9.32031C11.1494 11.2295 10.0215 12.3672 8.1123 12.3672Z"
         fill={glyphColor ?? color.main.white}
-        fontFamily={typography.fontFamily.base}
-        fontSize="9"
-        fontWeight={typography.fontWeight.medium}
-      >
-        G
-      </text>
-      <rect x="3.5" y="11" width="9" height="1.5" rx="0.75" fill={glyphColor ?? color.main.white} />
+      />
     </svg>
   );
 }

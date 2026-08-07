@@ -1,6 +1,14 @@
 import { color, component, typography, type BadgeSize } from '@uiuxjoseph/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import { Icon } from '../../icons/Icon.js';
+import {
+  IconIndicatorUpFill,
+  IconIndicatorDownFill,
+  IconRetryCloudStroke,
+  IconWarningCircleFill,
+  type IconDef,
+} from '../../icons/defs.js';
 
 const { badge } = component;
 
@@ -69,6 +77,21 @@ const states: Record<RankState, { background: string; text: string }> = {
 };
 
 /**
+ * The glyph each state draws, from the shared icon set.
+ *
+ * The set ships both indicator directions as their own drawings, so each is
+ * used as-is rather than flipping one — no transform, and each stays whatever
+ * the designer draws it as. `none` has no glyph: it is the dash alone.
+ */
+const glyphs: Record<RankState, IconDef | null> = {
+  up: IconIndicatorUpFill,
+  down: IconIndicatorDownFill,
+  none: null,
+  syncing: IconRetryCloudStroke,
+  error: IconWarningCircleFill,
+};
+
+/**
  * The rank or position badge — a position with its direction of travel.
  *
  * Figma: node 333:15163.
@@ -94,6 +117,7 @@ export const RankBadge = forwardRef<HTMLSpanElement, RankBadgeProps>(function Ra
   const palette = states[state];
   const bare = state === 'syncing' || state === 'error';
   const triangle = len(triangleSize) ?? `${badge.rank.triangleSize[size]}px`;
+  const glyph = glyphs[state];
 
   const style: CSSProperties = {
     display: 'inline-flex',
@@ -117,68 +141,20 @@ export const RankBadge = forwardRef<HTMLSpanElement, RankBadgeProps>(function Ra
 
   return (
     <span {...rest} ref={ref} style={style} role={label ? 'img' : undefined} aria-label={label}>
-      {(state === 'up' || state === 'down') && (
-        <Triangle size={triangle} direction={state} />
+      {glyph && (
+        <span
+          aria-hidden
+          style={{
+            display: 'flex',
+            flexShrink: 0,
+            width: triangle,
+            height: triangle,
+          }}
+        >
+          <Icon icon={glyph} size="100%" />
+        </span>
       )}
-      {state === 'syncing' && <SyncGlyph size={triangle} />}
-      {state === 'error' && <ErrorGlyph size={triangle} />}
       {state === 'none' ? '-' : state === 'up' || state === 'down' ? rank : null}
     </span>
   );
 });
-
-function Triangle({ size, direction }: { size: string; direction: 'up' | 'down' }) {
-  return (
-    <svg
-      viewBox="0 0 10 10"
-      width={size}
-      height={size}
-      fill="currentColor"
-      aria-hidden
-      style={{
-        flexShrink: 0,
-        display: 'block',
-        transform: direction === 'down' ? 'scaleY(-1)' : undefined,
-      }}
-    >
-      <path d="M5 1.5 9.33 8.5H0.67L5 1.5Z" />
-    </svg>
-  );
-}
-
-/** A circular arrow, for the in-flight state. */
-function SyncGlyph({ size }: { size: string }) {
-  return (
-    <svg
-      viewBox="0 0 14 14"
-      width={size}
-      height={size}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      aria-hidden
-      style={{ flexShrink: 0, display: 'block' }}
-    >
-      <path d="M12 7a5 5 0 1 1-1.46-3.54" />
-      <path d="M12 1.5V4.5H9" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-/** An exclamation mark, for the failed state. */
-function ErrorGlyph({ size }: { size: string }) {
-  return (
-    <svg
-      viewBox="0 0 14 14"
-      width={size}
-      height={size}
-      fill="currentColor"
-      aria-hidden
-      style={{ flexShrink: 0, display: 'block' }}
-    >
-      <rect x="6" y="1.5" width="2" height="7" rx="1" />
-      <circle cx="7" cy="11.5" r="1.25" />
-    </svg>
-  );
-}
