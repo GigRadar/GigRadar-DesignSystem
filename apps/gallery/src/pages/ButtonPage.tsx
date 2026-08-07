@@ -33,11 +33,11 @@ function FeatureStates({
   icon: IconDef;
 }) {
   return (
-    <VStack gap="m">
+    <VStack gap="m" mb="m">
       {(['primary', 'secondary'] as const).map((variant) => (
         <VStack key={variant} gap="xxs">
           <div style={{ ...textStyle.sSemibold, color: color.main.description }}>
-            {variant === 'primary' ? 'Main' : '2nd'}
+            {variant === 'primary' ? 'Button (Main)' : 'Button (Secondary)'}
           </div>
           <HStack gap="s">
             <Button variant={variant} tone={tone}>
