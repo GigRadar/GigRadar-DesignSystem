@@ -57,6 +57,7 @@ export { Switch } from './components/Switch/Switch.js';
 export type {
   SwitchProps,
   SwitchItem,
+  SwitchItemRenderContext,
   SwitchStyleProps,
   SwitchSize,
 } from './components/Switch/Switch.js';

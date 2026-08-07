@@ -38,6 +38,16 @@ export type SwitchItem = {
   disabled?: boolean;
 };
 
+/** What `itemRender` is told about the segment it is drawing. */
+export type SwitchItemRenderContext = {
+  /** Whether this segment is the current selection. */
+  selected: boolean;
+  /** Whether the segment is blocked, by its own flag or the whole control's. */
+  disabled: boolean;
+  /** The segment's position in `items`. */
+  index: number;
+};
+
 /** Per-instance overrides for the track's own metrics. */
 export type SwitchStyleProps = {
   /** The inset around the segments that makes the selected one read as raised. */
@@ -76,6 +86,14 @@ export type SwitchProps = {
    * reader announces a set of tabs with no indication of what they choose.
    */
   label?: string;
+  /**
+   * Draws a segment's content in place of the default icon + label + badge
+   * row — the antd-style escape hatch for custom segment markup. The switch
+   * still owns the pill, hover, thumb, and keyboard behavior; only the content
+   * inside the segment changes. Returning `undefined` for a segment falls back
+   * to the default rendering of that one segment.
+   */
+  itemRender?: (item: SwitchItem, context: SwitchItemRenderContext) => ReactNode;
 } & SwitchStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'onChange' | 'defaultValue'>;
 
@@ -112,6 +130,7 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
     size = 'medium',
     disabled = false,
     label,
+    itemRender,
     padding,
     radius,
     background,
@@ -262,8 +281,12 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
       }}
     >
       {thumbStyle && <span aria-hidden style={thumbStyle} />}
-      {items.map((item) => {
+      {items.map((item, index) => {
         const selected = item.value === current;
+        const itemDisabled = disabled || Boolean(item.disabled);
+        // A custom-rendered segment owns its whole content, so the default
+        // icon and badge slots step aside rather than doubling up around it.
+        const custom = itemRender?.(item, { selected, disabled: itemDisabled, index });
         return (
           <SwitchButton
             key={item.value}
@@ -278,9 +301,9 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
             // sliding thumb behind a stationary one. Before the first
             // measurement there is no thumb, and the segment fills in.
             raised={selected && thumb === null}
-            badge={item.badge}
-            icon={item.icon}
-            disabled={disabled || item.disabled}
+            badge={custom === undefined ? item.badge : undefined}
+            icon={custom === undefined ? item.icon : undefined}
+            disabled={itemDisabled}
             // Only the selected segment is a tab stop; the arrow keys move
             // within the group. That is the roving-tabindex the tab pattern
             // expects, and it keeps the switch one stop in the page's tab order
@@ -288,7 +311,7 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
             tabIndex={selected ? 0 : -1}
             onClick={() => select(item.value)}
           >
-            {item.label ?? item.value}
+            {custom ?? item.label ?? item.value}
           </SwitchButton>
         );
       })}
