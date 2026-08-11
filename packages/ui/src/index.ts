@@ -23,6 +23,41 @@ export type {
 export { ComposerButton } from './components/Button/ComposerButton.js';
 export type { ComposerButtonProps } from './components/Button/ComposerButton.js';
 
+export { IconButton } from './components/Button/IconButton.js';
+export type {
+  IconButtonProps,
+  IconButtonStyleProps,
+  IconButtonVariant,
+  IconButtonSize,
+} from './components/Button/IconButton.js';
+
+export { Modal } from './components/Modal/Modal.js';
+export type { ModalProps, ModalStyleProps } from './components/Modal/Modal.js';
+
+export {
+  ModalCard,
+  ModalHeader,
+  ModalContent,
+  ModalFooter,
+} from './components/Modal/ModalBands.js';
+export type {
+  ModalCardProps,
+  ModalCardStyleProps,
+  ModalHeaderProps,
+  ModalHeaderStyleProps,
+  ModalContentProps,
+  ModalContentStyleProps,
+  ModalFooterProps,
+  ModalFooterStyleProps,
+} from './components/Modal/ModalBands.js';
+
+export { Skeleton } from './components/Skeleton/Skeleton.js';
+export type {
+  SkeletonProps,
+  SkeletonStyleProps,
+  SkeletonVariant,
+} from './components/Skeleton/Skeleton.js';
+
 export { Avatar, initialsFromName } from './components/Avatar/Avatar.js';
 export type {
   AvatarProps,
@@ -43,6 +78,13 @@ export type { EyebrowBadgeProps, EyebrowBadgeStyleProps } from './components/Bad
 
 export { CounterBadge } from './components/Badge/CounterBadge.js';
 export type { CounterBadgeProps, CounterBadgeStyleProps } from './components/Badge/CounterBadge.js';
+
+export { StatusBadge } from './components/Badge/StatusBadge.js';
+export type {
+  StatusBadgeProps,
+  StatusBadgeStyleProps,
+  StatusTone,
+} from './components/Badge/StatusBadge.js';
 
 export { RankBadge } from './components/Badge/RankBadge.js';
 export type { RankBadgeProps, RankBadgeStyleProps, RankState } from './components/Badge/RankBadge.js';
@@ -97,6 +139,108 @@ export type {
   ConfirmTooltipStyleProps,
   ConfirmCardRenderProps,
 } from './components/Tooltip/ConfirmTooltip.js';
+
+export { SettingsHeader } from './components/SettingsSection/SettingsHeader.js';
+export type {
+  SettingsHeaderProps,
+  SettingsHeaderStyleProps,
+  SettingsHeaderTitleRenderProps,
+} from './components/SettingsSection/SettingsHeader.js';
+
+export { SettingsSection } from './components/SettingsSection/SettingsSection.js';
+export type {
+  SettingsSectionProps,
+  SettingsSectionStyleProps,
+  SettingsSectionTitleRenderProps,
+} from './components/SettingsSection/SettingsSection.js';
+
+export { SettingsCard } from './components/SettingsPanel/SettingsCard.js';
+export type {
+  SettingsCardProps,
+  SettingsCardStyleProps,
+  SettingsCardLevel,
+} from './components/SettingsPanel/SettingsCard.js';
+
+export { SettingsPanel } from './components/SettingsPanel/SettingsPanel.js';
+export type {
+  SettingsPanelProps,
+  SettingsPanelStyleProps,
+  SettingsItem,
+  SettingsItemRenderProps,
+  SettingsHeaderRenderProps,
+} from './components/SettingsPanel/SettingsPanel.js';
+
+export { AccountCard } from './components/UpworkAccounts/AccountCard.js';
+export type {
+  AccountCardProps,
+  AccountCardStyleProps,
+  AccountSlotVariant,
+} from './components/UpworkAccounts/AccountCard.js';
+
+export { AuthorizeBanner } from './components/UpworkAccounts/AuthorizeBanner.js';
+export type {
+  AuthorizeBannerProps,
+  AuthorizeBannerStyleProps,
+  AuthorizeBannerActionRenderProps,
+} from './components/UpworkAccounts/AuthorizeBanner.js';
+
+export { AccountSafetyNotice } from './components/UpworkAccounts/AccountSafetyNotice.js';
+export type {
+  AccountSafetyNoticeProps,
+  AccountSafetyNoticeStyleProps,
+} from './components/UpworkAccounts/AccountSafetyNotice.js';
+
+export { AuthorizationSteps } from './components/UpworkAccounts/AuthorizationSteps.js';
+export type {
+  AuthorizationStepsProps,
+  AuthorizationStepsStyleProps,
+  AuthorizationStepRenderProps,
+} from './components/UpworkAccounts/AuthorizationSteps.js';
+
+export { AuthorizationPopup } from './components/UpworkAccounts/AuthorizationPopup.js';
+export type {
+  AuthorizationPopupProps,
+  AuthorizationPopupStyleProps,
+  AuthorizationState,
+} from './components/UpworkAccounts/AuthorizationPopup.js';
+
+export { UpworkConnectedAccounts } from './components/UpworkAccounts/UpworkConnectedAccounts.js';
+export type {
+  UpworkConnectedAccountsProps,
+  UpworkConnectedAccountsStyleProps,
+  UpworkAccount,
+  AccountListRenderProps,
+} from './components/UpworkAccounts/UpworkConnectedAccounts.js';
+
+export { CustomPromptField } from './components/Prompt/CustomPromptField.js';
+export type {
+  CustomPromptFieldProps,
+  CustomPromptFieldStyleProps,
+  CustomPromptFieldHandle,
+  CopyButtonRenderProps,
+} from './components/Prompt/CustomPromptField.js';
+
+export { PromptVariable } from './components/Prompt/PromptVariable.js';
+export type { PromptVariableProps, PromptVariableStyleProps } from './components/Prompt/PromptVariable.js';
+
+export { VersionNumber, formatVersion } from './components/Prompt/VersionNumber.js';
+export type {
+  VersionNumberProps,
+  VersionNumberStyleProps,
+  VersionItemRenderProps,
+  PromptVersion,
+} from './components/Prompt/VersionNumber.js';
+
+export { AiPromptConfig } from './components/Prompt/AiPromptConfig.js';
+export type {
+  AiPromptConfigProps,
+  AiPromptConfigStyleProps,
+  PromptCardMode,
+  PromptVariableDef,
+  PromptFieldRenderProps,
+  PromptFooterRenderProps,
+  PromptVariablesRenderProps,
+} from './components/Prompt/AiPromptConfig.js';
 
 /**
  * The render-prop convention shared by the higher-level components.
