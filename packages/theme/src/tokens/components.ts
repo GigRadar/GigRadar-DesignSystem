@@ -1005,14 +1005,16 @@ export const modal = {
   content: {
     paddingX: spacing.l,
     paddingTop: spacing.m,
-    paddingBottom: spacing.s,
+    paddingBottom: spacing.m,
     /** Space between blocks inside the body. */
     gap: spacing.m,
+    /** Body type size — 14px, the M step. */
+    fontSize: fontSize.m,
   },
   footer: {
     padding: spacing.m,
-    /** Space between the footer's buttons. */
-    gap: spacing.xs,
+    /** Space between the footer's buttons. Figma draws 8px. */
+    gap: 8,
   },
   /**
    * The dialog shell's own shadow, which is tighter than the generic modal

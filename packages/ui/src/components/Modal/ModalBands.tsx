@@ -130,6 +130,9 @@ export type ModalContentStyleProps = {
   paddingTop?: CssLength;
   paddingBottom?: CssLength;
   gap?: CssLength;
+  /** Body type size. Figma draws the M step, 14px. */
+  fontSize?: CssLength;
+  textColor?: string;
 };
 
 export type ModalContentProps = {
@@ -143,7 +146,7 @@ export type ModalContentProps = {
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style'>;
 
 export const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function ModalContent(
-  { children, maxHeight, paddingX, paddingTop, paddingBottom, gap, ...rest },
+  { children, maxHeight, paddingX, paddingTop, paddingBottom, gap, fontSize, textColor, ...rest },
   ref,
 ) {
   const style: CSSProperties = {
@@ -161,6 +164,10 @@ export const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(functi
     overflowX: 'clip',
     overflowY: 'auto',
     maxHeight: len(maxHeight),
+    fontFamily: typography.fontFamily.base,
+    fontSize: len(fontSize) ?? `${modal.content.fontSize}px`,
+    letterSpacing: typography.letterSpacing.m,
+    color: textColor ?? color.navbar.textActive,
   };
 
   return (

@@ -10,11 +10,11 @@ import {
 } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
 import { IconButton } from '../Button/IconButton.js';
-import { ModalFooter } from '../Modal/ModalBands.js';
+import { ModalCard, ModalContent, ModalFooter } from '../Modal/ModalBands.js';
 import { Spinner } from '../Spinner/Spinner.js';
 import { AuthorizationSteps } from './AuthorizationSteps.js';
 
-const { upworkAccounts } = component;
+const { upworkAccounts, modal } = component;
 
 /**
  * Where the authorization attempt has got to.
@@ -237,22 +237,17 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
     const showGoToInbox = state === 'success' && onGoToInbox != null;
     const showRetry = state === 'failed' && onRetry != null;
 
-    const style: CSSProperties = {
-      boxSizing: 'border-box',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      width: len(width) ?? `${popup.width}px`,
-      maxWidth: '100%',
-      borderRadius: len(radius) ?? `${popup.radius}px`,
-      backgroundColor: background ?? color.main.white,
-      boxShadow: shadow ?? popup.shadow,
-      overflow: 'hidden',
-      fontFamily: typography.fontFamily.base,
-    };
-
     return (
-      <div {...rest} ref={ref} style={style} role="dialog" aria-modal="true">
+      <ModalCard
+        {...rest}
+        ref={ref}
+        role="dialog"
+        aria-modal="true"
+        width={width ?? popup.width}
+        radius={radius ?? popup.radius}
+        background={background}
+        shadow={shadow ?? popup.shadow}
+      >
         <div
           style={{
             boxSizing: 'border-box',
@@ -260,10 +255,14 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
             alignItems: 'center',
             gap: len(headGap) ?? `${popup.headGap}px`,
             width: '100%',
-            padding: `${len(headPaddingY) ?? `${popup.headPaddingY}px`} ${
-              len(headPaddingX) ?? `${popup.headPaddingX}px`
+            padding: `${len(headPaddingY) ?? `${modal.header.padding}px`} ${
+              len(headPaddingX) ?? `${modal.header.padding}px`
             }`,
-            borderBottom: `1px solid ${color.main.backgroundAlt}`,
+            // The modal shell's own separator — a shadow rather than a border,
+            // so it only reads once there is something scrolling under it.
+            position: 'relative',
+            zIndex: 1,
+            boxShadow: modal.header.shadow,
           }}
         >
           <span
@@ -302,8 +301,8 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
           >
             <span
               style={{
-                ...typography.textStyle.lSemibold,
-                fontSize: popup.titleFontSize,
+                ...typography.textStyle.lMedium,
+                fontSize: modal.header.fontSize,
                 color: color.main.black,
               }}
             >
@@ -332,15 +331,11 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
           )}
         </div>
 
-        <div
-          style={{
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: len(bodyGap) ?? `${popup.bodyGap}px`,
-            width: '100%',
-            padding: len(bodyPadding) ?? `${popup.bodyPadding}px`,
-          }}
+        <ModalContent
+          gap={bodyGap}
+          paddingX={bodyPadding}
+          paddingTop={bodyPadding}
+          paddingBottom={bodyPadding}
         >
           <div
             style={{
@@ -437,7 +432,7 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
               markerBackground={spec.accent}
             />
           </div>
-        </div>
+        </ModalContent>
 
         {/* Only the two terminal states get a footer. An attempt in flight has
             nothing to offer but waiting, and a button there would suggest
@@ -457,7 +452,7 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
             {showGoToInbox && <Button onClick={onGoToInbox}>{goToInboxLabel}</Button>}
           </ModalFooter>
         )}
-      </div>
+      </ModalCard>
     );
   },
 );
