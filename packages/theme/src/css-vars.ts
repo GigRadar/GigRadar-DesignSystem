@@ -1,5 +1,5 @@
 import { color } from './tokens/color.js';
-import { component } from './tokens/components.js';
+import { component, controlHeight } from './tokens/components.js';
 import { radius, shadow, spacing } from './tokens/space.js';
 import { fontFamily, fontSize, fontWeight, lineHeight } from './tokens/typography.js';
 
@@ -86,6 +86,11 @@ export function buildCssVars(): Record<string, string> {
   for (const [key, value] of Object.entries(fontSize)) set(`font-size-${key}`, value);
   for (const [key, value] of Object.entries(fontWeight)) set(`font-weight-${key}`, String(value));
   for (const [key, value] of Object.entries(lineHeight)) set(`line-height-${key}`, String(value));
+
+  // The shared control height, as `--gr-control-height-<size>`. Button reads
+  // these variables directly, so overriding one in a stylesheet resizes every
+  // control on that surface rather than just the buttons.
+  for (const [key, value] of Object.entries(controlHeight)) set(`control-height-${key}`, value);
 
   // Component tokens — `--gr-<component>-<property>[-<variant>]`.
   // Emitted so an app can override one component's metrics in a stylesheet

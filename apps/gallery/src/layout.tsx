@@ -1,5 +1,6 @@
 import { color, component, spacing, textStyle } from '@gigradar/theme';
 import type { ReactNode } from 'react';
+import { LifecycleBadge, type ComponentLifecycle } from '@gigradar/ui';
 
 export function Shell({ nav, children }: { nav: ReactNode; children: ReactNode }) {
   return (
@@ -28,12 +29,39 @@ export function Shell({ nav, children }: { nav: ReactNode; children: ReactNode }
   );
 }
 
-export function Section({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+export function Section({
+  title,
+  description,
+  children,
+  stage,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+  /**
+   * Marks the section as not yet part of the system.
+   *
+   * Omitted on everything approved — a badge on every heading would stop
+   * meaning anything. Only the sections still awaiting a review carry one.
+   */
+  stage?: ComponentLifecycle;
+}) {
   return (
     <section style={{ marginBottom: spacing.xl }}>
-      <h2 style={{ ...textStyle.h3, color: color.navbar.textActive, margin: 0, marginBottom: description ? spacing.xxs : spacing.m }}>
-        {title}
-      </h2>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: spacing.s,
+          marginBottom: description ? spacing.xxs : spacing.m,
+          flexWrap: 'wrap',
+        }}
+      >
+        <h2 style={{ ...textStyle.h3, color: color.navbar.textActive, margin: 0 }}>
+          {title}
+        </h2>
+        {stage && <LifecycleBadge stage={stage} />}
+      </div>
       {description && (
         <p style={{ ...textStyle.mRegular, color: color.main.description, margin: 0, marginBottom: spacing.m, maxWidth: 680 }}>
           {description}

@@ -1,4 +1,4 @@
-import { color, component, typography, type ButtonSize } from '@gigradar/theme';
+import { color, component, controlHeight, typography, type ButtonSize } from '@gigradar/theme';
 import { len, type CssLength } from '../../internal/length.js';
 
 export type { CssLength };
@@ -21,7 +21,7 @@ export type { ButtonSize };
  * page — Cancel, Reschedule, Meeting, Schedule, Laziza AI — is one of these
  * two with a different label, so they are variants rather than components.
  */
-export type ButtonVariant = 'primary' | 'secondary';
+export type ButtonVariant = 'primary' | 'secondary' | 'subtle';
 
 /**
  * The button's hue.
@@ -220,6 +220,31 @@ function paletteFor(variant: ButtonVariant, tone: ButtonTone) {
     };
   }
 
+  /**
+   * The quiet chrome button — an outlined control that fills with the nav
+   * hover gray instead of tinting its border.
+   *
+   * Figma draws it as the version pill (node 3770:1031 resting, 3804:21454
+   * hovered), but the behaviour is general: a control that sits in a toolbar
+   * or a form row, reads as neutral at rest, and acknowledges the pointer with
+   * a fill rather than by picking up a brand hue.
+   *
+   * Distinct from `secondary`, which keeps a white fill and tints its border
+   * and label on hover. That is right for a row of feature buttons, where the
+   * hue says which feature; it is wrong here, where the control is chrome and
+   * has no hue to announce.
+   */
+  if (variant === 'subtle') {
+    return {
+      background: color.main.white,
+      hoverBackground: color.navbar.hover,
+      border: color.navbar.hover,
+      hoverBorder: color.navbar.hover,
+      text: color.navbar.text,
+      hoverText: color.navbar.text,
+    };
+  }
+
   // Cancel is drawn as an outline in its own color rather than a neutral one,
   // and tints its fill on hover instead of filling solid — a destructive action
   // should read as destructive before it is hovered. `remove` outlines the same
@@ -375,6 +400,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     boxSizing: 'border-box',
     display: fullWidth ? 'flex' : 'inline-flex',
     width: fullWidth ? '100%' : undefined,
+    /**
+     * The shared control height, so a button lines up with every other control
+     * on its row.
+     *
+     * `minHeight` rather than `height`: padding still wins when the content is
+     * taller than the step — a button holding two lines grows rather than
+     * clipping — but the common case is exactly the scale, which is what makes
+     * a row of mixed controls align without anyone measuring.
+     */
+    minHeight: `var(--gr-control-height-${size}, ${controlHeight[size]}px)`,
     alignItems: 'center',
     justifyContent: 'center',
     gap: `var(--gr-button-gap-${size}, ${button.gap[size]}px)`,
