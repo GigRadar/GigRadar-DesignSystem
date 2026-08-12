@@ -4,6 +4,7 @@ import {
   ComposerButton,
   HStack,
   Icon,
+  IconDropdownArrowDown,
   IconLazizaSparkleStroke,
   IconMeetingsStroke,
   IconPlus,
@@ -148,6 +149,37 @@ export function ButtonPage() {
 <Button variant="secondary" disabled={!hasChanges}>Reset</Button>
 <Button variant="secondary" startIcon={<Icon icon={IconPlus} size={16} />}>
   Add filter
+</Button>`}
+        />
+      </Section>
+
+      <Section
+        title="Subtle"
+        description="Quiet chrome — an outlined control that fills with the nav grey on hover instead of tinting its border. Figma draws it as the version pill (node 3770:1031); the behaviour is general to any toolbar or form-row control that reads as neutral at rest."
+      >
+        <Preview>
+          <HStack gap={12}>
+            <Button variant="subtle">v2</Button>
+            <Button variant="subtle" endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}>
+              v2
+            </Button>
+            <Button variant="subtle" disabled>
+              v2
+            </Button>
+          </HStack>
+        </Preview>
+        <div style={{ ...textStyle.mRegular, color: color.main.description, maxWidth: 680 }}>
+          <p style={{ margin: 0 }}>
+            Distinct from <code>secondary</code>, which keeps a white fill and tints its border and
+            label on hover. That is right for a row of feature buttons, where the hue says which
+            feature. It is wrong here: this control is chrome and has no hue to announce, so the
+            fill moves instead.
+          </p>
+        </div>
+        <CodeBlock
+          code={`// The version pill, the settings toggle — anything neutral in a row.
+<Button variant="subtle" endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}>
+  v2
 </Button>`}
         />
       </Section>

@@ -34,7 +34,7 @@ const ITEMS: SettingsItem[] = [
       { id: 'prompt', label: 'Prompt', icon: IconPromptTerminalFill },
       { id: 'presets', label: 'Presets', icon: IconPresetDocumentFill },
       { id: 'auto-reply', label: 'Auto Reply', icon: IconAutoReplyBubbleFill },
-      { id: 'agent-tools', label: 'Agent Tools', icon: IconAgentToolsFill },
+      { id: 'agent-tools', label: 'AI Tools', icon: IconAgentToolsFill },
     ],
   },
   { id: 'api-key', label: 'Upwork API Key', icon: IconKeyFill },
@@ -74,7 +74,7 @@ export function SettingsPanelPage() {
       { id: 'prompt', label: 'Prompt', icon: IconPromptTerminalFill },
       { id: 'presets', label: 'Presets', icon: IconPresetDocumentFill },
       { id: 'auto-reply', label: 'Auto Reply', icon: IconAutoReplyBubbleFill },
-      { id: 'agent-tools', label: 'Agent Tools', icon: IconAgentToolsFill },
+      { id: 'agent-tools', label: 'AI Tools', icon: IconAgentToolsFill },
     ],
   },
   { id: 'api-key', label: 'Upwork API Key', icon: IconKeyFill },
@@ -110,6 +110,18 @@ export function SettingsPanelPage() {
           </div>
         </Preview>
         <Caption>Selected, hover, default — top to bottom.</Caption>
+
+        <Preview>
+          <div style={{ width: 300, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <SettingsCard label="CRM AI Configuration" icon={IconLazizaSparkleFill} selected />
+            <SettingsCard label="Prompt" icon={IconPromptTerminalFill} level="subSetting" />
+            <SettingsCard label="AI Tools" icon={IconAgentToolsFill} level="subSetting" />
+          </div>
+        </Preview>
+        <Caption>
+          A sub-setting indents to 32px AND fills with the page background — the indent alone is
+          too weak to read at a glance, so the fill is what groups the nested list.
+        </Caption>
         <CodeBlock
           code={`<SettingsCard label="Upwork API Key" icon={IconKeyFill} selected onClick={open} />`}
         />
@@ -135,7 +147,7 @@ export function SettingsPanelPage() {
             { name: 'Prompt', type: 'IconPromptTerminalFill', description: 'Sub-setting.' },
             { name: 'Presets', type: 'IconPresetDocumentFill', description: 'Sub-setting.' },
             { name: 'Auto Reply', type: 'IconAutoReplyBubbleFill', description: 'Sub-setting.' },
-            { name: 'Agent Tools', type: 'IconAgentToolsFill', description: 'Sub-setting.' },
+            { name: 'AI Tools', type: 'IconAgentToolsFill', description: 'Sub-setting.' },
             { name: 'Upwork API Key', type: 'IconKeyFill', description: 'Top-level entry.' },
             { name: 'Upwork Connected Account', type: 'IconConnectedPeopleFill', description: 'Top-level entry.' },
             { name: 'Notifications', type: 'IconNotificationBellFill', description: 'Top-level entry.' },

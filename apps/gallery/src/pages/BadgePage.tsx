@@ -1,10 +1,13 @@
 import { color, textStyle } from '@gigradar/theme';
 import {
+  AiToolBadge,
   CounterBadge,
   CreditBadge,
   EyebrowBadge,
   HStack,
+  ModeBadge,
   RankBadge,
+  StatusBadge,
   VStack,
   type BadgeSize,
 } from '@gigradar/ui';
@@ -34,7 +37,7 @@ export function BadgePage() {
     <>
       <PageHeader
         title="Badge"
-        description="Four badges, each a different job rather than a variant of one component — a credit amount, an AI eyebrow, an unread count, and a rank with its direction of travel. Every one comes in three sizes."
+        description="A family of badges, each a different job rather than a variant of one component — a credit amount, an AI eyebrow, an unread count, a rank with its direction of travel, a connection status, the Laziza reply mode, and the AI tool category marker. The sized ones come in three steps."
       />
 
       <Section
@@ -143,6 +146,125 @@ export function BadgePage() {
 <RankBadge state="error" label="Unavailable" /> // fetch failed
 
 // The triangle alone does not say "up" to a screen reader — pass a label.`}
+        />
+      </Section>
+
+
+      <Section
+        title="Status badge"
+        description="An account's state, tucked under the name it belongs to. Figma node 2113:1929 — the one badge in the family that is not a round pill: a 4px box, because it reads as a property of the thing above it rather than standing alone in a row."
+      >
+        <Preview>
+          <HStack gap={12}>
+            <StatusBadge tone="active" />
+            <StatusBadge tone="suspended" />
+            <StatusBadge tone="error" />
+            <StatusBadge tone="pending" />
+            <StatusBadge tone="inactive" />
+          </HStack>
+        </Preview>
+        <CodeBlock
+          code={`<StatusBadge tone="active" />
+
+// The label is overridable — the error state in particular
+// carries a specific message on some screens.
+<StatusBadge tone="error">Token expired</StatusBadge>`}
+        />
+      </Section>
+
+      <Section
+        title="StatusBadge props"
+      >
+        <PropsTable
+          rows={[
+            { name: 'tone', type: `'active' | 'suspended' | 'error' | 'pending' | 'inactive'`, default: `'active'`, description: 'Which state to draw. Each carries its own palette and default label.' },
+            { name: 'children', type: 'ReactNode', description: 'Overrides the label. Most callers pass only `tone`.' },
+            { name: 'size', type: `'small' | 'medium' | 'large'`, default: `'medium'`, description: 'Padding and type size.' },
+            { name: 'paddingX / paddingY / radius / fontSize', type: 'number | string', description: "Overrides for the badge's own metrics." },
+            { name: 'background / textColor', type: 'string', description: 'Fill and label, overriding the tone’s own.' },
+          ]}
+        />
+      </Section>
+
+      <Section
+        title="Mode badge — Laziza"
+        description="Names how Laziza handles a class of message. Figma node 4498:4800. The two Laziza oranges separate “sends on its own” from “waits for you”; OFF drops to the neutral nav pair so a disabled thread reads as inactive rather than as a third mode."
+      >
+        <Preview>
+          <HStack gap={12}>
+            <ModeBadge mode="fullAuto" />
+            <ModeBadge mode="coPilot" />
+            <ModeBadge mode="other" />
+            <ModeBadge mode="off" />
+          </HStack>
+        </Preview>
+        <CodeBlock code={`<ModeBadge mode="fullAuto" />`} />
+      </Section>
+
+      <Section
+        title="Two labels"
+        description="One badge reporting two things — a thread whose first message and later messages run in different modes. The separator dot takes the label color, so it stays legible on the filled and the pale variants alike."
+      >
+        <Preview>
+          <HStack gap={12}>
+            <ModeBadge mode="fullAuto" secondaryLabel="Co-pilot" />
+            <ModeBadge mode="other" secondaryLabel="OFF" />
+          </HStack>
+        </Preview>
+        <CodeBlock code={`<ModeBadge mode="fullAuto" secondaryLabel="Co-pilot" />`} />
+      </Section>
+
+      <Section title="ModeBadge props">
+        <PropsTable
+          rows={[
+            { name: 'mode', type: `'fullAuto' | 'coPilot' | 'off' | 'other'`, default: `'fullAuto'`, description: 'Which mode the badge names. Each carries its own palette and default label.' },
+            { name: 'children', type: 'ReactNode', description: 'Overrides the label. Each mode has a default.' },
+            { name: 'secondaryLabel', type: 'ReactNode', description: 'A second label after a separator dot — Figma’s `text2`.' },
+            { name: 'paddingX / paddingY / radius / fontSize / gap', type: 'number | string', description: "Overrides for the badge's own metrics." },
+            { name: 'background / textColor', type: 'string', description: 'Fill and label, overriding the mode’s own.' },
+          ]}
+        />
+      </Section>
+
+      <Section
+        title="AI tool badge"
+        description="The square category marker at the head of an AI tool row. Figma node 3777:9826. Four categories, each an accent pair already in the theme — so a capability keeps its identity wherever it appears."
+      >
+        <Preview>
+          <HStack gap={12}>
+            <AiToolBadge category="message" />
+            <AiToolBadge category="notes" />
+            <AiToolBadge category="schedule" />
+            <AiToolBadge category="meeting" />
+          </HStack>
+        </Preview>
+        <CodeBlock code={`<AiToolBadge category="schedule" />`} />
+      </Section>
+
+      <Section
+        title="Disabled capability"
+        description="The slash marks a capability the agent cannot currently call. A slash rather than a grey-out, because the category still matters when it is off: you need to see which capability is unavailable, not just that one is."
+      >
+        <Preview>
+          <HStack gap={12}>
+            <AiToolBadge category="message" crossed />
+            <AiToolBadge category="notes" crossed />
+            <AiToolBadge category="schedule" crossed />
+            <AiToolBadge category="meeting" crossed />
+          </HStack>
+        </Preview>
+        <CodeBlock code={`<AiToolBadge category="schedule" crossed />`} />
+      </Section>
+
+      <Section title="AiToolBadge props">
+        <PropsTable
+          rows={[
+            { name: 'category', type: `'message' | 'notes' | 'schedule' | 'meeting'`, default: `'message'`, description: 'Colours the badge and, through `aiToolPalette`, the tag beside it.' },
+            { name: 'crossed', type: 'boolean', default: 'false', description: 'Draws the disabled slash. The category palette stays.' },
+            { name: 'icon', type: 'IconDef', description: "Overrides the category's own glyph." },
+            { name: 'size / radius / iconSize', type: 'number | string', description: "The square's edge, corner radius, and glyph size." },
+            { name: 'background / iconColor', type: 'string', description: 'Fill and glyph, overriding the category palette.' },
+          ]}
         />
       </Section>
 

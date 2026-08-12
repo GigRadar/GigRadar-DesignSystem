@@ -577,6 +577,7 @@ export function TooltipPage() {
             { name: 'onConfirm', type: '() => void | Promise<unknown>', description: 'Runs on confirm. Return a promise to keep the popover open and spinning until it settles.' },
             { name: 'onCancel', type: '() => void', description: 'Called when dismissed without confirming.' },
             { name: 'placement', type: `'top' | 'bottom' | 'left' | 'right'`, default: `'bottom'`, description: 'Which side of the anchor the card sits on.' },
+            { name: 'align', type: `'center' | 'start'`, default: `'center'`, description: 'Where the card sits on the cross axis. `start` pins its leading edge to the anchor’s — for a card taller than its anchor inside a scroll container, where centring would push half of it out of view and get it clipped.' },
             { name: 'open / defaultOpen', type: 'boolean', description: 'Controlled and uncontrolled open state.' },
             { name: 'onOpenChange', type: '(open: boolean) => void', description: 'Called whenever the popover opens or closes.' },
             { name: 'disabled', type: 'boolean', default: 'false', description: 'Renders the anchor with no confirmation at all.' },

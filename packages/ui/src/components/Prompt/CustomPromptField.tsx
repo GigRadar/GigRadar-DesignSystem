@@ -13,6 +13,7 @@ import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { Icon } from '../../icons/Icon.js';
 import { IconCopyDocumentStroke, IconExpandCorner } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
+import { useScrollbar } from '../Scrollbar/Scrollbar.js';
 
 const { prompt } = component;
 
@@ -249,7 +250,7 @@ export const CustomPromptField = forwardRef<CustomPromptFieldHandle, CustomPromp
       handle.addEventListener('pointercancel', onUp);
     }, []);
 
-    const scopeId = useRef(`gr-prompt-${Math.random().toString(36).slice(2, 9)}`).current;
+    const bar = useScrollbar();
 
     const wrapperStyle: CSSProperties = {
       position: 'relative',
@@ -288,21 +289,21 @@ export const CustomPromptField = forwardRef<CustomPromptFieldHandle, CustomPromp
       // rather than scrolling sideways.
       whiteSpace: 'pre-wrap',
       overflowWrap: 'break-word',
-      scrollbarWidth: 'thin',
-      scrollbarColor: `${SCROLLBAR_THUMB} transparent`,
+      ...bar.style,
     };
 
     return (
-      <div style={wrapperStyle} data-gr-prompt-field={scopeId}>
-        <style>{scrollbarCss(scopeId)}</style>
+      <div style={wrapperStyle}>
         <textarea
           {...rest}
           ref={textareaRef}
           value={text}
           onChange={(event) => commit(event.target.value)}
+          {...bar.props}
           style={textareaStyle}
           spellCheck={rest.spellCheck ?? false}
         />
+        {bar.styleTag}
         {resizable && (
           <span
             onPointerDown={startResize}
@@ -353,25 +354,3 @@ export const CustomPromptField = forwardRef<CustomPromptFieldHandle, CustomPromp
     );
   },
 );
-
-/** Figma's thumb gray (#C1C1C1), the one color in this file with no token. */
-const SCROLLBAR_THUMB = '#C1C1C1';
-
-/**
- * WebKit scrollbar rules, scoped to one field instance.
- *
- * Chrome and Safari ignore `scrollbar-width`/`scrollbar-color`, so the pale
- * 8px pill Figma draws needs these pseudo-elements. Firefox uses the standard
- * properties set inline above and ignores this block.
- */
-function scrollbarCss(scopeId: string): string {
-  const selector = `[data-gr-prompt-field="${scopeId}"] textarea`;
-  return `
-${selector}::-webkit-scrollbar { width: ${prompt.field.scrollbarWidth}px; }
-${selector}::-webkit-scrollbar-track { background: transparent; }
-${selector}::-webkit-scrollbar-thumb {
-  background-color: ${SCROLLBAR_THUMB};
-  border-radius: ${prompt.field.scrollbarWidth / 2}px;
-}
-`.trim();
-}

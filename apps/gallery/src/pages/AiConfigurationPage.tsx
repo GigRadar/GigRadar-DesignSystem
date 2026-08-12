@@ -1,10 +1,19 @@
-import { color, radius, spacing, textStyle } from '@gigradar/theme';
+import { color, component, radius, spacing, textStyle } from '@gigradar/theme';
 import {
+  AiTool,
   AiPromptConfig,
+  AutoReply,
   CustomPromptField,
+  IconTrunOffPower,
+  MentionPresetList,
+  type MentionPresetItem,
   PromptVariable,
+  ModeBadge,
   SettingsHeader,
   SettingsSection,
+  type AutoReplyOption,
+  type AutoReplyTab,
+  type ReplyMode,
   VersionNumber,
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
@@ -176,6 +185,169 @@ const field = useRef<CustomPromptFieldHandle>(null);
   );
 }
 
+/** The capabilities Figma lists on this screen (node 3777:9422). */
+const AI_TOOLS = [
+  {
+    name: 'post_comment_as_laziza',
+    category: 'message' as const,
+    categoryLabel: 'Public Communication',
+    description:
+      'Post the final assistant reply as an internal CRM comment authored by Laziza. Called exactly once per run with the full reply text and a short reasoning summary. The room is bound by the runtime — Laziza cannot post into a different room.',
+  },
+  {
+    name: 'schedule_wake_up',
+    category: 'schedule' as const,
+    categoryLabel: 'Scheduling',
+    description:
+      'Schedule a one-shot follow-up that re-invokes the agent at a future time. Use when the user asks for a deferred check ("ping me tomorrow", "check back when the client replies"). Takes inSeconds (30s minimum, 1 year max) and a concrete message (≥10 chars) Laziza will act on at wake-up time.',
+  },
+  {
+    name: 'cancel_wake_up',
+    category: 'schedule' as const,
+    categoryLabel: 'Scheduling',
+    description:
+      'Cancel a previously scheduled wake-up by id. Use when the user asks to retract a pending follow-up or when the situation that motivated the wake-up has resolved early.',
+  },
+  {
+    name: 'list_my_wakeups',
+    category: 'schedule' as const,
+    categoryLabel: 'Scheduling',
+    description:
+      'List pending wake-ups visible to this team on this room. Use sparingly — only when the user asks to see what is scheduled, or when Laziza needs to avoid duplicating an existing wake-up.',
+  },
+];
+
+/** Sample presets, in priority order. */
+const PRESETS: MentionPresetItem[] = [
+  {
+    id: 'case-study',
+    title: 'Top performing case study',
+    description:
+      'Inserts our flagship fintech case study link with a 1-line value framing. Used in cold-outreach replies.',
+    characterCount: 103,
+  },
+  {
+    id: 'discovery',
+    title: 'Book discovery call',
+    description:
+      "Drops the team's Cal.com link and a 30-minute scheduling line. Auto-tags the room as `Booked`.",
+    characterCount: 96,
+  },
+  {
+    id: 'pricing',
+    title: 'Send pricing tiers',
+    description: "Returns the three-tier pricing block with the current month's promo footnote.",
+    characterCount: 78,
+  },
+];
+
+/** The preset list, wired the way the settings screen wires it. */
+function MentionPresetDemo() {
+  const [presets, setPresets] = useState(PRESETS);
+  const [dirty, setDirty] = useState(false);
+
+  /** Swaps a preset with its neighbour, which is what the move buttons do. */
+  const move = (index: number, delta: number) =>
+    setPresets((list) => {
+      const next = [...list];
+      const target = index + delta;
+      if (target < 0 || target >= next.length) return list;
+      [next[index], next[target]] = [next[target]!, next[index]!];
+      setDirty(true);
+      return next;
+    });
+
+  return (
+    <MentionPresetList
+      items={presets}
+      activeId={presets[0]?.id}
+      characterMax={400}
+      onMoveUp={(_item, index) => move(index, -1)}
+      onMoveDown={(_item, index) => move(index, 1)}
+      onDelete={(item) => {
+        setDirty(true);
+        setPresets((list) => list.filter((p) => p.id !== item.id));
+      }}
+      dirty={dirty}
+      onAdd={() => {
+        setDirty(true);
+        setPresets((list) => [
+          ...list,
+          { id: `preset-${list.length + 1}`, title: 'New Presets', characterCount: 0 },
+        ]);
+      }}
+      onSave={() => setDirty(false)}
+      onCancel={() => {
+        setDirty(false);
+        setPresets(PRESETS);
+      }}
+      onReset={() => {
+        setDirty(false);
+        setPresets(PRESETS);
+      }}
+    />
+  );
+}
+
+/** The message classes and modes, exactly as Figma draws them. */
+const AUTO_REPLY_TABS: AutoReplyTab[] = [
+  { id: 'first', label: 'First Message', mode: 'fullAuto' },
+  { id: 'other', label: 'Other Message', mode: 'coPilot' },
+];
+
+const AUTO_REPLY_OPTIONS: AutoReplyOption[] = [
+  {
+    id: 'fullAuto',
+    label: 'Full Auto',
+    description: 'Replies are sent automatically',
+    markerLabel: 'Auto',
+  },
+  {
+    id: 'coPilot',
+    label: 'Co-pilot',
+    description: 'Drafts a reply for your approval',
+    markerLabel: '50%',
+    markerColor: color.accent.laziza.backgroundAlt,
+  },
+  {
+    id: 'off',
+    label: 'Turn Off',
+    description: 'Disable automatic replies',
+    markerIcon: IconTrunOffPower,
+    markerColor: color.navbar.text,
+  },
+];
+
+/** The Auto Reply card, wired the way the settings screen wires it. */
+function AutoReplyDemo() {
+  const [tabId, setTabId] = useState('first');
+  const [promptEnabled, setPromptEnabled] = useState(false);
+  // Each message class carries its own mode — switching tabs shows that
+  // class's setting rather than dragging the last one across.
+  const [modes, setModes] = useState<Record<string, ReplyMode>>({
+    first: 'fullAuto',
+    other: 'coPilot',
+  });
+
+  const tabs = AUTO_REPLY_TABS.map((tab) => ({ ...tab, mode: modes[tab.id] }));
+
+  return (
+    <AutoReply
+      tabs={tabs}
+      tabId={tabId}
+      onTabChange={(tab) => setTabId(tab.id)}
+      options={AUTO_REPLY_OPTIONS}
+      value={modes[tabId]}
+      onChange={(mode) => setModes((state) => ({ ...state, [tabId]: mode }))}
+      promptEnabled={promptEnabled}
+      onPromptEnabledChange={setPromptEnabled}
+      onSave={() => undefined}
+      onCancel={() => undefined}
+      onReset={() => undefined}
+    />
+  );
+}
+
 /**
  * One row of the anatomy list: a component's name, what it does in this
  * screen, and the thing itself.
@@ -226,6 +398,12 @@ function ConfigDemo() {
       */}
       <div
         style={{
+          display: 'flex',
+          flexDirection: 'column',
+          // Figma stacks the content sections 24px apart (node 3770:964). The
+          // header supplies its own 32px of bottom padding, so it sits clear of
+          // the first section without this having to special-case it.
+          gap: component.settingsSection.stackGap,
           width: '100%',
           backgroundColor: color.main.white,
           borderRadius: radius.m,
@@ -236,6 +414,10 @@ function ConfigDemo() {
         <SettingsHeader
           title="CRM AI Configuration"
           description="Customize your CRM AI on the go for seamless automation."
+          // The stack's own gap supplies the room below the header, so its
+          // bottom padding would double it. Figma leaves 32px between the
+          // header and the first section, which is what the gap already gives.
+          paddingBottom={0}
         />
         <SettingsSection
           title="Custom Prompt"
@@ -255,6 +437,31 @@ function ConfigDemo() {
             savedHint={saved ?? '4 minutes ago'}
           />
         </SettingsSection>
+
+        <SettingsSection
+          title="Mention Presets"
+          description="Reusable @-mention snippets your team can drop into CRM replies. Drag to set priority, the top preset shows first in the mention picker."
+        >
+          <MentionPresetDemo />
+        </SettingsSection>
+
+        <SettingsSection
+          title="Auto Reply"
+          description="Reply to every message in a thread, or only the first one."
+        >
+          <AutoReplyDemo />
+        </SettingsSection>
+        <SettingsSection
+          title="AI Tools"
+          description="Registered capabilities available to Laziza on every CRM run. Reference them by name in your custom prompt above."
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+            {AI_TOOLS.map((tool) => (
+              <AiTool key={tool.name} {...tool} />
+            ))}
+          </div>
+        </SettingsSection>
+
         {/* The screen's sections sit on 32px of bottom room. */}
         <div style={{ height: spacing.xl }} />
       </div>

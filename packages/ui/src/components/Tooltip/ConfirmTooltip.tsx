@@ -63,6 +63,17 @@ export type ConfirmTooltipProps = {
   /** Called when the popover is dismissed without confirming. */
   onCancel?: () => void;
   placement?: TooltipPlacement;
+  /**
+   * Where the card sits along the placement's cross axis.
+   *
+   * `center` is the default and what Figma draws. `start` anchors the card's
+   * leading edge to the anchor's — its top for a `left`/`right` placement, its
+   * left for `top`/`bottom`. Reach for it when the card is taller (or wider)
+   * than its anchor and centring would push it out of a scrolling container:
+   * a row action near the top of a scroll area centres its card half above the
+   * row, which the container then clips.
+   */
+  align?: ConfirmTooltipAlign;
   /** Controls the popover from the parent. Pairs with `onOpenChange`. */
   open?: boolean;
   defaultOpen?: boolean;
@@ -90,6 +101,9 @@ export type ConfirmTooltipProps = {
  * promise, holds `busy` while it settles, and closes on success — behaviour a
  * replacement card should not have to reimplement.
  */
+/** Where the card sits along its placement's cross axis. */
+export type ConfirmTooltipAlign = 'center' | 'start';
+
 export type ConfirmCardRenderProps = WithDefaultRender & {
   title: ReactNode;
   description: ReactNode;
@@ -130,6 +144,7 @@ export function ConfirmTooltip({
   onConfirm,
   onCancel,
   placement = 'bottom',
+  align = 'center',
   open,
   defaultOpen = false,
   onOpenChange,
@@ -235,7 +250,7 @@ export function ConfirmTooltip({
             position: 'absolute',
             zIndex: 1000,
             width: cardWidth,
-            ...placementStyle(placement, offset ?? 8),
+            ...placementStyle(placement, offset ?? 8, align),
           }}
         >
           {(() => {
@@ -356,15 +371,44 @@ export function ConfirmTooltip({
  * has a fixed width, so it centres against that rather than against a
  * content-driven box, and it carries no arrow to leave room for.
  */
-function placementStyle(placement: TooltipPlacement, offset: number): CSSProperties {
+function placementStyle(
+  placement: TooltipPlacement,
+  offset: number,
+  align: ConfirmTooltipAlign,
+): CSSProperties {
+  // Centring is what Figma draws, but a card taller than its anchor centres
+  // half of itself above the anchor — inside a scroll area that half is
+  // clipped, so `start` pins the leading edges together instead.
+  const centered = align === 'center';
+
   switch (placement) {
     case 'top':
-      return { bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: offset };
+      return {
+        bottom: '100%',
+        left: centered ? '50%' : 0,
+        transform: centered ? 'translateX(-50%)' : undefined,
+        marginBottom: offset,
+      };
     case 'bottom':
-      return { top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: offset };
+      return {
+        top: '100%',
+        left: centered ? '50%' : 0,
+        transform: centered ? 'translateX(-50%)' : undefined,
+        marginTop: offset,
+      };
     case 'left':
-      return { right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: offset };
+      return {
+        right: '100%',
+        top: centered ? '50%' : 0,
+        transform: centered ? 'translateY(-50%)' : undefined,
+        marginRight: offset,
+      };
     case 'right':
-      return { left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: offset };
+      return {
+        left: '100%',
+        top: centered ? '50%' : 0,
+        transform: centered ? 'translateY(-50%)' : undefined,
+        marginLeft: offset,
+      };
   }
 }

@@ -1,5 +1,5 @@
 import { color, textStyle } from '@gigradar/theme';
-import { Checkbox, HStack, VStack, type CheckboxSize } from '@gigradar/ui';
+import { Checkbox, Radio, HStack, VStack, type CheckboxSize } from '@gigradar/ui';
 import { useState } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
@@ -35,8 +35,8 @@ export function CheckboxPage() {
   return (
     <>
       <PageHeader
-        title="Checkbox"
-        description="A single on/off choice. Figma node 538:9016 draws two states — a brand-blue disc holding a white checkmark when complete, and the same circle as a thin ring when not."
+        title="Checkbox & Radio"
+        description="Two controls that look alike and mean different things. A checkbox is one independent on/off choice; a radio is one option in a group where exactly one applies. Both are circles in Figma — the contract, not the shape, is what tells them apart."
       />
 
       <Section
@@ -130,6 +130,71 @@ const [done, setDone] = useState(false);
 <Checkbox background={color.status.success.main} borderColor={color.status.success.main} />
 <Checkbox radius={6} />       // a square box instead of Figma's circle
 <Checkbox boxSize={30} iconSize={26} />`}
+        />
+      </Section>
+
+
+      <Section
+        title="Radio"
+        description="The same circle, a different contract. A checkbox stands alone — three of them let a user pick all three. A radio belongs to a group and the browser enforces one-of-many, so arrow keys move between options instead of tabbing through them."
+      >
+        <Preview>
+          <VStack gap={12}>
+            <Radio name="demo-plan" defaultChecked>
+              Full Auto
+            </Radio>
+            <Radio name="demo-plan">Co-pilot</Radio>
+            <Radio name="demo-plan">Turn Off</Radio>
+          </VStack>
+        </Preview>
+        <CodeBlock
+          code={`// One name binds the group. Picking one clears the rest.
+<Radio name="mode" checked={mode === 'auto'} onSelectedChange={() => setMode('auto')}>
+  Full Auto
+</Radio>`}
+        />
+      </Section>
+
+      <Section
+        title="Indicators"
+        description="dot is the classic radio — a ring around a smaller filled circle. check fills the whole circle and drops a white tick in, which is what Figma draws for the Auto Reply modes (node 3866:3252). Same meaning; the difference is how loudly the selection reads in its row."
+      >
+        <Preview>
+          <HStack gap={24}>
+            <Radio name="demo-dot" defaultChecked>
+              dot
+            </Radio>
+            <Radio name="demo-check" indicator="check" defaultChecked>
+              check
+            </Radio>
+            <Radio
+              name="demo-accent"
+              indicator="check"
+              selectedColor={color.accent.laziza.main}
+              borderColor={color.accent.laziza.main}
+              defaultChecked
+            >
+              check, Laziza accent
+            </Radio>
+          </HStack>
+        </Preview>
+        <CodeBlock code={`<Radio indicator="check" selectedColor={color.accent.laziza.main} />`} />
+      </Section>
+
+      <Section title="Radio props">
+        <PropsTable
+          rows={[
+            { name: 'checked', type: 'boolean', description: 'The value. Passing it makes the radio controlled.' },
+            { name: 'defaultChecked', type: 'boolean', default: 'false', description: 'Starting value of an uncontrolled radio.' },
+            { name: 'onSelectedChange', type: '(checked, event) => void', description: 'Fires when this option is picked. Only ever with `true` — a radio cannot be unset by clicking it.' },
+            { name: 'name', type: 'string', description: 'Binds the group. Options sharing a name are mutually exclusive.' },
+            { name: 'indicator', type: `'dot' | 'check'`, default: `'dot'`, description: 'Which mark the selected state draws.' },
+            { name: 'children', type: 'ReactNode', description: 'Visible label. Clicking it selects the option.' },
+            { name: 'label', type: 'string', description: 'Accessible name, for a radio with no visible label.' },
+            { name: 'size', type: `'small' | 'medium' | 'large'`, default: `'medium'`, description: 'Reads the same scale as Checkbox — the two are the same size by design.' },
+            { name: 'controlSize / radius / borderWidth / gap / fontSize', type: 'number | string', description: "Overrides for the control's own metrics." },
+            { name: 'selectedColor / borderColor / textColor', type: 'string', description: 'Accent when selected, ring when not, and the label.' },
+          ]}
         />
       </Section>
 

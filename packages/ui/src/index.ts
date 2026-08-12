@@ -99,6 +99,73 @@ export type { RankBadgeProps, RankBadgeStyleProps, RankState } from './component
 export { Checkbox } from './components/Checkbox/Checkbox.js';
 export type { CheckboxProps, CheckboxStyleProps, CheckboxSize } from './components/Checkbox/Checkbox.js';
 
+export { Radio } from './components/Radio/Radio.js';
+export type {
+  RadioProps,
+  RadioStyleProps,
+  RadioSize,
+  RadioIndicator,
+} from './components/Radio/Radio.js';
+
+export { AutoReply } from './components/AutoReply/AutoReply.js';
+export type {
+  AutoReplyProps,
+  AutoReplyStyleProps,
+  AutoReplyTab,
+  AutoReplyOption,
+  AutoReplyOptionRenderProps,
+  AutoReplyFooterRenderProps,
+  ReplyMode,
+} from './components/AutoReply/AutoReply.js';
+
+export { ModeBadge } from './components/AutoReply/ModeBadge.js';
+export type { ModeBadgeProps, ModeBadgeStyleProps } from './components/AutoReply/ModeBadge.js';
+
+export { AutoReplyButton } from './components/AutoReply/AutoReplyButton.js';
+export type {
+  AutoReplyButtonProps,
+  AutoReplyButtonStyleProps,
+  AutoReplyButtonLayout,
+} from './components/AutoReply/AutoReplyButton.js';
+
+export { AutoReplyModeTab } from './components/AutoReply/AutoReplyModeTab.js';
+export type {
+  AutoReplyModeTabProps,
+  AutoReplyModeTabStyleProps,
+} from './components/AutoReply/AutoReplyModeTab.js';
+
+export { useScrollbar } from './components/Scrollbar/Scrollbar.js';
+export type { ScrollbarStyleProps } from './components/Scrollbar/Scrollbar.js';
+
+export { AiTool } from './components/AiTool/AiTool.js';
+export type {
+  AiToolProps,
+  AiToolStyleProps,
+  AiToolCategory,
+} from './components/AiTool/AiTool.js';
+
+export { AiToolBadge, aiToolPalette } from './components/AiTool/AiToolBadge.js';
+export type {
+  AiToolBadgeProps,
+  AiToolBadgeStyleProps,
+} from './components/AiTool/AiToolBadge.js';
+
+export { MentionPreset } from './components/MentionPreset/MentionPreset.js';
+export type {
+  MentionPresetProps,
+  MentionPresetStyleProps,
+} from './components/MentionPreset/MentionPreset.js';
+
+export { MentionPresetList } from './components/MentionPreset/MentionPresetList.js';
+export type {
+  MentionPresetListProps,
+  MentionPresetListStyleProps,
+  MentionPresetItem,
+  MentionPresetRenderProps,
+  MentionPresetEmptyRenderProps,
+  MentionPresetFooterRenderProps,
+} from './components/MentionPreset/MentionPresetList.js';
+
 export { Spinner } from './components/Spinner/Spinner.js';
 export type { SpinnerProps, SpinnerStyleProps, SpinnerSize } from './components/Spinner/Spinner.js';
 
@@ -145,6 +212,7 @@ export type {
   ConfirmTooltipProps,
   ConfirmTooltipStyleProps,
   ConfirmCardRenderProps,
+  ConfirmTooltipAlign,
 } from './components/Tooltip/ConfirmTooltip.js';
 
 export { SettingsHeader } from './components/SettingsSection/SettingsHeader.js';

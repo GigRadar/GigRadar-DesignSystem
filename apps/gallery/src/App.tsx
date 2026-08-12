@@ -9,8 +9,12 @@ import { ButtonPage } from './pages/ButtonPage';
 import { CheckboxPage } from './pages/CheckboxPage';
 import { IconsPage } from './pages/IconsPage';
 import { LifecyclePage } from './pages/LifecyclePage';
+import { ModeTabPage } from './pages/ModeTabPage';
+import { OptionButtonPage } from './pages/OptionButtonPage';
 import { PaginationPage } from './pages/PaginationPage';
+import { PresetPage } from './pages/PresetPage';
 import { PromptPage } from './pages/PromptPage';
+import { ScrollbarPage } from './pages/ScrollbarPage';
 import { SettingsPanelPage } from './pages/SettingsPanelPage';
 import { SpinnerPage } from './pages/SpinnerPage';
 import { SwitchPage } from './pages/SwitchPage';
@@ -60,9 +64,13 @@ const NAV: { title: string; nodes: Page[] }[] = [
       { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
       { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
       { id: 'button', label: 'Button', render: () => <ButtonPage /> },
-      { id: 'checkbox', label: 'Checkbox', render: () => <CheckboxPage /> },
+      { id: 'checkbox', label: 'Checkbox & Radio', render: () => <CheckboxPage /> },
+      { id: 'mode-tab', label: 'Mode tab', render: () => <ModeTabPage /> },
+      { id: 'option-button', label: 'Option button', render: () => <OptionButtonPage /> },
       { id: 'pagination', label: 'Pagination', render: () => <PaginationPage /> },
+      { id: 'preset', label: 'Preset', render: () => <PresetPage /> },
       { id: 'prompt', label: 'Prompt', render: () => <PromptPage /> },
+      { id: 'scrollbar', label: 'Scrollbar', render: () => <ScrollbarPage /> },
       { id: 'spinner', label: 'Spinner', render: () => <SpinnerPage /> },
       { id: 'switch', label: 'Switch', render: () => <SwitchPage /> },
       { id: 'tooltip', label: 'Tooltip', render: () => <TooltipPage /> },

@@ -802,8 +802,6 @@ export const prompt = {
     minHeight: 322,
     /** The drag corner Figma draws bottom-right at 30% opacity. */
     resizeHandleSize: 24,
-    /** Scrollbar thumb width. Figma draws an 8px pill. */
-    scrollbarWidth: 8,
     radius: radius.m,
   },
   /**
@@ -864,6 +862,243 @@ export const prompt = {
  * than markup repeated four times.
  */
 /**
+ * Agent tools — Figma nodes 3777:9845 (one row) and 3777:9826 (its badge).
+ *
+ * The capabilities Laziza can call on a CRM run. A row names the function in
+ * mono, tags it with the category it belongs to, and explains when the agent
+ * should reach for it.
+ */
+export const aiTool = {
+  /** One row. */
+  row: {
+    paddingX: spacing.s,
+    paddingY: 8,
+    gap: spacing.s,
+    radius: radius.s,
+    /** Space between the function name and its category tag. */
+    headerGap: 10,
+    /** The function name, in mono. */
+    nameFontSize: fontSize.m,
+    /** The description below it. */
+    fontSize: fontSize.m,
+  },
+  /**
+   * The square category badge at the row's head.
+   *
+   * 33px matches the version pill and the auto-reply marker — the three are
+   * the same square in different screens, so they read as one idea.
+   */
+  badge: {
+    size: 33,
+    radius: radius.xs,
+    iconSize: 16,
+    /**
+     * The diagonal slash marking a disabled capability — Figma's `crossIcon`.
+     * A 1.5px bar with a 1.75px white outline, so it stays legible over the
+     * glyph beneath it.
+     */
+    crossWidth: 1.5,
+    crossOutlineWidth: 1.75,
+    crossAngle: -40.98,
+  },
+  /** The category tag beside the function name. */
+  tag: {
+    paddingX: spacing.xxs,
+    paddingY: 2,
+    /** Figma draws 4px here, tighter than the badge's 6px. */
+    radius: radius.xxs + 2,
+    fontSize: fontSize.s,
+  },
+} as const;
+
+/**
+ * Mention presets — Figma nodes 3774:8382 (one row), 3948:27566 (the two
+ * states), and 3950:510 (the scrolling list).
+ *
+ * Reusable @-mention snippets, ordered by priority. The list is the ordering
+ * UI as much as it is a list, which is why a row carries a drag handle, a
+ * priority number, and a pair of move buttons rather than just its content.
+ */
+export const mentionPreset = {
+  /** One row. */
+  row: {
+    padding: 8,
+    gap: 8,
+    radius: radius.s,
+    /** The drag handle's slot. Figma draws 20px. */
+    handleSize: 20,
+    /** The priority badge — Figma gives it a 33px floor so digits stay level. */
+    badgeMinWidth: 33,
+    /**
+     * Horizontal padding on the row's action buttons.
+     *
+     * The actions are `Button`s carrying an icon and no label, and Figma draws
+     * them square. Half the room the label would have occupied is what turns a
+     * `controlHeight.medium` button back into a square. The borders come out of
+     * that half too — the button sets its height with `min-height`, which the
+     * border does not add to, but its width is content plus padding plus
+     * border. Derived rather than written as 9, so it stays square if the
+     * control height, the icon, or the border width moves.
+     */
+    actionPaddingX:
+      (controlHeight.medium - button.iconSize.medium - 2 * button.borderWidth) / 2,
+    fontSize: fontSize.m,
+  },
+  /** The description block under the title. */
+  description: {
+    paddingX: 8,
+    paddingY: spacing.xxs,
+    radius: radius.xs,
+    fontSize: fontSize.m,
+  },
+  /**
+   * The character counter tucked into the description's corner.
+   *
+   * 9px is below every step on the type scale, and deliberately so — it is a
+   * running total the writer glances at, not text to read.
+   */
+  counter: {
+    fontSize: 9,
+    paddingX: 3,
+    paddingY: 2,
+    radius: radius.round,
+  },
+  /** The list around the rows. */
+  list: {
+    padding: spacing.s,
+    gap: 8,
+    /** Height of the scrolling area before it scrolls. Figma draws 350px. */
+    maxHeight: 350,
+    /** The card wrapping the scroll area and its footer. */
+    radius: radius.m,
+    /** The footer holding Add New / Save / Cancel / Reset. */
+    footerPadding: spacing.m,
+    footerGap: 8,
+  },
+  /** The empty state. */
+  empty: {
+    /** The circle holding the document glyph. */
+    iconContainerSize: 40,
+    iconSize: 20,
+    gap: 8,
+    titleFontSize: fontSize.m,
+    descriptionFontSize: fontSize.s,
+  },
+} as const;
+
+/**
+ * Scrollbar — Figma node 2583:25060, with its thumb at 43:4122.
+ *
+ * A component rather than a colour on its own, because a scrollbar is three
+ * decisions that have to agree: how thick the thumb is, how far the track
+ * insets it, and how round it reads. Figma draws one vertical and one
+ * horizontal variant of the same thing, so the sizes below are the thumb's
+ * short edge in both.
+ *
+ * These are consumed as CSS: `scrollbar-width`/`scrollbar-color` on Firefox
+ * and the `::-webkit-scrollbar` pseudo-elements elsewhere. See
+ * `CustomPromptField` for the one component that styles a real scrollbar.
+ */
+export const scrollbar = {
+  /** Thumb thickness. Figma draws an 8px bar. */
+  size: 8,
+  /** Track padding around the thumb. Figma insets it 2px on the long edges. */
+  trackInset: 2,
+  /** Figma draws 4px — half the thumb, so it reads as a capsule. */
+  radius: 4,
+  /**
+   * The thumb's minimum length before it stops shrinking with the content.
+   * Figma draws 42px; browsers enforce their own floor, so this is the value
+   * to use when drawing a scrollbar by hand rather than styling a native one.
+   */
+  minLength: 42,
+} as const;
+
+/**
+ * Auto Reply — Figma nodes 3962:39155 (the card), 4498:4818 (its tabs), and
+ * 4498:4800 (the mode badge).
+ *
+ * The card that picks how Laziza answers a thread: a tab per message class, a
+ * row of mode choices, an optional extra prompt, and a save row.
+ */
+export const autoReply = {
+  /** The tab strip across the top. */
+  tab: {
+    height: 49,
+    padding: spacing.m,
+    /** Space between the label and its badge. */
+    gap: 10,
+    /** Only the top corners round — the strip sits on the card's edge. */
+    radius: radius.m,
+    fontSize: fontSize.m,
+  },
+  /**
+   * The pill naming a tab's mode — Figma's "Mode badge".
+   *
+   * Its own block rather than a step of `badge`: that scale is built around
+   * 12px text in a tight pill, and this is 14px in a 100px-radius one. Sharing
+   * would mean overriding every value.
+   */
+  modeBadge: {
+    paddingX: 8,
+    paddingY: 2,
+    fontSize: fontSize.m,
+    /** Figma draws 100px — effectively round at this height. */
+    radius: radius.round,
+    /** The separator dot when the badge carries two labels. */
+    dotSize: 3,
+    gap: spacing.xxs,
+  },
+  /** One selectable mode inside the card. */
+  option: {
+    padding: 8,
+    gap: 8,
+    radius: radius.s,
+    /** The square marker at the row's head. Matches the version pill's 33px. */
+    markerSize: 33,
+    markerRadius: radius.xs,
+    /** The marker's short label — "Auto", "50%". */
+    markerFontSize: fontSize.s,
+    fontSize: fontSize.m,
+  },
+  /** Space between the option row, the prompt block, and the footer. */
+  gap: spacing.m,
+  padding: spacing.m,
+  radius: radius.m,
+  /** The additional-prompt field's visible height. Figma draws 64px. */
+  promptHeight: 64,
+  /** Figma dims a disabled card rather than restyling it. */
+  disabledOpacity: 0.3,
+} as const;
+
+/**
+ * Radio metrics.
+ *
+ * Deliberately thin: a radio is a checkbox that draws a dot instead of a tick,
+ * so it borrows `checkbox`'s size, ring, gap, and type scale rather than
+ * restating them. Only the dot is its own.
+ */
+export const radioControl = {
+  /**
+   * The filled dot's share of the box, for the plain dot indicator.
+   *
+   * Figma draws a 16px control with 3px of padding, leaving a 10px dot — 62.5%.
+   * Expressed as a ratio so the dot tracks whichever `checkbox.size` step the
+   * radio is rendered at.
+   */
+  dotRatio: 0.625,
+  /**
+   * The tick's share of the box, for the check indicator.
+   *
+   * Figma's Auto Reply option fills the whole circle and drops a white check
+   * into it (node 3866:3252, "Selected"), rather than leaving a ring around a
+   * dot. `IconCheck` is inset on its own grid, so this slot is larger than the
+   * visible mark — see the note on `checkbox.iconSize`.
+   */
+  checkRatio: 0.75,
+} as const;
+
+/**
  * The band at the top of a settings screen — Figma node 3767:1258.
  *
  * The screen's own title and its one-line explanation, with an optional back
@@ -885,6 +1120,16 @@ export const settingsHeader = {
 export const settingsSection = {
   /** Space between the title block and the content below it. */
   gap: 10,
+  /**
+   * Space between one section and the next.
+   *
+   * Figma draws 24px on the AI Configuration screen (node 3770:964): Custom
+   * Prompt ends at y=436 and Mention Presets opens at y=460. Distinct from
+   * `gap`, which is the much tighter step between a section's own title and
+   * its content — the two have to differ, or a heading reads as belonging to
+   * the block above it rather than the one below.
+   */
+  stackGap: spacing.l,
   /** Space between the heading and its description. */
   titleGap: 2,
   /** Horizontal inset. Figma draws 24px — the page's own separator step. */
@@ -1286,6 +1531,10 @@ export const upworkAccounts = {
  * are not product tokens: nothing in a GigRadar app should read them. They live
  * here so the gallery has names for its metrics instead of scattering bare
  * numbers, and so the docs and the components stay on one radius scale.
+ *
+ * Read by `apps/gallery` only — `layout.tsx`, `CodeBlock`, and `PropsTable`.
+ * An audit that greps `packages/ui` alone will report this block as dead; it
+ * is not. Check the gallery before removing anything here.
  */
 export const docs = {
   /**
@@ -1309,6 +1558,8 @@ export const docs = {
 } as const;
 
 export const component = {
+  aiTool,
+  autoReply,
   avatar,
   badge,
   statusBadge,
@@ -1318,7 +1569,10 @@ export const component = {
   iconButton,
   modal,
   pagination,
+  mentionPreset,
   prompt,
+  radioControl,
+  scrollbar,
   settingsHeader,
   settingsPanel,
   settingsSection,

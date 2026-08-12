@@ -11,6 +11,13 @@ const { settingsHeader } = component;
 export type SettingsHeaderStyleProps = {
   paddingX?: CssLength;
   paddingY?: CssLength;
+  /**
+   * Overrides the bottom padding alone.
+   *
+   * For a header stacked with a gap below it, where `paddingY` would double
+   * the room. Set it to 0 and let the stack own that space.
+   */
+  paddingBottom?: CssLength;
   /** Title type size. */
   fontSize?: CssLength;
   /** Title color. */
@@ -67,6 +74,7 @@ export const SettingsHeader = forwardRef<HTMLElement, SettingsHeaderProps>(funct
     renderTitle,
     paddingX,
     paddingY,
+    paddingBottom,
     fontSize,
     titleColor,
     descriptionColor,
@@ -80,9 +88,10 @@ export const SettingsHeader = forwardRef<HTMLElement, SettingsHeaderProps>(funct
     gap: settingsHeader.gap,
     boxSizing: 'border-box',
     width: '100%',
-    padding: `${len(paddingY) ?? `${settingsHeader.paddingY}px`} ${
-      len(paddingX) ?? `${settingsHeader.paddingX}px`
-    }`,
+    paddingTop: len(paddingY) ?? `${settingsHeader.paddingY}px`,
+    paddingBottom: len(paddingBottom) ?? len(paddingY) ?? `${settingsHeader.paddingY}px`,
+    paddingLeft: len(paddingX) ?? `${settingsHeader.paddingX}px`,
+    paddingRight: len(paddingX) ?? `${settingsHeader.paddingX}px`,
     fontFamily: typography.fontFamily.base,
   };
 

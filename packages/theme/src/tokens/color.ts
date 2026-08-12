@@ -61,6 +61,15 @@ export const main = {
   highlightSelectSolid: '#37A9FA',
   /** Default border/divider color. */
   border: '#C3CBD3',
+  /**
+   * The scrollbar thumb. Figma: node 43:4122 ("Thumb").
+   *
+   * Browser chrome rather than product color — it names the bar you drag, and
+   * nothing else should reach for it. Here rather than in a component block so
+   * it reaches CSS through the generated custom properties, which is where a
+   * scrollbar has to be styled.
+   */
+  scrollbar: '#C1C1C1',
 } as const;
 
 /**
