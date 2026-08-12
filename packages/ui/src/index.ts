@@ -70,6 +70,14 @@ export type {
   CssLength,
 } from './components/Avatar/Avatar.js';
 
+export { LifecycleBadge } from './components/Lifecycle/LifecycleBadge.js';
+export type {
+  LifecycleBadgeProps,
+  LifecycleBadgeStyleProps,
+  LifecycleBadgeVariant,
+  ComponentLifecycle,
+} from './components/Lifecycle/LifecycleBadge.js';
+
 export { CreditBadge } from './components/Badge/CreditBadge.js';
 export type { CreditBadgeProps, CreditBadgeStyleProps, BadgeSize } from './components/Badge/CreditBadge.js';
 

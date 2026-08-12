@@ -167,6 +167,7 @@ const authorize = async () => {
       </Section>
 
       <Section
+        stage="development"
         title="The three popup states"
         description="Progress has no close button and no way out — an authorization that can be dismissed mid-flight leaves the attempt in a state neither side can report on. The two terminal states carry the countdown, the close, and a footer action: success routes to the Inbox, failure offers a retry. A terminal state with nothing to press is a dead end (BF-3969)."
       >

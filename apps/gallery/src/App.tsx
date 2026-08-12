@@ -8,6 +8,7 @@ import { BadgePage } from './pages/BadgePage';
 import { ButtonPage } from './pages/ButtonPage';
 import { CheckboxPage } from './pages/CheckboxPage';
 import { IconsPage } from './pages/IconsPage';
+import { LifecyclePage } from './pages/LifecyclePage';
 import { PaginationPage } from './pages/PaginationPage';
 import { PromptPage } from './pages/PromptPage';
 import { SettingsPanelPage } from './pages/SettingsPanelPage';
@@ -50,6 +51,7 @@ const NAV: { title: string; nodes: Page[] }[] = [
     nodes: [
       { id: 'tokens', label: 'Tokens', render: () => <TokensPage /> },
       { id: 'icons', label: 'Icons', render: () => <IconsPage /> },
+      { id: 'lifecycle', label: 'Lifecycle', render: () => <LifecyclePage /> },
     ],
   },
   {

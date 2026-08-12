@@ -287,6 +287,45 @@ export const badge = {
 export type BadgeSize = keyof typeof badge.fontSize;
 
 /**
+ * Status badge metrics — the marker that says how far along a component is.
+ *
+ * Not from Figma: this is documentation chrome for the design system's own
+ * process, not product UI. It sits on the badge scale so a status marker and a
+ * product badge do not read as two different systems.
+ */
+export const statusBadge = {
+  paddingX: {
+    small: spacing.xs,
+    medium: 10,
+    large: spacing.s,
+  },
+  paddingY: {
+    small: 2,
+    medium: 3,
+    large: 5,
+  },
+  fontSize: {
+    small: 10,
+    medium: fontSize.s,
+    large: fontSize.m,
+  },
+  gap: {
+    small: spacing.xxs,
+    medium: spacing.xxs,
+    large: spacing.xs,
+  },
+  /** Dot diameter, for the variant that carries one. */
+  dotSize: {
+    small: 5,
+    medium: 6,
+    large: 8,
+  },
+  radius: radius.round,
+  borderWidth: 1,
+} as const;
+
+
+/**
  * Checkbox metrics.
  *
  * Figma draws one size (node 538:9016): a 22px square with a full radius, a
@@ -1272,6 +1311,7 @@ export const docs = {
 export const component = {
   avatar,
   badge,
+  statusBadge,
   button,
   checkbox,
   confirm,
