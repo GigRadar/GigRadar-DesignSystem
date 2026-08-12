@@ -1,6 +1,5 @@
 import { color, component, textStyle } from '@gigradar/theme';
 import {
-  AuthorizationSteps,
   Button,
   HStack,
   Icon,
@@ -25,6 +24,14 @@ import type { ReactNode } from 'react';
  * carries four rows of prose under it; the question under review is how much
  * of that survives.
  *
+ * One thing is settled and no longer part of that question: the panels are
+ * dotted, not numbered. Success read as step 1 then step 2 when the Inbox and
+ * connecting another account are alternatives — Kolya raised that on the PR —
+ * and the same is true of the other two lists, which are candidate causes and
+ * things to keep in mind rather than an order to work down. Success also offers
+ * both of its routes as buttons, so the choice is actionable and not only
+ * described.
+ *
  * Every one is built from the same tokens and the same components. Nothing
  * here introduces a primitive, so approving any of them adds nothing new to
  * the system.
@@ -39,11 +46,10 @@ const { upworkAccounts } = component;
  * the CRM can honestly claim, and Vadym asked for a route to the Inbox. What
  * is open is how much of it to show.
  *
- * Note the panel is a different thing in each state — "What Next?" is a list of
- * consequences, "Possible Reason" a diagnosis, "Important Reminders" an
- * instruction. Proposal 2 cuts all three, which is the part worth arguing
- * about: a failure with no reasons is a different loss from a success with no
- * next steps.
+ * Note the panel is a different thing in each state — "What Next?" is a pair of
+ * choices, "Possible Reason" a diagnosis, "Important Reminders" an instruction.
+ * Proposal 2 cuts all three, which is the part worth arguing about: a failure
+ * with no reasons leaves the user with nothing to act on.
  */
 const content: Record<
   AuthorizationState,
@@ -53,8 +59,17 @@ const content: Record<
     heading: string;
     description: string;
     panelTitle: string;
+    /** Empty where the state has no panel to draw. */
     steps: string[];
     action?: string;
+    /**
+     * A second action of equal standing, drawn to the left of the main one.
+     *
+     * Only success has one, and only because its two routes onward are
+     * alternatives rather than steps. `Cancel` and `Back` are not this: they
+     * dismiss, so they stay where the proposals put them.
+     */
+    secondaryAction?: string;
   }
 > = {
   progress: {
@@ -76,10 +91,14 @@ const content: Record<
     heading: "All set! You're ready to go",
     description: 'Upwork account has been successfully connected',
     panelTitle: 'What Next ?',
-    // Two rows, not four. The four described what connecting enables, which is
-    // reassurance; these two are the only things the user can act on.
-    steps: ['Go to the Inbox to read what just synced', 'Connect another Upwork account'],
+    // Two rows, and "Or" is what makes them alternatives rather than a sequence.
+    // The user goes to the Inbox or connects another account; only one happens.
+    // Kolya raised exactly that on the PR, against the numbered discs these rows
+    // used to carry.
+    steps: ['Go to the Inbox to read what just synced', 'Or add another Upwork account'],
     action: 'Go To Inbox',
+    // The alternative, drawn beside the main action rather than under it.
+    secondaryAction: 'Connect Another Account',
   },
   failed: {
     accent: color.deprecated.errorAlt.main,
@@ -134,24 +153,81 @@ function StateIcon({ state }: { state: AuthorizationState }) {
   );
 }
 
-/** The panel of numbered rows, tinted to the state. */
+/**
+ * The panel, tinted to the state.
+ *
+ * Dots rather than numbered discs, in every state. A disc puts a row at a
+ * position in an order, which is a claim none of these lists actually make:
+ * the two success rows are alternatives, the failed rows are candidate causes
+ * of one failure, and even the progress reminders are things to keep in mind
+ * rather than a checklist to work down. That numbering is what Kolya read as a
+ * sequence on the PR.
+ *
+ * This is why `AuthorizationSteps` is not used here. That component numbers
+ * from position by design — it draws the real authorization walkthrough, where
+ * the order is the content. Passing it a list that is not ordered would be
+ * using it against what it is for.
+ *
+ * Draws nothing where a state has no rows, so a proposal can keep the panel in
+ * general and still have a state that does without one.
+ */
 function Panel({ state }: { state: AuthorizationState }) {
   const c = content[state];
+  if (c.steps.length === 0) return null;
+
   return (
     <VStack gap="s" p="m" radius="s" background={c.tint} width="100%">
       <span style={{ ...textStyle.mSemibold, color: color.navbar.textActive }}>{c.panelTitle}</span>
-      <AuthorizationSteps title={null} steps={c.steps} markerBackground={c.accent} />
+      <VStack gap="xs" width="100%">
+        {c.steps.map((step) => (
+          <HStack key={step} gap="s" alignItems="flex-start" width="100%">
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                backgroundColor: c.accent,
+                flexShrink: 0,
+                // Sits the dot on the first line's optical centre. Centring it
+                // on the row would drop it when a label wraps to two lines.
+                marginTop: 7,
+              }}
+            />
+            <span style={{ ...textStyle.mRegular, color: color.navbar.textActive, minWidth: 0 }}>
+              {step}
+            </span>
+          </HStack>
+        ))}
+      </VStack>
     </VStack>
+  );
+}
+
+/**
+ * The body, drawn only where there is a panel to put in it.
+ *
+ * An empty `ModalContent` is not nothing — it still lays out its padding, so
+ * the success card would carry a blank band between the header and the
+ * buttons.
+ */
+function Body({ state }: { state: AuthorizationState }) {
+  if (content[state].steps.length === 0) return null;
+  return (
+    <ModalContent>
+      <Panel state={state} />
+    </ModalContent>
   );
 }
 
 /**
  * The footer.
  *
- * `secondary` names the button beside the main action. Proposals that keep the
- * close button leave it off on success — there are two ways out already —
- * while a proposal with no close button needs one here, or the only route out
- * of a terminal state is the action itself.
+ * Two kinds of button can sit left of the main action, and they are not the
+ * same thing. `secondaryAction` is a real alternative — success offers the
+ * Inbox or another account, and the user takes one — so both are drawn as
+ * choices. `secondary` names a way out (Cancel, Back), which a proposal
+ * supplies when it has no close button and would otherwise leave a terminal
+ * state with only the action itself.
  */
 function Actions({
   state,
@@ -165,6 +241,7 @@ function Actions({
   const back = secondary ? secondary(state) : state === 'failed' ? 'Cancel' : null;
   return (
     <ModalFooter>
+      {c.secondaryAction && <Button variant="secondary">{c.secondaryAction}</Button>}
       {back && <Button variant="secondary">{back}</Button>}
       <Button tone={state === 'failed' ? 'danger' : 'brand'}>{c.action}</Button>
     </ModalFooter>
@@ -206,14 +283,13 @@ function Head({
 }
 
 /**
- * Proposal 1 — trim the list.
+ * Proposal 1 — keep the card.
  *
- * Keeps the whole card and cuts the success panel from four rows to two: the
- * Inbox, and connecting another account. The four rows it replaces described
- * what connecting enables, which the user has just been told by the heading —
- * these two are the only things there is to do.
+ * Every state keeps its panel, and the description sits under the heading in
+ * the header rather than at the top of the body. Success explains both routes
+ * onward in the panel and offers both as buttons under it.
  *
- * The most conservative of the three. Progress and failed are unchanged.
+ * The most conservative of the three — nothing is taken away.
  */
 export function ProposalTrimmed({ state }: { state: AuthorizationState }) {
   const c = content[state];
@@ -228,9 +304,7 @@ export function ProposalTrimmed({ state }: { state: AuthorizationState }) {
           <span style={{ ...textStyle.mRegular, color: color.navbar.text }}>{c.description}</span>
         </VStack>
       </Head>
-      <ModalContent>
-        <Panel state={state} />
-      </ModalContent>
+      <Body state={state} />
       <Actions state={state} />
     </ModalCard>
   );
@@ -271,7 +345,10 @@ export function ProposalNoPanel({ state }: { state: AuthorizationState }) {
 
           {c.action && (
             <HStack gap="xs" alignItems="center" justifyContent="flex-end" width="100%">
-              <Button variant="secondary">Back</Button>
+              {/* On success the left button is the other route onward, not a
+                  way out — there is nothing to go back from once the account is
+                  connected. Failed keeps Back, which is the only exit it has. */}
+              <Button variant="secondary">{c.secondaryAction ?? 'Back'}</Button>
               <Button tone={state === 'failed' ? 'danger' : 'brand'}>{c.action}</Button>
             </HStack>
           )}
@@ -298,9 +375,7 @@ export function ProposalNoDescription({ state }: { state: AuthorizationState }) 
   return (
     <ModalCard width={upworkAccounts.popup.width}>
       <Head state={state}>{c.heading}</Head>
-      <ModalContent>
-        <Panel state={state} />
-      </ModalContent>
+      <Body state={state} />
       <Actions state={state} />
     </ModalCard>
   );
@@ -314,23 +389,23 @@ export const PROPOSALS: {
 }[] = [
   {
     number: 1,
-    approach: 'Trim the list',
+    approach: 'Keep the card',
     rationale:
-      'Keeps the card and cuts success to two rows — the Inbox, and connecting another account. The rows it drops described what connecting enables, which the heading already said. Progress and failed are unchanged.',
+      'Nothing is taken away. Every state keeps its panel, and success explains both routes onward — the Inbox, or a second account — then offers both as buttons. The description sits under the heading rather than at the top of the body.',
     render: (state) => <ProposalTrimmed state={state} />,
   },
   {
     number: 2,
-    approach: 'No panel',
+    approach: 'No panel anywhere',
     rationale:
-      'One band: the message, then the buttons under it at the bottom right, with no body and no footer to divide. The tightest of the three. Success loses reassurance it can afford to; failed loses its diagnosis.',
+      'One band in every state: the message, then the buttons under it at the bottom right, with no body and no footer to divide. The tightest of the three — and the only one where failed loses its diagnosis and progress loses its reminders.',
     render: (state) => <ProposalNoPanel state={state} />,
   },
   {
     number: 3,
     approach: 'No description',
     rationale:
-      'Keeps the outcome in the header and the panel under it, and drops the line that restates the heading — "All set!" followed by "successfully connected" says one thing twice.',
+      'Drops the line that restates the heading — "All set!" followed by "successfully connected" says one thing twice. Keeps every panel, so the card still explains the two routes onward; what goes is only the sentence said twice.',
     render: (state) => <ProposalNoDescription state={state} />,
   },
 ];
