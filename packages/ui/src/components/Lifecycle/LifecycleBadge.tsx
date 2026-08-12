@@ -22,22 +22,6 @@ const { statusBadge } = component;
  */
 export type ComponentLifecycle = 'stable' | 'development' | 'deprecated';
 
-/**
- * How loudly to say it.
- *
- * Every component here ships three variants, and these are the three a
- * lifecycle marker needs — the same badge at three volumes, for the three
- * places it appears:
- *
- *   `solid`   filled. For a page heading, where the marker is the first thing
- *             to read and has to survive being scanned past.
- *   `subtle`  tinted fill, no border. For a section inside a page that is
- *             already marked — it says "this part too" without shouting.
- *   `outline` border only. For a sidebar row or a dense list, where a filled
- *             pill beside every label would be louder than the labels.
- */
-export type LifecycleBadgeVariant = 'solid' | 'subtle' | 'outline';
-
 export type LifecycleBadgeStyleProps = {
   paddingX?: CssLength;
   paddingY?: CssLength;
@@ -59,12 +43,6 @@ export type LifecycleBadgeProps = {
    * @default 'development'
    */
   stage?: ComponentLifecycle;
-  /**
-   * How loudly to draw it.
-   *
-   * @default 'solid'
-   */
-  variant?: LifecycleBadgeVariant;
   size?: BadgeSize;
   /** Overrides the label. Each stage supplies one. */
   children?: ReactNode;
@@ -121,7 +99,6 @@ export const LifecycleBadge = forwardRef<HTMLSpanElement, LifecycleBadgeProps>(
   function LifecycleBadge(
     {
       stage = 'development',
-      variant = 'solid',
       size = 'medium',
       children,
       dot,
@@ -142,14 +119,11 @@ export const LifecycleBadge = forwardRef<HTMLSpanElement, LifecycleBadgeProps>(
     const spec = stages[stage];
     const showDot = dot ?? stage === 'development';
 
-    // Each variant is the same three colors dealt out differently: the fill,
-    // the label, and the border each take one of them.
-    const palette =
-      variant === 'solid'
-        ? { background: spec.main, text: color.main.white, border: spec.main }
-        : variant === 'subtle'
-          ? { background: spec.tint, text: spec.text, border: 'transparent' }
-          : { background: 'transparent', text: spec.text, border: spec.main };
+    // One drawing: a tinted fill with the stage's own text on it. This is the
+    // system's own chrome rather than a product component, so it has no
+    // variants — a marker that could be drawn three ways is three markers, and
+    // a reader would have to learn which is which before reading any of them.
+    const palette = { background: spec.tint, text: spec.text, border: spec.main };
 
     const style: CSSProperties = {
       display: 'inline-flex',
@@ -185,7 +159,7 @@ export const LifecycleBadge = forwardRef<HTMLSpanElement, LifecycleBadgeProps>(
               borderRadius: '9999px',
               // On the filled variant the dot has to read against the fill, so
               // it borrows the label's color rather than the stage's.
-              backgroundColor: variant === 'solid' ? color.main.white : spec.main,
+              backgroundColor: spec.main,
               flexShrink: 0,
             }}
           />

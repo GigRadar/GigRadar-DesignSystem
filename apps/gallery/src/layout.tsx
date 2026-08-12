@@ -60,7 +60,7 @@ export function Section({
         <h2 style={{ ...textStyle.h3, color: color.navbar.textActive, margin: 0 }}>
           {title}
         </h2>
-        {stage && <LifecycleBadge stage={stage} variant="subtle" />}
+        {stage && <LifecycleBadge stage={stage} />}
       </div>
       {description && (
         <p style={{ ...textStyle.mRegular, color: color.main.description, margin: 0, marginBottom: spacing.m, maxWidth: 680 }}>

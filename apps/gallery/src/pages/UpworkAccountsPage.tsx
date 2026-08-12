@@ -6,6 +6,7 @@ import {
   AuthorizationSteps,
   AuthorizeBanner,
   Button,
+  HStack,
   Icon,
   IconButton,
   IconGoToExternal,
@@ -14,10 +15,13 @@ import {
   Skeleton,
   StatusBadge,
   UpworkConnectedAccounts,
+  VStack,
   type AuthorizationState,
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
+import { DevelopmentPlaceholder, Proposal } from '../components/DevelopmentPlaceholder';
+import { PROPOSALS } from '../proposals/AuthPopupProposals';
 import { PropsTable } from '../components/PropsTable';
 import { ACCOUNTS, FULL_ACCOUNTS, MORE_ACCOUNTS } from '../fixtures/upworkAccounts';
 import { PageHeader, Preview, Section } from '../layout';
@@ -169,28 +173,35 @@ const authorize = async () => {
       <Section
         stage="development"
         title="The three popup states"
-        description="Progress has no close button and no way out — an authorization that can be dismissed mid-flight leaves the attempt in a state neither side can report on. The two terminal states carry the countdown, the close, and a footer action: success routes to the Inbox, failure offers a retry. A terminal state with nothing to press is a dead end (BF-3969)."
+        description="Not part of the design system yet. Three proposals are under review — they carry the same copy and differ in how the outcome, the next steps, and the action are arranged. Open the card to compare them; whichever is approved takes this section over, with the usual live example, usage snippet, and props table."
       >
-        <PopupDemo />
-        <CodeBlock
-          code={`<Modal
-  open={auth !== null}
-  // Withheld while in flight — the modal then has no dismissal route at all.
-  onClose={auth === 'progress' ? undefined : () => setAuth(null)}
-  label="Upwork authorization"
-  background="transparent" shadow="none"   // the popup draws its own card
->
-  <AuthorizationPopup
-    state={auth}
-    countdown={5}
-    onClose={() => setAuth(null)}
-    // Success has one thing worth doing next — read what just synced.
-    onGoToInbox={() => navigate('/inbox')}
-    // Failure needs a route out that is not "close and start over".
-    onRetry={authorize}
-  />
-</Modal>`}
-        />
+        <DevelopmentPlaceholder
+          title="Authorization popup"
+          problem="After connecting an Upwork account, tell the user what happened, what it enables, and where to go next — in one card, across three states."
+          proposalCount={PROPOSALS.length}
+        >
+          <VStack gap="l">
+            {PROPOSALS.map((proposal) => (
+              <Proposal
+                key={proposal.number}
+                number={proposal.number}
+                approach={proposal.approach}
+                rationale={proposal.rationale}
+              >
+                <HStack gap="l" alignItems="flex-start" flexWrap="wrap">
+                  {(['progress', 'success', 'failed'] as const).map((state) => (
+                    <VStack key={state} gap="xxs">
+                      <span style={{ ...textStyle.sSemibold, color: color.main.description }}>
+                        {state}
+                      </span>
+                      {proposal.render(state)}
+                    </VStack>
+                  ))}
+                </HStack>
+              </Proposal>
+            ))}
+          </VStack>
+        </DevelopmentPlaceholder>
       </Section>
 
       <Section

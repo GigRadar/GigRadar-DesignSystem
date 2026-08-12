@@ -2,9 +2,9 @@ import { color, component, typography } from '@gigradar/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import { IconXClose } from '../../icons/defs.js';
-import { IconButton } from '../Button/IconButton.js';
+import { IconButton, type IconButtonSize } from '../Button/IconButton.js';
 
-const { modal } = component;
+const { modal, iconButton } = component;
 
 /**
  * The three bands a modal card is built from.
@@ -31,6 +31,15 @@ export type ModalHeaderStyleProps = {
   gap?: CssLength;
   /** Title type size. */
   fontSize?: CssLength;
+  /**
+   * Width of the title cell.
+   *
+   * It shrink-wraps by default, which is right when the close button sits
+   * beside it. A header whose title block carries its own full-width content —
+   * a row of buttons under the message — needs `"100%"` so that content can
+   * reach the card's edge.
+   */
+  titleWidth?: CssLength;
   background?: string;
   textColor?: string;
   /** The shadow separating the head from the scrolling body. */
@@ -47,6 +56,16 @@ export type ModalHeaderProps = {
   onClose?: () => void;
   /** Accessible name for the close button. */
   closeLabel?: string;
+  /**
+   * The close button's size.
+   *
+   * `medium` matches the form controls, which is right for a dialog whose
+   * header is mostly chrome. `small` matches a 28px status glyph beside the
+   * title, so the button does not set the header's height on its own.
+   *
+   * @default 'medium'
+   */
+  closeSize?: IconButtonSize;
   /** Rendered between the title and the close button. */
   extra?: ReactNode;
   /**
@@ -57,6 +76,16 @@ export type ModalHeaderProps = {
    * under it reads as an unexplained line.
    */
   divided?: boolean;
+  /**
+   * Holds the close button's space open when there is no close button.
+   *
+   * The button is taller than the title beside it, so a header without one is
+   * shorter than a header with one. That is invisible on a static dialog and
+   * obvious on one whose header changes — an authorization popup that cannot be
+   * dismissed while in flight would grow by the difference the moment it
+   * resolves. Reserving the space keeps every state the same height.
+   */
+  reserveCloseSpace?: boolean;
 } & ModalHeaderStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'title'>;
 
@@ -67,9 +96,12 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(function
     closeLabel = 'Close',
     extra,
     divided = true,
+    reserveCloseSpace = false,
+    closeSize = 'medium',
     padding,
     gap,
     fontSize,
+    titleWidth,
     background,
     textColor,
     shadow,
@@ -77,6 +109,8 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(function
   },
   ref,
 ) {
+  const hasTrailing = extra != null || onClose != null || reserveCloseSpace;
+
   const style: CSSProperties = {
     boxSizing: 'border-box',
     display: 'flex',
@@ -100,12 +134,19 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(function
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: `${modal.footer.gap}px`,
+          // Only when something sits beside the title. An empty trailing cell
+          // would otherwise hold its gap open, and a title block carrying its
+          // own right-aligned content would stop short of the card's edge.
+          gap: hasTrailing ? `${modal.footer.gap}px` : 0,
           width: '100%',
         }}
       >
         <div
           style={{
+            // Lets a long title shrink instead of pushing whatever sits beside
+            // it past the card's edge.
+            minWidth: 0,
+            width: len(titleWidth),
             fontFamily: typography.fontFamily.base,
             fontSize: len(fontSize) ?? `${modal.header.fontSize}px`,
             fontWeight: typography.fontWeight.medium,
@@ -116,10 +157,30 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(function
         >
           {children}
         </div>
+        {hasTrailing && (
         <div style={{ display: 'flex', alignItems: 'center', gap: `${modal.footer.gap}px`, flexShrink: 0 }}>
           {extra}
-          {onClose && <IconButton icon={IconXClose} aria-label={closeLabel} onClick={onClose} />}
+          {onClose ? (
+            <IconButton
+              icon={IconXClose}
+              size={closeSize}
+              aria-label={closeLabel}
+              onClick={onClose}
+            />
+          ) : (
+            reserveCloseSpace && (
+              <span
+                aria-hidden
+                style={{
+                  width: iconButton.size[closeSize],
+                  height: iconButton.size[closeSize],
+                  flexShrink: 0,
+                }}
+              />
+            )
+          )}
         </div>
+        )}
       </div>
     </div>
   );

@@ -1,107 +1,31 @@
 import { color, textStyle } from '@gigradar/theme';
-import { HStack, LifecycleBadge, VStack, type ComponentLifecycle, type LifecycleBadgeVariant } from '@gigradar/ui';
+import { HStack, LifecycleBadge, VStack, type ComponentLifecycle } from '@gigradar/ui';
 import { CodeBlock } from '../components/CodeBlock';
-import { PropsTable } from '../components/PropsTable';
+import { DevelopmentPlaceholder, Proposal } from '../components/DevelopmentPlaceholder';
 import { PageHeader, Preview, Section } from '../layout';
 
 const STAGES: ComponentLifecycle[] = ['stable', 'development', 'deprecated'];
-const VARIANTS: LifecycleBadgeVariant[] = ['solid', 'subtle', 'outline'];
 
 export function LifecyclePage() {
   return (
     <>
       <PageHeader
         title="Lifecycle"
-        description="How the gallery says whether a component is part of the design system yet. A component can be visible here long before it is approved, and a reader with no way to tell the difference will use whatever they can see."
+        description="How a component gets into the design system, and how the gallery says where it has got to. A component can be built and visible here long before it is approved — a reader with no way to tell will use whatever they can see."
       />
 
       <Section
-        title="The three stages"
-        description="A component is always in exactly one of three situations: it is in the system, it is on its way in, or it is on its way out."
-      >
-        <Preview>
-          <HStack gap="s" flexWrap="wrap">
-            {STAGES.map((stage) => (
-              <LifecycleBadge key={stage} stage={stage} />
-            ))}
-          </HStack>
-        </Preview>
-        <CodeBlock
-          code={`import { LifecycleBadge } from '@gigradar/ui';
-
-<LifecycleBadge stage="stable" />       // in the system, safe to use
-<LifecycleBadge stage="development" />  // built, not approved — do not ship
-<LifecycleBadge stage="deprecated" />   // still works, being removed`}
-        />
-      </Section>
-
-      <Section
-        title="Three variants"
-        description="The same badge at three volumes, one per place it appears. Every component in this system ships three variants; these are the three a lifecycle marker actually needs."
-      >
-        <VStack gap="m">
-          {VARIANTS.map((variant) => (
-            <VStack key={variant} gap="xxs">
-              <div style={{ ...textStyle.sSemibold, color: color.main.description }}>{variant}</div>
-              <HStack gap="s" flexWrap="wrap">
-                {STAGES.map((stage) => (
-                  <LifecycleBadge key={stage} stage={stage} variant={variant} />
-                ))}
-              </HStack>
-            </VStack>
-          ))}
-        </VStack>
-        <CodeBlock
-          code={`// solid — a page heading, where the marker is the first thing to read
-<LifecycleBadge stage="development" variant="solid" />
-
-// subtle — a section inside a page that is already marked
-<LifecycleBadge stage="development" variant="subtle" />
-
-// outline — a sidebar row, where a filled pill beside every label
-// would be louder than the labels
-<LifecycleBadge stage="development" variant="outline" />`}
-        />
-      </Section>
-
-      <Section
-        title="Sizes"
-        description="Three steps, matching the badge scale so a lifecycle marker and a product badge do not read as two different systems."
-      >
-        <Preview>
-          <HStack gap="s" alignItems="center" flexWrap="wrap">
-            <LifecycleBadge size="small" />
-            <LifecycleBadge size="medium" />
-            <LifecycleBadge size="large" />
-          </HStack>
-        </Preview>
-      </Section>
-
-      <Section
-        title="Marking a section"
-        description="Pass stage to any gallery Section. It is deliberately omitted on everything approved — a badge on every heading would stop meaning anything."
-      >
-        <CodeBlock
-          code={`<Section
-  stage="development"
-  title="The three popup states"
-  description="…"
->
-  <PopupDemo />
-</Section>`}
-        />
-      </Section>
-
-      <Section
-        title="How a component graduates"
-        description="The marker is not decoration; it tracks a process."
+        title="How a component gets in"
+        description="The marker is not decoration; it tracks a process with one decision in it."
       >
         <VStack gap="s">
           {[
-            'Drawn in Figma, built here, shown in the gallery as In development.',
-            'Opened as a pull request, with screenshots of every state.',
-            'Reviewed — a designer on the design, a PM on the copy and behaviour.',
-            'On approval and merge the marker comes off, and it is part of the system.',
+            'A problem is identified — a screen that misleads, a pattern repeated by hand in three apps.',
+            'Three proposals are drawn for it, differing in layout and approach, all built from existing tokens and components.',
+            'The gallery shows a placeholder card marked In development. No live example, no usage snippet, no props table — nothing that reads as "ready".',
+            'A pull request puts the three proposals in front of a reviewer, rendered in every state.',
+            'One is approved. The placeholder, the marker, and the two losing proposals come out.',
+            'The winner takes the section over as an ordinary component — live examples, usage snippets, props table, like everything else here.',
           ].map((line, index) => (
             <HStack key={line} gap="s" alignItems="flex-start">
               <span
@@ -126,46 +50,56 @@ export function LifecyclePage() {
         </VStack>
       </Section>
 
-      <Section title="Props">
-        <PropsTable
-          rows={[
-            {
-              name: 'stage',
-              type: `'stable' | 'development' | 'deprecated'`,
-              default: `'development'`,
-              description: 'Which stage the component is at.',
-            },
-            {
-              name: 'variant',
-              type: `'solid' | 'subtle' | 'outline'`,
-              default: `'solid'`,
-              description: 'How loudly to draw it. One per place the marker appears.',
-            },
-            {
-              name: 'size',
-              type: `'small' | 'medium' | 'large'`,
-              default: `'medium'`,
-              description: 'Padding, type size, and dot diameter.',
-            },
-            {
-              name: 'dot',
-              type: 'boolean',
-              description:
-                'Draws a leading dot. On by default for development — the stage a reader must not skim past.',
-            },
-            { name: 'children', type: 'ReactNode', description: 'Overrides the label.' },
-            {
-              name: 'paddingX / paddingY / fontSize / gap / radius / borderWidth / dotSize',
-              type: 'number | string',
-              description: 'Metrics, overriding the size step.',
-            },
-            {
-              name: 'background / textColor / borderColor',
-              type: 'string',
-              description: 'Colors, overriding the stage palette.',
-            },
-          ]}
+      <Section
+        title="The marker"
+        description="Three stages, because a component is always in exactly one of three situations: in the system, on its way in, or on its way out. One drawing each — a marker that could be drawn three ways would be three markers, and a reader would have to learn which is which before reading any of them."
+      >
+        <Preview>
+          <HStack gap="s" flexWrap="wrap">
+            {STAGES.map((stage) => (
+              <LifecycleBadge key={stage} stage={stage} />
+            ))}
+          </HStack>
+        </Preview>
+        <CodeBlock
+          code={`// On a gallery section, which draws the marker beside the heading.
+<Section stage="development" title="The three popup states" description="…">
+  <DevelopmentPlaceholder …>…</DevelopmentPlaceholder>
+</Section>`}
         />
+      </Section>
+
+      <Section
+        title="What in development looks like"
+        description="A placeholder card standing in for the component, holding the proposals. This is the pattern itself, shown on a made-up example — the real one is on CRM ▸ Settings ▸ Upwork Connected Account."
+      >
+        <DevelopmentPlaceholder
+          title="Example component"
+          problem="The one-line statement of what the proposals are competing to solve."
+          proposalCount={2}
+        >
+          <VStack gap="l">
+            <Proposal
+              number={1}
+              approach="One approach"
+              rationale="What makes it different, and what it costs. A reviewer picks on this line, not on the picture."
+            >
+              <span style={{ ...textStyle.mRegular, color: color.main.description }}>
+                Each proposal renders here, in every state the component has.
+              </span>
+            </Proposal>
+            <Proposal
+              number={2}
+              approach="Another approach"
+              rationale="Three proposals that differ only in decoration are not a choice. They have to disagree about something."
+            >
+              <span style={{ ...textStyle.mRegular, color: color.main.description }}>
+                All built from existing tokens and components, so approving one adds no new
+                primitives to the system.
+              </span>
+            </Proposal>
+          </VStack>
+        </DevelopmentPlaceholder>
       </Section>
     </>
   );

@@ -74,7 +74,6 @@ export { LifecycleBadge } from './components/Lifecycle/LifecycleBadge.js';
 export type {
   LifecycleBadgeProps,
   LifecycleBadgeStyleProps,
-  LifecycleBadgeVariant,
   ComponentLifecycle,
 } from './components/Lifecycle/LifecycleBadge.js';
 
