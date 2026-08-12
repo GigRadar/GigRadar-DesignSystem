@@ -1497,10 +1497,27 @@ export const upworkAccounts = {
     /** The disc beside the panel's own title, and the space between them. */
     panelIconSize: 32,
     panelTitleGap: spacing.s,
-    /** The panel of numbered rows under the status. */
+    /** The panel of rows under the status. */
     panelRadius: 16,
     panelPadding: spacing.s,
     panelGap: spacing.m,
+    /**
+     * The status glyph's slot in the head.
+     *
+     * A fixed slot rather than a bare icon: the two glyphs and the spinner are
+     * different sizes, and without one the head's height would change with the
+     * state.
+     */
+    glyphSlot: 28,
+    /** The bullet at the head of a panel row, and the space it leaves. */
+    dotSize: 6,
+    /**
+     * How far the bullet sits below the row's top.
+     *
+     * Puts it on the first line's optical centre. Centring it on the row would
+     * drop it out of line the moment a label wraps to two lines.
+     */
+    dotOffset: 7,
     /** One row inside that panel. */
     rowRadius: 14,
     rowPadding: 8,

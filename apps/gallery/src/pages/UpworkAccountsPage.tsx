@@ -20,8 +20,6 @@ import {
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
-import { DevelopmentPlaceholder, Proposal } from '../components/DevelopmentPlaceholder';
-import { PROPOSALS } from '../proposals/AuthPopupProposals';
 import { PropsTable } from '../components/PropsTable';
 import { ACCOUNTS, FULL_ACCOUNTS, MORE_ACCOUNTS } from '../fixtures/upworkAccounts';
 import { PageHeader, Preview, Section } from '../layout';
@@ -171,37 +169,73 @@ const authorize = async () => {
       </Section>
 
       <Section
-        stage="development"
         title="The three popup states"
-        description="Not part of the design system yet. Three proposals are under review — they carry the same copy and differ in how the outcome, the next steps, and the action are arranged. Open the card to compare them; whichever is approved takes this section over, with the usual live example, usage snippet, and props table."
+        description="One layout across all three — a head carrying the glyph and the message, a panel of rows, and a footer — differing only in accent, glyph, and copy. Switch between them below."
       >
-        <DevelopmentPlaceholder
-          title="Authorization popup"
-          problem="After connecting an Upwork account, tell the user what happened, what it enables, and where to go next — in one card, across three states."
-          proposalCount={PROPOSALS.length}
-        >
-          <VStack gap="l">
-            {PROPOSALS.map((proposal) => (
-              <Proposal
-                key={proposal.number}
-                number={proposal.number}
-                approach={proposal.approach}
-                rationale={proposal.rationale}
-              >
-                <HStack gap="l" alignItems="flex-start" flexWrap="wrap">
-                  {(['progress', 'success', 'failed'] as const).map((state) => (
-                    <VStack key={state} gap="xxs">
-                      <span style={{ ...textStyle.sSemibold, color: color.main.description }}>
-                        {state}
-                      </span>
-                      {proposal.render(state)}
-                    </VStack>
-                  ))}
-                </HStack>
-              </Proposal>
-            ))}
-          </VStack>
-        </DevelopmentPlaceholder>
+        <PopupDemo />
+        <Caption>
+          The card states its outcome once. It previously said it three times — in the head's
+          title, again in a large centred status disc, and a third time in the description under
+          that. The glyph and the heading carry the outcome now, and the description explains it.
+        </Caption>
+        <CodeBlock
+          code={`<AuthorizationPopup
+  state="success"
+  onClose={dismiss}
+  onGoToInbox={openInbox}            // the main route onward
+  onConnectAnother={authorizeAgain}  // its alternative, at equal standing
+/>
+
+<AuthorizationPopup state="failed" onClose={dismiss} onRetry={authorize} />
+
+// In flight. No close button, no footer — and Modal withholds its own
+// onClose too, so there is no route out of an attempt in progress.
+<AuthorizationPopup state="progress" />`}
+        />
+      </Section>
+
+      <Section
+        title="Why the panel is dotted"
+        description="Every row in every state carries a dot, not a numbered disc."
+      >
+        <div style={{ ...textStyle.mRegular, color: color.main.description, maxWidth: 680 }}>
+          <p style={{ margin: 0, marginBottom: spacing.s }}>
+            A disc puts a row at a position in an order, which is a claim none of these lists makes.
+            The two success rows are alternatives — the Inbox <em>or</em> another account, and only
+            one happens. The failed rows are candidate causes of a single failure. Even the progress
+            reminders are things to keep in mind rather than a checklist to work down.
+          </p>
+          <p style={{ margin: 0, marginBottom: spacing.s }}>
+            This is why <code>AuthorizationSteps</code> is not used here, though it draws a visually
+            similar list. That component numbers from position by design, because it draws the real
+            walkthrough, where the order <em>is</em> the content. Passing it an unordered list would
+            be using it against what it is for.
+          </p>
+          <p style={{ margin: 0 }}>
+            Success also offers both of its routes as buttons, so the choice is actionable and not
+            only described. <code>Connect Another Account</code> is drawn <code>secondary</code>{' '}
+            beside the main action rather than as a way out — Cancel and Back dismiss, and this does
+            not.
+          </p>
+        </div>
+      </Section>
+
+      <Section title="AuthorizationPopup props">
+        <PropsTable
+          rows={[
+            { name: 'state', type: `'progress' | 'success' | 'failed'`, default: `'progress'`, description: 'Which of the three to draw. Everything else follows from it.' },
+            { name: 'heading / description', type: 'ReactNode', description: 'The message in the head. Each state has its own.' },
+            { name: 'panelTitle / steps', type: 'ReactNode / ReactNode[]', description: 'The panel’s heading and rows. Pass an empty array to drop the panel and the body with it.' },
+            { name: 'onClose', type: '() => void', description: 'Draws the close button — in the two terminal states only. An attempt in flight cannot be dismissed without leaving it in a state neither side can report on.' },
+            { name: 'onGoToInbox / goToInboxLabel', type: '() => void / ReactNode', default: `'Go To Inbox'`, description: 'The success state’s main action. Omitted, no button is drawn.' },
+            { name: 'onConnectAnother / connectAnotherLabel', type: '() => void / ReactNode', default: `'Connect Another Account'`, description: 'Its alternative, drawn secondary beside it.' },
+            { name: 'onRetry / retryLabel', type: '() => void / ReactNode', default: `'Try Again'`, description: 'The failed state’s action, in the danger tone. Drawn with Cancel when `onClose` is passed.' },
+            { name: 'width / radius', type: 'CssLength', default: '413 / radius.l', description: 'The card.' },
+            { name: 'panelPadding / panelGap', type: 'CssLength', description: 'Inside the panel, and between its title and rows.' },
+            { name: 'glyphSize', type: 'CssLength', default: '28', description: 'The status glyph’s slot. Fixed, so the spinner and the two icons cannot change the head’s height between states.' },
+            { name: 'background / shadow', type: 'string', description: 'Card fill and drop shadow.' },
+          ]}
+        />
       </Section>
 
       <Section
@@ -518,6 +552,7 @@ function PopupDemo() {
           state={state}
           onClose={() => {}}
           onGoToInbox={() => {}}
+          onConnectAnother={() => {}}
           onRetry={() => {}}
         />
       </div>

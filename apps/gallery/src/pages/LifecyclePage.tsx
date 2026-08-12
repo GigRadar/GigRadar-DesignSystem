@@ -71,7 +71,7 @@ export function LifecyclePage() {
 
       <Section
         title="What in development looks like"
-        description="A placeholder card standing in for the component, holding the proposals. This is the pattern itself, shown on a made-up example — the real one is on CRM ▸ Settings ▸ Upwork Connected Account."
+        description="A placeholder card standing in for the component, holding the proposals. Shown here on a made-up example: a section only carries this while its proposals are open, so the real ones come and go as they are decided."
       >
         <DevelopmentPlaceholder
           title="Example component"
