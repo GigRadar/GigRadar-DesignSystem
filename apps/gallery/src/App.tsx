@@ -460,6 +460,7 @@ export function App() {
                             do. */}
                         <NavItem
                           label={section.title}
+                          variant="section"
                           open={sectionOpen}
                           onClick={() =>
                             setCollapsedSections((state) => ({ ...state, [key]: !state[key] }))
@@ -488,11 +489,22 @@ function NavItem({
   active = false,
   depth = 0,
   open,
+  variant = 'page',
   onClick,
   onToggle,
 }: {
   label: string;
   active?: boolean;
+  /**
+   * What the row is.
+   *
+   * `page` is a link — regular weight, sentence case, indented under whatever
+   * holds it. `section` names a band of pages inside a card and never opens a
+   * page of its own, so it is drawn as a header: uppercase, tracked out, and
+   * flush to the card's edge. Without that the section label sat at the same
+   * weight and inset as the links beneath it, and the hierarchy read flat.
+   */
+  variant?: 'page' | 'section';
   /** Indent level. One step in is enough to read as nested at this width. */
   depth?: number;
   /**
@@ -517,11 +529,14 @@ function NavItem({
         alignItems: 'center',
         gap: spacing.xxs,
         paddingLeft: depth * spacing.s,
+        // A section is a header, so it takes room above it rather than sitting
+        // in the same rhythm as the links it introduces.
+        marginTop: variant === 'section' ? spacing.xs : undefined,
         borderRadius: radius.xs,
         backgroundColor: active ? color.navbar.hover : 'transparent',
       }}
     >
-      {open !== undefined && (
+      {open !== undefined && variant === 'page' && (
         <button
           onClick={onToggle}
           aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
@@ -549,22 +564,52 @@ function NavItem({
       )}
       <button
         onClick={onClick}
+        aria-expanded={variant === 'section' ? open : undefined}
         style={{
-          ...textStyle.mMedium,
+          ...(variant === 'section' ? textStyle.sSemibold : textStyle.mMedium),
+          display: 'flex',
+          alignItems: 'center',
+          // On a section the label and its caret sit at opposite ends, the way
+          // the card heading above does.
+          justifyContent: variant === 'section' ? 'space-between' : undefined,
+          gap: spacing.xxs,
           flex: '1 1 auto',
           minWidth: 0,
           textAlign: 'left',
           padding: `${spacing.xs}px ${spacing.s}px`,
-          // The caret already supplies the left inset on a parent row.
-          paddingLeft: open === undefined ? spacing.s : 0,
+          // The caret already supplies the left inset on a parent page row.
+          paddingLeft: open === undefined || variant === 'section' ? spacing.s : 0,
           borderRadius: radius.xs,
           border: 'none',
           background: 'transparent',
           cursor: 'pointer',
-          color: active ? color.main.brand : color.navbar.text,
+          textTransform: variant === 'section' ? 'uppercase' : undefined,
+          letterSpacing: variant === 'section' ? 0.5 : undefined,
+          color:
+            variant === 'section'
+              ? color.main.description
+              : active
+                ? color.main.brand
+                : color.navbar.text,
         }}
       >
         {label}
+        {variant === 'section' && open !== undefined && (
+          <span
+            aria-hidden
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              width: 14,
+              height: 14,
+              color: color.navbar.text,
+            }}
+          >
+            <Icon icon={open ? IconDropdownArrowUp : IconDropdownArrowDown} size="100%" />
+          </span>
+        )}
       </button>
     </div>
   );
