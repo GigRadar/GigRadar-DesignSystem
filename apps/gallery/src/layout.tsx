@@ -55,7 +55,7 @@ export function Shell({
             display: 'flex',
             alignItems: 'flex-start',
             gap: spacing.xs,
-            padding: collapsed ? 0 : `${spacing.s}px ${spacing.s}px ${spacing.s}px`,
+            padding: collapsed ? 0 : `${spacing.xs}px 0 ${spacing.s}px`,
           }}
         >
           {!collapsed && (
@@ -75,9 +75,12 @@ export function Shell({
           )}
         </div>
 
-        {!collapsed && search && (
-          <div style={{ padding: `0 ${spacing.s}px ${spacing.m}px` }}>{search}</div>
-        )}
+        {/* The search carries no horizontal padding of its own: the aside
+            already insets its contents, and a second inset made the field
+            narrower than the cards below it. The title block above drops its
+            own inset for the same reason, so title, search, and cards all
+            share one left edge. */}
+        {!collapsed && search && <div style={{ paddingBottom: spacing.m }}>{search}</div>}
 
         {/* The rail keeps its scroll position and its open/shut state while
             collapsed — the rows are hidden, not unmounted, so expanding
