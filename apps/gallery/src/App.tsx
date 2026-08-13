@@ -263,6 +263,16 @@ export function App() {
    * silently dropped a third level, so adding the AI Configuration sections
    * put four pages in the router that the sidebar never rendered.
    */
+  /**
+   * Whether the open page sits somewhere beneath this row.
+   *
+   * A folder is not the page you are on, but it is the branch you are in, and
+   * a sidebar that says nothing about that leaves a page nested two levels
+   * down looking unrelated to the rows above it.
+   */
+  const onPath = (node: Page): boolean =>
+    node.id !== active && flatten(node).some((page) => page.id === active);
+
   const renderNode = (node: Page, depth: number): ReactNode => {
     if (!hasChildren(node)) {
       return (
@@ -286,6 +296,7 @@ export function App() {
           depth={depth}
           query={query}
           active={active === node.id}
+          onPath={onPath(node)}
           open={nodeOpen}
           onClick={() => navigate(node.id)}
           onToggle={() => setCollapsed((state) => ({ ...state, [node.id]: !state[node.id] }))}
@@ -472,6 +483,9 @@ export function App() {
                           label={section.title}
                           variant="section"
                           query={query}
+                          onPath={section.nodes.some((node) =>
+                            flatten(node).some((page) => page.id === active),
+                          )}
                           open={sectionOpen}
                           onClick={() =>
                             setCollapsedSections((state) => ({ ...state, [key]: !state[key] }))
@@ -532,6 +546,7 @@ function HighlightedLabel({ label, query }: { label: string; query: string }) {
 function NavItem({
   label,
   active = false,
+  onPath = false,
   depth = 0,
   open,
   variant = 'page',
@@ -541,6 +556,14 @@ function NavItem({
 }: {
   label: string;
   active?: boolean;
+  /**
+   * Whether the open page is nested somewhere beneath this row.
+   *
+   * Takes the brand color but not the fill: it marks the branch you are in,
+   * where the fill marks the page you are on. Both blue would make a folder
+   * and its page compete; only the page gets the fill.
+   */
+  onPath?: boolean;
   /** The live search, so the matched run can be marked. */
   query?: string;
   /**
@@ -603,12 +626,10 @@ function NavItem({
           background: 'transparent',
           cursor: 'pointer',
           letterSpacing: variant === 'section' ? 0.2 : undefined,
-          color:
-            variant === 'section'
-              ? color.main.description
-              : active
-                ? color.main.brand
-                : color.main.description,
+          color: active || onPath ? color.main.brand : color.main.description,
+          // Only the open page takes the heavier weight. An ancestor is blue
+          // but stays regular, so the two states are distinguishable rather
+          // than merely both highlighted.
           fontWeight: active ? 600 : undefined,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
