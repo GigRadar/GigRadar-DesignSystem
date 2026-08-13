@@ -225,12 +225,12 @@ export const VersionNumber = forwardRef<HTMLDivElement, VersionNumberProps>(func
         reimplement and then keep in step.
 
         `active` maps onto the filled primary variant; the resting pill onto
-        `subtle`, the variant that fills with the nav hover gray rather than
+        `third`, the variant that fills with the nav hover gray rather than
         tinting its border — which is what Figma draws for this control, and
         what `secondary` does not do.
       */}
       <Button
-        variant={active ? 'primary' : 'subtle'}
+        variant={active ? 'primary' : 'third'}
         size="medium"
         disabled={disabled}
         paddingX={paddingX ?? prompt.version.paddingX}

@@ -213,7 +213,7 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
           <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             {onMoveUp && (
               <Button
-                variant="subtle"
+                variant="third"
                 size="medium"
                 paddingX={mentionPreset.row.actionPaddingX}
                 aria-label={`Move ${typeof title === 'string' ? title : 'preset'} up`}
@@ -224,7 +224,7 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
             )}
             {onMoveDown && (
               <Button
-                variant="subtle"
+                variant="third"
                 size="medium"
                 paddingX={mentionPreset.row.actionPaddingX}
                 aria-label={`Move ${typeof title === 'string' ? title : 'preset'} down`}

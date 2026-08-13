@@ -14,14 +14,15 @@ export type { ButtonSize };
 
 
 /**
- * The two button kinds drawn in Figma.
+ * The three button kinds drawn in Figma.
  *
- * `primary` is the blue filled button (node 2573:4267) and `secondary` the
- * white outlined one (node 2573:4294). Every per-feature button on the Figma
- * page — Cancel, Reschedule, Meeting, Schedule, Laziza AI — is one of these
- * two with a different label, so they are variants rather than components.
+ * `primary` is the blue filled button (node 2573:4267), `secondary` the white
+ * outlined one (node 2573:4294), and `third` the quiet chrome control Figma
+ * labels "Third button" (node 4893:16258). Every per-feature button on the
+ * Figma page — Cancel, Reschedule, Meeting, Schedule, Laziza AI — is one of
+ * these with a different label, so they are variants rather than components.
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'subtle';
+export type ButtonVariant = 'primary' | 'secondary' | 'third';
 
 /**
  * The button's hue.
@@ -32,11 +33,11 @@ export type ButtonVariant = 'primary' | 'secondary' | 'subtle';
  * So the feature is a tone rather than a component, and a new one is a row in
  * this table instead of a new file.
  *
- * `brand` is the default blue. `danger` is Figma's Cancel button, which is the
- * one tone drawn only as an outline. `remove` is the filled destructive button
- * from the confirmation popover (node 1272:11993).
+ * `brand` is the default blue. `danger` is the destructive tone — Figma's
+ * Cancel button and the confirmation popover's Remove, which are the same
+ * button.
  */
-export type ButtonTone = 'brand' | 'meeting' | 'schedule' | 'laziza' | 'danger' | 'remove';
+export type ButtonTone = 'brand' | 'meeting' | 'schedule' | 'laziza' | 'danger';
 
 /**
  * Per-instance overrides for the button's own metrics.
@@ -174,21 +175,21 @@ const tones = {
     hover: color.accent.laziza.hover,
     outline: color.main.border,
   },
-  danger: {
-    main: color.accent.decrease.main,
-    hover: color.accent.decrease.main,
-    outline: color.accent.decrease.main,
-  },
   /**
-   * The Remove button from the confirmation popover (node 1272:11993).
+   * The destructive tone — Figma's Cancel button and the Remove button in the
+   * confirmation popover (node 1272:11993).
    *
-   * Distinct from `danger`, which Figma draws as an outline: this one is filled,
-   * and it is the only tone that deepens rather than lightens on hover — from
-   * the soft `decrease` coral to a full red. That jump is the point. The button
-   * confirms a deletion, so it should feel more serious the closer the pointer
-   * gets, where the other tones just acknowledge the hover.
+   * These were two tones until they turned out to draw the same button. The
+   * outlined form was identical in both, and the filled form differed only in
+   * whether the fill moved on hover, which is not a distinction between two
+   * kinds of destruction — it is one behaviour that one of them was missing.
+   *
+   * It deepens rather than lightens on hover, from the soft `decrease` coral to
+   * a full red. That jump is the point: the button destroys something, so it
+   * should feel more serious the closer the pointer gets, where the other tones
+   * only acknowledge the hover.
    */
-  remove: {
+  danger: {
     main: color.accent.decrease.main,
     hover: color.status.error.text,
     outline: color.accent.decrease.main,
@@ -224,17 +225,18 @@ function paletteFor(variant: ButtonVariant, tone: ButtonTone) {
    * The quiet chrome button — an outlined control that fills with the nav
    * hover gray instead of tinting its border.
    *
-   * Figma draws it as the version pill (node 3770:1031 resting, 3804:21454
-   * hovered), but the behaviour is general: a control that sits in a toolbar
-   * or a form row, reads as neutral at rest, and acknowledges the pointer with
-   * a fill rather than by picking up a brand hue.
+   * Figma calls it the "Third button" (node 4893:16258) and draws it as the
+   * version pill (node 3770:1031 resting, 3804:21454 hovered), but the
+   * behaviour is general: a control that sits in a toolbar or a form row,
+   * reads as neutral at rest, and acknowledges the pointer with a fill rather
+   * than by picking up a brand hue.
    *
    * Distinct from `secondary`, which keeps a white fill and tints its border
    * and label on hover. That is right for a row of feature buttons, where the
    * hue says which feature; it is wrong here, where the control is chrome and
    * has no hue to announce.
    */
-  if (variant === 'subtle') {
+  if (variant === 'third') {
     return {
       background: color.main.white,
       hoverBackground: color.navbar.hover,
@@ -245,12 +247,10 @@ function paletteFor(variant: ButtonVariant, tone: ButtonTone) {
     };
   }
 
-  // Cancel is drawn as an outline in its own color rather than a neutral one,
-  // and tints its fill on hover instead of filling solid — a destructive action
-  // should read as destructive before it is hovered. `remove` outlines the same
-  // way: Figma draws it only as a filled button, so rather than invent a
-  // neutral-bordered variant it borrows the destructive outline.
-  if (tone === 'danger' || tone === 'remove') {
+  // Drawn as an outline in its own color rather than a neutral one, and tints
+  // its fill on hover instead of filling solid — a destructive action should
+  // read as destructive before it is hovered.
+  if (tone === 'danger') {
     return {
       background: color.main.white,
       hoverBackground: color.accent.decrease.background,
@@ -288,11 +288,10 @@ function disabledPaletteFor(variant: ButtonVariant, tone: ButtonTone) {
     };
   }
 
-  // Cancel fades its outline to the disabled grey; the feature buttons keep a
-  // neutral border and lean on `opacity` instead, which Figma applies to the
-  // whole button rather than recoloring each part. `remove` follows Cancel,
-  // matching how it borrows the destructive outline above.
-  if (tone === 'danger' || tone === 'remove') {
+  // The destructive tone fades its outline to the disabled grey; the feature
+  // buttons keep a neutral border and lean on `opacity` instead, which Figma
+  // applies to the whole button rather than recoloring each part.
+  if (tone === 'danger') {
     return {
       background: color.main.white,
       border: color.disable.background,
@@ -424,10 +423,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     backgroundColor: `var(--gr-button-background, ${fill.background})`,
     color: `var(--gr-button-text-color, ${fill.text})`,
     // Figma dims the whole disabled outlined button rather than restyling it.
-    // The destructive tones are excluded — they recolor border and label
-    // instead, so dimming on top would fade them twice.
+    // The destructive tone is excluded — it recolors border and label instead,
+    // so dimming on top would fade them twice.
     opacity:
-      inert && variant === 'secondary' && tone !== 'danger' && tone !== 'remove'
+      inert && variant === 'secondary' && tone !== 'danger'
         ? disabledSecondaryOpacity
         : undefined,
     fontFamily: typography.fontFamily.base,

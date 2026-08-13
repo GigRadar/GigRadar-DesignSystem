@@ -107,7 +107,7 @@ export function PresetPage() {
 
       <Section
         title="Row actions"
-        description="Three design system buttons, not bespoke squares. Move up and move down are the subtle variant — the third button, quiet enough that a pair of them does not compete with the preset's own text. Delete is the secondary button in the danger tone, icon-only."
+        description="Three design system buttons, not bespoke squares. Move up and move down are the third variant, quiet enough that a pair of them does not compete with the preset's own text. Delete is the secondary button in the danger tone, icon-only."
       >
         <div style={{ ...textStyle.mRegular, color: color.main.description, maxWidth: 680 }}>
           <p style={{ margin: 0, marginBottom: 12 }}>

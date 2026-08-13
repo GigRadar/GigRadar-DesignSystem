@@ -138,14 +138,14 @@ export const AccountSafetyNotice = forwardRef<HTMLDivElement, AccountSafetyNotic
         </p>
 
         {/*
-          Figma's "Third button" (node 4893:16258) — the design system's subtle
+          Figma's "Third button" (node 4893:16258) — the design system's `third`
           button on the pale badge fill, drawn as a full pill rather than the
           6px box. Radius and colors are the only divergence, so they are passed
           through rather than the button being rebuilt.
         */}
         {onAction && (
           <Button
-            variant="subtle"
+            variant="third"
             onClick={onAction}
             radius={radiusToken.round}
             background={color.badge.background}

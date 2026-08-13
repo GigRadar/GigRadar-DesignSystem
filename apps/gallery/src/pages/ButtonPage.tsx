@@ -4,7 +4,6 @@ import {
   ComposerButton,
   HStack,
   Icon,
-  IconDropdownArrowDown,
   IconLazizaSparkleStroke,
   IconMeetingsStroke,
   IconPlus,
@@ -19,33 +18,55 @@ import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { PageHeader, Preview, Section } from '../layout';
 
+const VARIANT_LABEL: Record<NonNullable<ButtonProps['variant']>, string> = {
+  primary: 'Button (Main)',
+  secondary: 'Button (Secondary)',
+  third: 'Button (Third)',
+};
+
 /**
- * One feature, complete: both variants (Figma's Main and 2nd), all four
- * states (Active, Hover, Disable, Syncing), and the icon slot — so a
- * developer building that feature sees everything it can do in one place.
+ * One feature, complete: every variant it is drawn in, all four states
+ * (Active, Hover, Disable, Syncing), and the icon slot — so a developer
+ * building that feature sees everything it can do in one place.
+ *
+ * `variants` defaults to Main and 2nd, which is what a tone has. The third
+ * button is chrome and carries no hue, so it is drawn once on the default
+ * section rather than repeated identically under every feature colour.
  */
 function FeatureStates({
   tone,
   label,
   icon,
+  variants = ['primary', 'secondary'],
   usageMain,
   usageSecondary,
+  usageThird,
 }: {
   tone: ButtonProps['tone'];
   label: string;
   icon: IconDef;
+  /** Which variants to draw, in order. */
+  variants?: NonNullable<ButtonProps['variant']>[];
   /** Usage snippet shown under the Main row. */
   usageMain: string;
   /** Usage snippet shown under the Secondary row. */
   usageSecondary: string;
+  /** Usage snippet shown under the Third row, where one is drawn. */
+  usageThird?: string;
 }) {
+  const usage: Partial<Record<NonNullable<ButtonProps['variant']>, string>> = {
+    primary: usageMain,
+    secondary: usageSecondary,
+    third: usageThird,
+  };
+
   return (
     <VStack gap="l" mb="m">
-      {(['primary', 'secondary'] as const).map((variant) => (
+      {variants.map((variant) => (
         <VStack key={variant} gap="s">
           <VStack gap="xxs">
             <div style={{ ...textStyle.sSemibold, color: color.main.description }}>
-              {variant === 'primary' ? 'Button (Main)' : 'Button (Secondary)'}
+              {VARIANT_LABEL[variant]}
             </div>
             <HStack gap="s" flexWrap="wrap">
               <Button variant={variant} tone={tone}>
@@ -70,10 +91,9 @@ function FeatureStates({
               </Button>
             </HStack>
           </VStack>
-          <CodeBlock
-            label={variant === 'primary' ? 'Usage — Button (Main)' : 'Usage — Button (Secondary)'}
-            code={variant === 'primary' ? usageMain : usageSecondary}
-          />
+          {usage[variant] && (
+            <CodeBlock label={`Usage — ${VARIANT_LABEL[variant]}`} code={usage[variant]} />
+          )}
         </VStack>
       ))}
     </VStack>
@@ -127,13 +147,14 @@ export function ButtonPage() {
       </Section>
 
       <Section
-        title="Main + 2nd"
-        description="The default button — Figma's Main (filled) and 2nd (outlined). One Main per view: the action you want taken. Everything beside it is the 2nd variant."
+        title="Main + 2nd + 3rd"
+        description="The default button, in all three variants — Figma's Main (filled), 2nd (outlined), and 3rd (quiet chrome). One Main per view: the action you want taken. Everything beside it is the 2nd. The 3rd is for controls that are not part of the decision at all — a version pill, a toolbar toggle, the Cancel beside a destructive action — and it is the one variant with no tone, since chrome has no hue to announce."
       >
         <FeatureStates
           tone="brand"
           label="Apply"
           icon={IconPlus}
+          variants={['primary', 'secondary', 'third']}
           usageMain={`// ONE Main per view — the action you want taken.
 <Button onClick={apply}>Apply</Button>
 
@@ -150,37 +171,17 @@ export function ButtonPage() {
 <Button variant="secondary" startIcon={<Icon icon={IconPlus} size={16} />}>
   Add filter
 </Button>`}
-        />
-      </Section>
-
-      <Section
-        title="Subtle"
-        description="Quiet chrome — an outlined control that fills with the nav grey on hover instead of tinting its border. Figma draws it as the version pill (node 3770:1031); the behaviour is general to any toolbar or form-row control that reads as neutral at rest."
-      >
-        <Preview>
-          <HStack gap={12}>
-            <Button variant="subtle">v2</Button>
-            <Button variant="subtle" endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}>
-              v2
-            </Button>
-            <Button variant="subtle" disabled>
-              v2
-            </Button>
-          </HStack>
-        </Preview>
-        <div style={{ ...textStyle.mRegular, color: color.main.description, maxWidth: 680 }}>
-          <p style={{ margin: 0 }}>
-            Distinct from <code>secondary</code>, which keeps a white fill and tints its border and
-            label on hover. That is right for a row of feature buttons, where the hue says which
-            feature. It is wrong here: this control is chrome and has no hue to announce, so the
-            fill moves instead.
-          </p>
-        </div>
-        <CodeBlock
-          code={`// The version pill, the settings toggle — anything neutral in a row.
-<Button variant="subtle" endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}>
+          usageThird={`// Chrome — a control that is not part of the decision. It fills with the
+// nav grey on hover instead of tinting its border, because it has no hue
+// to announce. Pass no tone: the 3rd variant ignores it.
+<Button variant="third" endIcon={<Icon icon={IconDropdownArrowDown} size={16} />}>
   v2
-</Button>`}
+</Button>
+
+// The Cancel beside a destructive action — quiet, so the two do not look
+// equally weighted when one of them deletes something. ConfirmTooltip
+// already draws its Cancel this way.
+<Button variant="third" onClick={dismiss}>Cancel</Button>`}
         />
       </Section>
 
@@ -242,7 +243,7 @@ export function ButtonPage() {
 
       <Section
         title="Cancel / negative + 2nd"
-        description="Destructive actions. Unlike the other outlined tones, the 2nd variant carries its red outline at rest — a destructive action should read as destructive before it is hovered."
+        description="Destructive actions — cancelling a proposal, removing a member, deleting a record. Two things set this tone apart. The 2nd variant carries its red outline at rest, where the other tones stay neutral until hovered: destructive should read as destructive before you point at it. And the filled variant DEEPENS on hover, from the soft coral to a full red, rather than lightening — the button destroys something, so it should feel more serious the closer the pointer gets."
       >
         <FeatureStates
           tone="danger"
@@ -252,40 +253,19 @@ export function ButtonPage() {
 // confirm step of a destructive flow, not the entry point.
 <Button tone="danger" onClick={confirmCancel} loading={isCancelling}>
   Cancel proposal
-</Button>`}
+</Button>
+
+// ConfirmTooltip already draws this button as its Remove, so reach for it
+// directly only when you are building your own confirm surface:
+<ConfirmTooltip onConfirm={doDelete}>
+  <Button variant="secondary" tone="danger">Delete</Button>
+</ConfirmTooltip>`}
           usageSecondary={`// The usual entry point. Unlike other tones it carries its red outline at
 // rest — destructive should read as destructive before it is hovered.
 // Confirm before acting when the action is not undoable: the color warns,
 // it does not protect.
 <Button variant="secondary" tone="danger" onClick={askToConfirm}>
   Cancel proposal
-</Button>`}
-        />
-      </Section>
-
-      <Section
-        title="Remove + 2nd"
-        description="The Remove button from the confirmation popover (Figma node 1272:11993). It is the one tone that DEEPENS on hover — from the soft coral to a full red — rather than lightening. That jump is deliberate: the button confirms a deletion, so it should feel more serious the closer the pointer gets."
-      >
-        <FeatureStates
-          tone="remove"
-          label="Remove"
-          icon={IconXClose}
-          usageMain={`// The confirm step INSIDE a confirmation, not the button that opens one.
-// ConfirmTooltip already renders this button — reach for it directly only
-// when you are building your own confirm surface.
-<Button tone="remove" onClick={doDelete} loading={isDeleting}>
-  Remove
-</Button>
-
-// Usually you want the whole flow instead, which draws this for you:
-<ConfirmTooltip onConfirm={doDelete}>
-  <Button variant="secondary" tone="danger">Delete</Button>
-</ConfirmTooltip>`}
-          usageSecondary={`// Rare. Figma draws Remove only as a filled button; the outlined form
-// borrows the destructive outline so it still reads as destructive at rest.
-<Button variant="secondary" tone="remove" onClick={askToConfirm}>
-  Remove
 </Button>`}
         />
       </Section>
@@ -379,17 +359,17 @@ const [tab, setTab] = useState<'message' | 'note'>('message');
           rows={[
             {
               name: 'variant',
-              type: `'primary' | 'secondary'`,
+              type: `'primary' | 'secondary' | 'third'`,
               default: `'primary'`,
               description:
-                'Which of the two kinds to render. primary is the blue filled button, secondary the white outlined one.',
+                'Which of the three kinds to render. primary is the blue filled button, secondary the white outlined one, and third the quiet chrome control that fills with the nav grey on hover.',
             },
             {
               name: 'tone',
               type: `'brand' | 'meeting' | 'schedule' | 'laziza' | 'danger'`,
               default: `'brand'`,
               description:
-                "The button's hue. Each of Figma's per-feature buttons is one of these — danger is the Cancel button.",
+                "The button's hue. Each of Figma's per-feature buttons is one of these — danger is the destructive tone, covering both Cancel and Remove.",
             },
             {
               name: 'size',

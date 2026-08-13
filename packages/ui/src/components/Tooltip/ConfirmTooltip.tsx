@@ -323,22 +323,26 @@ export function ConfirmTooltip({
               paddingBottom: confirm.footerPaddingY,
             }}
           >
-            {/* Cancel is drawn as bare text rather than an outlined button —
-                the two actions should not look equally weighted when one of
-                them deletes something. */}
+            {/* Cancel is the third button, which is what the design system has
+                for a control that should not compete: it reads as neutral at
+                rest and answers the pointer with a fill rather than a hue. The
+                two actions must not look equally weighted when one of them
+                deletes something.
+
+                It used to be `secondary` with its background, border, and text
+                colors overridden to fake exactly this. That is the variant's
+                job, so the overrides are gone — and a change to the third
+                button now reaches this Cancel instead of passing it by. */}
             <Button
-              variant="secondary"
+              variant="third"
               onClick={dismiss}
               disabled={busy}
-              background="transparent"
-              borderColor="transparent"
-              textColor={color.navbar.text}
               paddingX={8}
               paddingY={6}
             >
               {cancelLabel}
             </Button>
-            <Button tone="remove" onClick={handleConfirm} loading={busy} paddingX={8} paddingY={6}>
+            <Button tone="danger" onClick={handleConfirm} loading={busy} paddingX={8} paddingY={6}>
               {confirmLabel}
             </Button>
           </span>
