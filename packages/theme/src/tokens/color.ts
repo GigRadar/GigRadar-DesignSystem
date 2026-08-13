@@ -70,6 +70,15 @@ export const main = {
    * scrollbar has to be styled.
    */
   scrollbar: '#C1C1C1',
+  /**
+   * The GigRadar mark's own navy field, sampled from the exported logo asset.
+   *
+   * Backing the logo with it means any sub-pixel gap between the scaled artwork
+   * and its clip reads as part of the mark rather than as a white sliver. It
+   * belongs to the asset, not to the palette — nothing but the logo should
+   * reach for it, and it does not shift when the brand colors do.
+   */
+  gigRadarLogoBackground: '#191D28',
 } as const;
 
 /**

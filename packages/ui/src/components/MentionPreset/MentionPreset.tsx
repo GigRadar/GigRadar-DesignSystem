@@ -289,7 +289,9 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
                   borderRadius: mentionPreset.counter.radius,
                   // A 10% wash of the disabled grey, so the counter sits on the
                   // description without introducing a fourth surface color.
-                  backgroundColor: 'rgba(165, 166, 168, 0.1)',
+                  // `color-mix` rather than a hard-coded rgba: the wash then
+                  // tracks the token if the grey is ever retuned.
+                  backgroundColor: `color-mix(in srgb, ${color.disable.text} 10%, transparent)`,
                   color: color.disable.text,
                   fontSize: mentionPreset.counter.fontSize,
                   letterSpacing: typography.letterSpacing.s,

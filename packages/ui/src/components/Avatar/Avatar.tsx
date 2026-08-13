@@ -164,13 +164,6 @@ function styleVars(props: AvatarStyleProps, size: AvatarSize): Record<string, st
   return vars;
 }
 
-/**
- * The GigRadar mark's own navy field, sampled from the exported asset. Backing
- * the badge with it means any sub-pixel gap between the scaled artwork and the
- * circular clip reads as part of the logo rather than as a white sliver.
- */
-const gigRadarBadgeBackground = '#191D28';
-
 const serviceImages: Record<AvatarService, string> = {
   gigradar: gigRadarAvatarImage,
   upwork: upworkAvatarImage,
@@ -389,7 +382,7 @@ function AvatarBadgeSlot({ size, badge }: { size: AvatarSize; badge: AvatarBadge
 
   if (badge === 'gigradar') {
     return (
-      <span style={{ ...base, backgroundColor: gigRadarBadgeBackground }} aria-hidden>
+      <span style={{ ...base, backgroundColor: color.main.gigRadarLogoBackground }} aria-hidden>
         {/*
           The exported mark is a rounded square on a white field. Figma scales
           it to 118% inside the circular clip so the artwork's own corners fall
