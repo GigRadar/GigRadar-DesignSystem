@@ -38,6 +38,7 @@ export function AiToolsPage() {
         <Preview>
           <div style={{ width: '100%' }}>
             <SettingsSection
+              paddingX={0}
               title="AI Tools"
               description="Registered capabilities available to Laziza on every CRM run. Reference them by name in your custom prompt above."
             >

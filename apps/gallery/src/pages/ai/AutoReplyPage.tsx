@@ -41,6 +41,7 @@ export function AutoReplyPage() {
         <Preview>
           <div style={{ width: '100%' }}>
             <SettingsSection
+              paddingX={0}
               title="Auto Reply"
               description="Reply to every message in a thread, or only the first one."
             >

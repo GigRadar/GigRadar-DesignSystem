@@ -35,13 +35,17 @@ export function AiConfigurationPage() {
       />
 
       <CrossLink
-        eyebrow="Composed from components"
-        links={[{ label: 'Components ▸ Prompt field', pageId: 'prompt' }]}
+        eyebrow="The four sections it stacks"
+        links={[
+          { label: 'Custom Prompt', pageId: 'crm-ai-prompt' },
+          { label: 'Mention Preset', pageId: 'crm-ai-presets' },
+          { label: 'Auto Reply', pageId: 'crm-ai-auto-reply' },
+          { label: 'AI Tools', pageId: 'crm-ai-tools' },
+        ]}
       >
-        This screen is one component — <code>AiPromptConfig</code> — assembled from three smaller
-        ones that are documented on their own under Components ▸ Prompt. Use the card when you want
-        the whole settings screen; reach for the parts when you are building something else out of
-        them.
+        The screen is these four sections in a card, in this order. Each has its own page covering
+        the section as the screen wires it, its props, and the components it composes — start
+        there rather than here when you are building one of them.
       </CrossLink>
 
       <Section

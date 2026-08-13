@@ -39,6 +39,7 @@ export function MentionPresetPage() {
         <Preview>
           <div style={{ width: '100%' }}>
             <SettingsSection
+              paddingX={0}
               title="Mention Presets"
               description="Reusable @-mention snippets your team can drop into CRM replies. Drag to set priority, the top preset shows first in the mention picker."
             >

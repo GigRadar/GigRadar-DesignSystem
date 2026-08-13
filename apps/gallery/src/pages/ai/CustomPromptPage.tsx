@@ -127,7 +127,8 @@ function PromptDemo() {
   return (
     <Preview>
       <div style={{ width: '100%' }}>
-        <SettingsSection
+                <SettingsSection
+          paddingX={0}
           title="Custom Prompt"
           description="The instructions Laziza follows on every CRM run. Save your changes to commit a new version, you can restore any earlier version below."
         >
