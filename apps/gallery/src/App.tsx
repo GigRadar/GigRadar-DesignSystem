@@ -559,9 +559,10 @@ function NavItem({
   /**
    * Whether the open page is nested somewhere beneath this row.
    *
-   * Takes the brand color but not the fill: it marks the branch you are in,
-   * where the fill marks the page you are on. Both blue would make a folder
-   * and its page compete; only the page gets the fill.
+   * Goes bold, and takes neither the brand color nor the fill: it marks the
+   * branch you are in, where those two mark the page you are on. Giving an
+   * ancestor the same color would make a folder and its page compete for
+   * which one you are actually looking at.
    */
   onPath?: boolean;
   /** The live search, so the matched run can be marked. */
@@ -609,7 +610,7 @@ function NavItem({
       <button
         onClick={onClick}
         style={{
-          ...(variant === 'section' ? textStyle.sMedium : textStyle.mMedium),
+          ...textStyle.mMedium,
           display: 'flex',
           alignItems: 'center',
           flex: '1 1 auto',
@@ -625,12 +626,12 @@ function NavItem({
           border: 'none',
           background: 'transparent',
           cursor: 'pointer',
-          letterSpacing: variant === 'section' ? 0.2 : undefined,
-          color: active || onPath ? color.main.brand : color.main.description,
-          // Only the open page takes the heavier weight. An ancestor is blue
-          // but stays regular, so the two states are distinguishable rather
-          // than merely both highlighted.
-          fontWeight: active ? 600 : undefined,
+          color: active ? color.main.brand : color.main.description,
+          // An ancestor of the open page goes bold and nothing else: no color,
+          // no fill. That leaves the branch legible without a second row
+          // looking as selected as the page itself, which carries both the
+          // brand color and the fill.
+          fontWeight: active || onPath ? 600 : undefined,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
