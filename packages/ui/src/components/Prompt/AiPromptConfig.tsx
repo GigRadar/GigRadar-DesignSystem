@@ -21,6 +21,7 @@ import {
   IconXClose,
 } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
+import { ConfirmTooltip } from '../Tooltip/ConfirmTooltip.js';
 import { CustomPromptField, type CustomPromptFieldHandle } from './CustomPromptField.js';
 import { PromptVariable } from './PromptVariable.js';
 import { VersionNumber, formatVersion, type PromptVersion } from './VersionNumber.js';
@@ -151,6 +152,14 @@ export type AiPromptConfigProps = {
    * in `viewing` mode — an older revision has nothing to reset.
    */
   onReset?: () => void;
+  /**
+   * The confirmation shown before resetting.
+   *
+   * Reset throws away the working draft and cannot be undone, so it asks
+   * first — the same standing as any other destructive action.
+   */
+  resetTitle?: ReactNode;
+  resetDescription?: ReactNode;
 
   /** The right-hand save status. Figma draws "4 minutes ago". */
   savedHint?: ReactNode;
@@ -211,6 +220,8 @@ export const AiPromptConfig = forwardRef<HTMLDivElement, AiPromptConfigProps>(
       onSave,
       onCancel,
       onReset,
+      resetTitle = 'Discard your changes?',
+      resetDescription = 'The prompt goes back to the last saved version. This cannot be undone.',
       savedHint,
       saving = false,
       renderField,
@@ -460,16 +471,23 @@ export const AiPromptConfig = forwardRef<HTMLDivElement, AiPromptConfigProps>(
             there is nothing to reset, so the button is dropped rather than
             greyed — a disabled control still asks to be read. */}
         {onReset && !isViewing && (
-          <Button
-            variant="secondary"
-            tone="danger"
-            size="medium"
-            disabled={saving}
-            startIcon={<Icon icon={IconTryAgain} size={16} />}
-            onClick={onReset}
+          <ConfirmTooltip
+            title={resetTitle}
+            description={resetDescription}
+            confirmLabel="Reset"
+            placement="top"
+            onConfirm={onReset}
           >
-            Reset
-          </Button>
+            <Button
+              variant="secondary"
+              tone="danger"
+              size="medium"
+              disabled={saving}
+              startIcon={<Icon icon={IconTryAgain} size={16} />}
+            >
+              Reset
+            </Button>
+          </ConfirmTooltip>
         )}
 
         {statusHint && (

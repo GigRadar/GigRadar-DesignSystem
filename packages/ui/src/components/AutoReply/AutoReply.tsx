@@ -12,6 +12,7 @@ import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { Icon } from '../../icons/Icon.js';
 import { IconCheck, IconEditPencilArrow, IconTryAgain, IconXClose } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
+import { ConfirmTooltip } from '../Tooltip/ConfirmTooltip.js';
 import { CustomPromptField } from '../Prompt/CustomPromptField.js';
 import { Radio } from '../Radio/Radio.js';
 import { AutoReplyButton } from './AutoReplyButton.js';
@@ -102,6 +103,14 @@ export type AutoReplyProps = {
   onSave?: () => void;
   onCancel?: () => void;
   onReset?: () => void;
+  /**
+   * The confirmation shown before resetting.
+   *
+   * Reset throws away every unsaved edit at once and cannot be undone, so it
+   * asks first — the same standing as any other destructive action.
+   */
+  resetTitle?: ReactNode;
+  resetDescription?: ReactNode;
   /** Puts Save in its loading state and blocks editing. */
   saving?: boolean;
   /**
@@ -150,6 +159,8 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
     onSave,
     onCancel,
     onReset,
+    resetTitle = 'Discard your changes?',
+    resetDescription = 'The reply modes and prompts go back to the last saved version. This cannot be undone.',
     saving = false,
     disabled = false,
     renderOption,
@@ -232,16 +243,23 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
         Cancel
       </Button>
       {onReset && (
-        <Button
-          variant="secondary"
-          tone="danger"
-          size="medium"
-          disabled={saving || disabled}
-          startIcon={<Icon icon={IconTryAgain} size="100%" />}
-          onClick={onReset}
+        <ConfirmTooltip
+          title={resetTitle}
+          description={resetDescription}
+          confirmLabel="Reset"
+          placement="top"
+          onConfirm={onReset}
         >
-          Reset
-        </Button>
+          <Button
+            variant="secondary"
+            tone="danger"
+            size="medium"
+            disabled={saving || disabled}
+            startIcon={<Icon icon={IconTryAgain} size="100%" />}
+          >
+            Reset
+          </Button>
+        </ConfirmTooltip>
       )}
     </div>
   );

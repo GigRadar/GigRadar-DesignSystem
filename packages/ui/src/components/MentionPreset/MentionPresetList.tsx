@@ -6,6 +6,7 @@ import { Icon } from '../../icons/Icon.js';
 import { IconCheck, IconPlus, IconPresetDocumentFill, IconTryAgain, IconXClose } from '../../icons/defs.js';
 import type { IconDef } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
+import { ConfirmTooltip } from '../Tooltip/ConfirmTooltip.js';
 import { MentionPreset } from './MentionPreset.js';
 import { useScrollbar } from '../Scrollbar/Scrollbar.js';
 
@@ -76,6 +77,14 @@ export type MentionPresetListProps = {
   onCancel?: () => void;
   onReset?: () => void;
   /**
+   * The confirmation shown before resetting.
+   *
+   * Reset throws away every unsaved edit at once and cannot be undone — the
+   * same standing as deleting a row, so it asks first for the same reason.
+   */
+  resetTitle?: ReactNode;
+  resetDescription?: ReactNode;
+  /**
    * Whether the list has unsaved edits.
    *
    * Gates Save and Cancel. Controlled, because the list does not own the rows
@@ -125,6 +134,8 @@ export const MentionPresetList = forwardRef<HTMLDivElement, MentionPresetListPro
       onSave,
       onCancel,
       onReset,
+      resetTitle = 'Discard your changes?',
+      resetDescription = 'Every unsaved edit to these presets goes back to the last saved version. This cannot be undone.',
       dirty = false,
       saving = false,
       renderItem,
@@ -221,16 +232,23 @@ export const MentionPresetList = forwardRef<HTMLDivElement, MentionPresetListPro
           Cancel
         </Button>
         {onReset && (
-          <Button
-            variant="secondary"
-            tone="danger"
-            size="medium"
-            disabled={saving}
-            startIcon={<Icon icon={IconTryAgain} size="100%" />}
-            onClick={onReset}
+          <ConfirmTooltip
+            title={resetTitle}
+            description={resetDescription}
+            confirmLabel="Reset"
+            placement="top"
+            onConfirm={onReset}
           >
-            Reset
-          </Button>
+            <Button
+              variant="secondary"
+              tone="danger"
+              size="medium"
+              disabled={saving}
+              startIcon={<Icon icon={IconTryAgain} size="100%" />}
+            >
+              Reset
+            </Button>
+          </ConfirmTooltip>
         )}
       </div>
     );
