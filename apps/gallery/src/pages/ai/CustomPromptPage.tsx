@@ -26,7 +26,7 @@ export function CustomPromptPage() {
         eyebrow="Related"
         links={[
           { label: 'The whole screen', pageId: 'crm-settings-ai' },
-          { label: 'Components ▸ Prompt', pageId: 'prompt' },
+          { label: 'Components ▸ Prompt field', pageId: 'prompt' },
         ]}
       >
         This section is one component — <code>AiPromptConfig</code> — assembled from the prompt

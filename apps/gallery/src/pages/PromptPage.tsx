@@ -24,7 +24,7 @@ export function PromptPage() {
   return (
     <>
       <PageHeader
-        title="Prompt"
+        title="Prompt field"
         description="The mono prompt field, the variable chips that insert into it, and the version pill. Each is independent — the AI Configuration screen composes all three, but nothing here depends on that screen."
       />
 

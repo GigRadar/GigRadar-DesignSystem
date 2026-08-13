@@ -36,7 +36,7 @@ export function AiConfigurationPage() {
 
       <CrossLink
         eyebrow="Composed from components"
-        links={[{ label: 'Components ▸ Prompt', pageId: 'prompt' }]}
+        links={[{ label: 'Components ▸ Prompt field', pageId: 'prompt' }]}
       >
         This screen is one component — <code>AiPromptConfig</code> — assembled from three smaller
         ones that are documented on their own under Components ▸ Prompt. Use the card when you want

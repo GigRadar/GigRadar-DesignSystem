@@ -63,21 +63,41 @@ const NAV: { title: string; nodes: Page[] }[] = [
     ],
   },
   {
+    /**
+     * The generic tier: nothing here knows what a CRM is.
+     *
+     * The dividing line is the dependency graph, not the name. Every component
+     * in this group is consumed by others and depends on nothing screen-shaped,
+     * so a second product could take the whole group unchanged.
+     */
     title: 'Components',
     nodes: [
       { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
       { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
       { id: 'button', label: 'Button', render: () => <ButtonPage /> },
       { id: 'checkbox', label: 'Checkbox & Radio', render: () => <CheckboxPage /> },
-      { id: 'mode-tab', label: 'Mode tab', render: () => <ModeTabPage /> },
-      { id: 'option-button', label: 'Option button', render: () => <OptionButtonPage /> },
       { id: 'pagination', label: 'Pagination', render: () => <PaginationPage /> },
-      { id: 'preset', label: 'Preset', render: () => <PresetPage /> },
-      { id: 'prompt', label: 'Prompt', render: () => <PromptPage /> },
+      { id: 'prompt', label: 'Prompt field', render: () => <PromptPage /> },
       { id: 'scrollbar', label: 'Scrollbar', render: () => <ScrollbarPage /> },
       { id: 'spinner', label: 'Spinner', render: () => <SpinnerPage /> },
       { id: 'switch', label: 'Switch', render: () => <SwitchPage /> },
       { id: 'tooltip', label: 'Tooltip', render: () => <TooltipPage /> },
+    ],
+  },
+  {
+    /**
+     * The CRM tier: built from the group above, used by the screens below.
+     *
+     * These take no CRM-specific props — a mode tab is a tab, an option button
+     * is a radio row — but nothing outside a CRM screen uses them today, and
+     * filing them as generic advertised a reuse that does not exist. Any of
+     * them can be promoted the moment a second product wants one.
+     */
+    title: 'CRM Components',
+    nodes: [
+      { id: 'mode-tab', label: 'Mode tab', render: () => <ModeTabPage /> },
+      { id: 'option-button', label: 'Option button', render: () => <OptionButtonPage /> },
+      { id: 'preset', label: 'Preset', render: () => <PresetPage /> },
     ],
   },
   {
@@ -119,6 +139,8 @@ export function App() {
   const [active, setActive] = useState(PAGES[0]?.id ?? '');
   // Folders start open, so a section's pages are visible without a click.
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  // Groups too — keyed by title, which is what identifies a group.
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
   const page = PAGES.find((p) => p.id === active) ?? PAGES[0];
   if (!page) return null;
@@ -157,6 +179,9 @@ export function App() {
         return next;
       });
     }
+
+    const group = NAV.find((g) => g.nodes.some((node) => flatten(node).some((p) => p.id === pageId)));
+    if (group) setCollapsedGroups((state) => ({ ...state, [group.title]: false }));
   };
 
   /**
@@ -199,26 +224,58 @@ export function App() {
     <Shell
       nav={
         <nav style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}>
-          {NAV.map((group, index) => (
-            <div key={group.title} style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}>
-              <div
-                style={{
-                  ...textStyle.sSemibold,
-                  color: color.main.description,
-                  padding:
-                    index === 0
-                      ? `${spacing.xs}px ${spacing.s}px`
-                      : `${spacing.s}px ${spacing.s}px ${spacing.xs}px`,
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}
-              >
-                {group.title}
-              </div>
+          {NAV.map((group, index) => {
+            const open = !collapsedGroups[group.title];
 
-              {group.nodes.map((node) => renderNode(node, 0))}
-            </div>
-          ))}
+            return (
+              <div key={group.title} style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}>
+                <button
+                  type="button"
+                  aria-expanded={open}
+                  onClick={() =>
+                    setCollapsedGroups((state) => ({ ...state, [group.title]: !state[group.title] }))
+                  }
+                  style={{
+                    ...textStyle.sSemibold,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: spacing.xxs,
+                    width: '100%',
+                    color: color.main.description,
+                    padding:
+                      index === 0
+                        ? `${spacing.xs}px ${spacing.s}px`
+                        : `${spacing.s}px ${spacing.s}px ${spacing.xs}px`,
+                    border: 'none',
+                    background: 'transparent',
+                    textTransform: 'uppercase',
+                    textAlign: 'left',
+                    letterSpacing: 0.5,
+                    cursor: 'pointer',
+                    appearance: 'none',
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    style={{
+                      display: 'inline-block',
+                      // The same quarter-turn the page rows use, so a heading
+                      // and a folder read as the same kind of control.
+                      transform: open ? 'rotate(0deg)' : 'rotate(-90deg)',
+                      transition: 'transform 120ms ease',
+                      fontSize: 9,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ▾
+                  </span>
+                  {group.title}
+                </button>
+
+                {open && group.nodes.map((node) => renderNode(node, 0))}
+              </div>
+            );
+          })}
         </nav>
       }
     >
