@@ -161,6 +161,9 @@ const NAV: NavGroup[] = [
  */
 const NAV_CHEVRON = 16;
 
+/** The expand box on a nav row. Square, so it reads as a control. */
+const NAV_TOGGLE = 22;
+
 /** Every page a group holds, whether it nests them in sections or not. */
 const groupPages = (group: NavGroup): Page[] => [
   ...(group.nodes ?? []),
@@ -269,6 +272,7 @@ export function App() {
           key={node.id}
           label={node.label}
           depth={depth}
+          query={query}
           active={active === node.id}
           onClick={() => navigate(node.id)}
         />
@@ -282,6 +286,7 @@ export function App() {
         <NavItem
           label={node.label}
           depth={depth}
+          query={query}
           active={active === node.id}
           open={nodeOpen}
           onClick={() => navigate(node.id)}
@@ -461,6 +466,7 @@ export function App() {
                         <NavItem
                           label={section.title}
                           variant="section"
+                          query={query}
                           open={sectionOpen}
                           onClick={() =>
                             setCollapsedSections((state) => ({ ...state, [key]: !state[key] }))
@@ -484,17 +490,54 @@ export function App() {
   );
 }
 
+/**
+ * Draws a label with the searched-for run marked.
+ *
+ * Splits on the match rather than replacing markup in a string: the label is
+ * arbitrary text, and building HTML out of it would make a page called
+ * "<Button>" a rendering bug.
+ */
+function HighlightedLabel({ label, query }: { label: string; query: string }) {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return <>{label}</>;
+
+  const at = label.toLowerCase().indexOf(needle);
+  if (at === -1) return <>{label}</>;
+
+  return (
+    <>
+      {label.slice(0, at)}
+      <mark
+        style={{
+          // The theme's own search-match wash — an alpha, so the row's own
+          // background still shows through on the active row.
+          backgroundColor: color.main.highlight,
+          color: 'inherit',
+          borderRadius: 2,
+          padding: '0 1px',
+        }}
+      >
+        {label.slice(at, at + needle.length)}
+      </mark>
+      {label.slice(at + needle.length)}
+    </>
+  );
+}
+
 function NavItem({
   label,
   active = false,
   depth = 0,
   open,
   variant = 'page',
+  query = '',
   onClick,
   onToggle,
 }: {
   label: string;
   active?: boolean;
+  /** The live search, so the matched run can be marked. */
+  query?: string;
   /**
    * What the row is.
    *
@@ -536,49 +579,16 @@ function NavItem({
         backgroundColor: active ? color.navbar.hover : 'transparent',
       }}
     >
-      {open !== undefined && variant === 'page' && (
-        <button
-          onClick={onToggle}
-          aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
-          aria-expanded={open}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 20,
-            height: 20,
-            marginLeft: spacing.xs,
-            padding: 0,
-            border: 'none',
-            borderRadius: radius.xs,
-            background: 'transparent',
-            color: active ? color.main.brand : color.navbar.text,
-            lineHeight: 1,
-            cursor: 'pointer',
-          }}
-        >
-          {/* The same pair the group headings use, so a folder row and a card
-              heading read as the same control at two sizes. */}
-          <Icon icon={open ? IconDropdownArrowUp : IconDropdownArrowDown} size={14} />
-        </button>
-      )}
       <button
         onClick={onClick}
-        aria-expanded={variant === 'section' ? open : undefined}
         style={{
-          ...(variant === 'section' ? textStyle.sSemibold : textStyle.mMedium),
+          ...(variant === 'section' ? textStyle.sMedium : textStyle.mMedium),
           display: 'flex',
           alignItems: 'center',
-          // On a section the label and its caret sit at opposite ends, the way
-          // the card heading above does.
-          justifyContent: variant === 'section' ? 'space-between' : undefined,
-          gap: spacing.xxs,
           flex: '1 1 auto',
           minWidth: 0,
           textAlign: 'left',
           padding: `${spacing.xs}px ${spacing.s}px`,
-          // The caret already supplies the left inset on a parent page row.
-          paddingLeft: open === undefined || variant === 'section' ? spacing.s : 0,
           borderRadius: radius.xs,
           border: 'none',
           background: 'transparent',
@@ -591,26 +601,45 @@ function NavItem({
               : active
                 ? color.main.brand
                 : color.navbar.text,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
         }}
       >
-        {label}
-        {variant === 'section' && open !== undefined && (
-          <span
-            aria-hidden
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              width: 14,
-              height: 14,
-              color: color.navbar.text,
-            }}
-          >
-            <Icon icon={open ? IconDropdownArrowUp : IconDropdownArrowDown} size="100%" />
-          </span>
-        )}
+        <HighlightedLabel label={label} query={query} />
       </button>
+
+      {/* The toggle sits at the right in its own bordered box, so a row that
+          both opens a page and holds sub-pages has two visibly separate
+          targets: the label navigates, the box folds. Without the border the
+          two ran together and there was no way to tell that clicking one edge
+          of the row did something different from the other. */}
+      {open !== undefined && onToggle && (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
+          aria-expanded={open}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            width: NAV_TOGGLE,
+            height: NAV_TOGGLE,
+            marginRight: spacing.xxs,
+            padding: 0,
+            border: `1px solid ${color.navbar.hover}`,
+            borderRadius: radius.xs,
+            background: color.main.white,
+            color: active ? color.main.brand : color.navbar.text,
+            lineHeight: 1,
+            cursor: 'pointer',
+          }}
+        >
+          <Icon icon={open ? IconDropdownArrowUp : IconDropdownArrowDown} size={12} />
+        </button>
+      )}
     </div>
   );
 }
