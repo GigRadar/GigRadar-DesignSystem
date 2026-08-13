@@ -53,7 +53,22 @@ const hasChildren = (page: Page): page is Page & { children: Page[] } =>
  * the other group, which cannot express a third group and silently puts any
  * new page under Components.
  */
-const NAV: { title: string; nodes: Page[] }[] = [
+/**
+ * A nav group — a card in the sidebar.
+ *
+ * A group holds either pages directly or named sections of them. Components
+ * carries sections because the split inside it is real and load-bearing:
+ * Main is the generic tier, CRM is what is built on top. Both live in one card
+ * because they are two halves of one idea — "the components" — rather than two
+ * unrelated groups that happen to sit next to each other.
+ */
+type NavGroup = {
+  title: string;
+  nodes?: Page[];
+  sections?: { title: string; nodes: Page[] }[];
+};
+
+const NAV: NavGroup[] = [
   {
     title: 'Foundations',
     nodes: [
@@ -63,41 +78,47 @@ const NAV: { title: string; nodes: Page[] }[] = [
     ],
   },
   {
-    /**
-     * The generic tier: nothing here knows what a CRM is.
-     *
-     * The dividing line is the dependency graph, not the name. Every component
-     * in this group is consumed by others and depends on nothing screen-shaped,
-     * so a second product could take the whole group unchanged.
-     */
     title: 'Components',
-    nodes: [
-      { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
-      { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
-      { id: 'button', label: 'Button', render: () => <ButtonPage /> },
-      { id: 'checkbox', label: 'Checkbox & Radio', render: () => <CheckboxPage /> },
-      { id: 'pagination', label: 'Pagination', render: () => <PaginationPage /> },
-      { id: 'prompt', label: 'Prompt field', render: () => <PromptPage /> },
-      { id: 'scrollbar', label: 'Scrollbar', render: () => <ScrollbarPage /> },
-      { id: 'spinner', label: 'Spinner', render: () => <SpinnerPage /> },
-      { id: 'switch', label: 'Switch', render: () => <SwitchPage /> },
-      { id: 'tooltip', label: 'Tooltip', render: () => <TooltipPage /> },
-    ],
-  },
-  {
-    /**
-     * The CRM tier: built from the group above, used by the screens below.
-     *
-     * These take no CRM-specific props — a mode tab is a tab, an option button
-     * is a radio row — but nothing outside a CRM screen uses them today, and
-     * filing them as generic advertised a reuse that does not exist. Any of
-     * them can be promoted the moment a second product wants one.
-     */
-    title: 'CRM Components',
-    nodes: [
-      { id: 'mode-tab', label: 'Mode tab', render: () => <ModeTabPage /> },
-      { id: 'option-button', label: 'Option button', render: () => <OptionButtonPage /> },
-      { id: 'preset', label: 'Preset', render: () => <PresetPage /> },
+    sections: [
+      {
+        /**
+         * The generic tier: nothing here knows what a CRM is.
+         *
+         * The dividing line is the dependency graph, not the name. Every
+         * component here is consumed by others and depends on nothing
+         * screen-shaped, so a second product could take the section unchanged.
+         */
+        title: 'Main',
+        nodes: [
+          { id: 'avatar', label: 'Avatar', render: () => <AvatarPage /> },
+          { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
+          { id: 'button', label: 'Button', render: () => <ButtonPage /> },
+          { id: 'checkbox', label: 'Checkbox & Radio', render: () => <CheckboxPage /> },
+          { id: 'pagination', label: 'Pagination', render: () => <PaginationPage /> },
+          { id: 'prompt', label: 'Prompt field', render: () => <PromptPage /> },
+          { id: 'scrollbar', label: 'Scrollbar', render: () => <ScrollbarPage /> },
+          { id: 'spinner', label: 'Spinner', render: () => <SpinnerPage /> },
+          { id: 'switch', label: 'Switch', render: () => <SwitchPage /> },
+          { id: 'tooltip', label: 'Tooltip', render: () => <TooltipPage /> },
+        ],
+      },
+      {
+        /**
+         * Built from Main, used by the CRM screens.
+         *
+         * These take no CRM-specific props — a mode tab is a tab, an option
+         * button is a radio row — but nothing outside a CRM screen uses them
+         * today, and filing them as generic advertised a reuse that does not
+         * exist. Any of them can move up to Main the moment a second product
+         * wants one. More product sections join this list as they are built.
+         */
+        title: 'CRM',
+        nodes: [
+          { id: 'mode-tab', label: 'Mode tab', render: () => <ModeTabPage /> },
+          { id: 'option-button', label: 'Option button', render: () => <OptionButtonPage /> },
+          { id: 'preset', label: 'Preset', render: () => <PresetPage /> },
+        ],
+      },
     ],
   },
   {
@@ -131,9 +152,15 @@ const NAV: { title: string; nodes: Page[] }[] = [
   },
 ];
 
+/** Every page a group holds, whether it nests them in sections or not. */
+const groupPages = (group: NavGroup): Page[] => [
+  ...(group.nodes ?? []),
+  ...(group.sections ?? []).flatMap((section) => section.nodes),
+];
+
 const flatten = (page: Page): Page[] => [page, ...(page.children ?? []).flatMap(flatten)];
 
-const PAGES: Page[] = NAV.flatMap((group) => group.nodes.flatMap(flatten));
+const PAGES: Page[] = NAV.flatMap((group) => groupPages(group).flatMap(flatten));
 
 export function App() {
   const [active, setActive] = useState(PAGES[0]?.id ?? '');
@@ -168,7 +195,7 @@ export function App() {
         }
         return walk(node.children ?? [], [...trail, node.id]);
       });
-    walk(NAV.flatMap((group) => group.nodes), []);
+    walk(NAV.flatMap(groupPages), []);
 
     if (ancestors.length) {
       setCollapsed((state) => {
@@ -180,7 +207,9 @@ export function App() {
       });
     }
 
-    const group = NAV.find((g) => g.nodes.some((node) => flatten(node).some((p) => p.id === pageId)));
+    const group = NAV.find((g) =>
+      groupPages(g).some((node) => flatten(node).some((p) => p.id === pageId)),
+    );
     if (group) setCollapsedGroups((state) => ({ ...state, [group.title]: false }));
   };
 
@@ -223,12 +252,24 @@ export function App() {
   return (
     <Shell
       nav={
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}>
-          {NAV.map((group, index) => {
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: spacing.s }}>
+          {NAV.map((group) => {
             const open = !collapsedGroups[group.title];
 
             return (
-              <div key={group.title} style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}>
+              <div
+                key={group.title}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: spacing.xxs,
+                  boxSizing: 'border-box',
+                  padding: spacing.xxs,
+                  borderRadius: radius.s,
+                  border: `1px solid ${color.navbar.hover}`,
+                  backgroundColor: color.main.white,
+                }}
+              >
                 <button
                   type="button"
                   aria-expanded={open}
@@ -242,10 +283,7 @@ export function App() {
                     gap: spacing.xxs,
                     width: '100%',
                     color: color.main.description,
-                    padding:
-                      index === 0
-                        ? `${spacing.xs}px ${spacing.s}px`
-                        : `${spacing.s}px ${spacing.s}px ${spacing.xs}px`,
+                    padding: `${spacing.xs}px ${spacing.s}px`,
                     border: 'none',
                     background: 'transparent',
                     textTransform: 'uppercase',
@@ -272,7 +310,28 @@ export function App() {
                   {group.title}
                 </button>
 
-                {open && group.nodes.map((node) => renderNode(node, 0))}
+                {open && group.nodes?.map((node) => renderNode(node, 0))}
+                {open &&
+                  group.sections?.map((section) => (
+                    <div
+                      key={section.title}
+                      style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}
+                    >
+                      {/* A quieter label than the card's own heading: this
+                          divides one card's contents rather than naming a new
+                          card, so it does not compete with the heading above. */}
+                      <div
+                        style={{
+                          ...textStyle.sMedium,
+                          color: color.navbar.text,
+                          padding: `${spacing.xs}px ${spacing.s}px ${spacing.xxs}px`,
+                        }}
+                      >
+                        {section.title}
+                      </div>
+                      {section.nodes.map((node) => renderNode(node, 0))}
+                    </div>
+                  ))}
               </div>
             );
           })}
