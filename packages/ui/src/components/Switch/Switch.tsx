@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { SwitchButton } from './SwitchButton.js';
 import type { IconDef } from '../../icons/defs.js';
 
@@ -38,14 +39,24 @@ export type SwitchItem = {
   disabled?: boolean;
 };
 
-/** What `itemRender` is told about the segment it is drawing. */
-export type SwitchItemRenderContext = {
+/**
+ * What a `renderSegment` function receives — one segment's content.
+ *
+ * The states are resolved rather than left to be re-derived: `disabled` already
+ * folds the whole control's flag into the segment's own, and `selected` is the
+ * comparison against the current value.
+ */
+export type SwitchSegmentRenderProps = WithDefaultRender & {
+  /** The segment being drawn, as declared in `items`. */
+  item: SwitchItem;
   /** Whether this segment is the current selection. */
   selected: boolean;
   /** Whether the segment is blocked, by its own flag or the whole control's. */
   disabled: boolean;
   /** The segment's position in `items`. */
   index: number;
+  /** Selects this segment. A no-op while it is disabled. */
+  select: () => void;
 };
 
 /** Per-instance overrides for the track's own metrics. */
@@ -87,13 +98,24 @@ export type SwitchProps = {
    */
   label?: string;
   /**
-   * Draws a segment's content in place of the default icon + label + badge
-   * row — the antd-style escape hatch for custom segment markup. The switch
-   * still owns the pill, hover, thumb, and keyboard behavior; only the content
-   * inside the segment changes. Returning `undefined` for a segment falls back
-   * to the default rendering of that one segment.
+   * Replaces a segment's content — the default icon + label + badge row —
+   * keeping the behaviour that is hard to get right: the pill, the hover, the
+   * sliding thumb, the roving tab stop, the arrow-key wrapping.
+   *
+   * Only the content inside the segment changes; the segment itself is still
+   * the switch's. Call `defaultRender()` to wrap rather than replace, which is
+   * also how one segment opts back out while the others are customised.
+   *
+   * The one thing `defaultRender()` cannot give back is `item.icon` and
+   * `item.badge`: `SwitchButton` draws those from its own props, around its
+   * children, and this prop only supplies the children. So passing it drops
+   * both from EVERY segment, and a renderer that wants them draws them itself
+   * — `item` carries them for exactly that. They are dropped rather than left
+   * in place because a caller replacing the label almost always means to
+   * replace what sits beside it too, and a badge surviving into custom markup
+   * lands in the wrong place more often than the right one.
    */
-  itemRender?: (item: SwitchItem, context: SwitchItemRenderContext) => ReactNode;
+  renderSegment?: RenderProp<SwitchSegmentRenderProps>;
 } & SwitchStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'onChange' | 'defaultValue'>;
 
@@ -130,7 +152,7 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
     size = 'medium',
     disabled = false,
     label,
-    itemRender,
+    renderSegment,
     padding,
     radius,
     background,
@@ -284,9 +306,23 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
       {items.map((item, index) => {
         const selected = item.value === current;
         const itemDisabled = disabled || Boolean(item.disabled);
-        // A custom-rendered segment owns its whole content, so the default
-        // icon and badge slots step aside rather than doubling up around it.
-        const custom = itemRender?.(item, { selected, disabled: itemDisabled, index });
+        const defaultRender = () => item.label ?? item.value;
+        // A replaced segment owns its whole content, so the icon and badge
+        // slots step aside rather than doubling up around it. They are props on
+        // the button rather than children, so `defaultRender()` cannot carry
+        // them; `item` is handed over so the renderer can redraw whichever it
+        // still wants. Suppressed for every segment, not just the replaced
+        // ones, so the row stays consistent while a caller customises it.
+        const content = renderSegment
+          ? renderSegment({
+              item,
+              selected,
+              disabled: itemDisabled,
+              index,
+              select: () => (itemDisabled ? undefined : select(item.value)),
+              defaultRender,
+            })
+          : defaultRender();
         return (
           <SwitchButton
             key={item.value}
@@ -301,8 +337,8 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
             // sliding thumb behind a stationary one. Before the first
             // measurement there is no thumb, and the segment fills in.
             raised={selected && thumb === null}
-            badge={custom === undefined ? item.badge : undefined}
-            icon={custom === undefined ? item.icon : undefined}
+            badge={renderSegment ? undefined : item.badge}
+            icon={renderSegment ? undefined : item.icon}
             disabled={itemDisabled}
             // Only the selected segment is a tab stop; the arrow keys move
             // within the group. That is the roving-tabindex the tab pattern
@@ -311,7 +347,7 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
             tabIndex={selected ? 0 : -1}
             onClick={() => select(item.value)}
           >
-            {custom ?? item.label ?? item.value}
+            {content}
           </SwitchButton>
         );
       })}

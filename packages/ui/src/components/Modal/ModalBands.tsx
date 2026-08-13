@@ -1,6 +1,7 @@
 import { color, component, typography } from '@gigradar/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { IconXClose } from '../../icons/defs.js';
 import { IconButton, type IconButtonSize } from '../Button/IconButton.js';
 
@@ -86,8 +87,40 @@ export type ModalHeaderProps = {
    * resolves. Reserving the space keeps every state the same height.
    */
   reserveCloseSpace?: boolean;
+  /**
+   * Replaces the close button, keeping the header's layout and the reserved
+   * space that holds every state at one height.
+   *
+   * The usual reason is a close that has to do more than call `onClose` — one
+   * that confirms first, or carries a tooltip explaining why it is absent.
+   * `reserved` is true on the branch that draws the spacer rather than a
+   * button, so a renderer can leave that case to the default.
+   *
+   * Call `defaultRender()` to wrap rather than replace.
+   */
+  renderClose?: RenderProp<ModalCloseRenderProps>;
 } & ModalHeaderStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'title'>;
+
+/**
+ * What a `renderClose` function receives — the header's trailing cell.
+ *
+ * Called for the spacer branch too, so a renderer sees every state the cell
+ * has rather than only the ones with a button in them.
+ */
+export type ModalCloseRenderProps = WithDefaultRender & {
+  /** The close handler, or undefined when the dialog cannot be dismissed. */
+  close?: () => void;
+  /** Accessible name the default button carries. */
+  closeLabel: string;
+  /** The size the default button is drawn at. */
+  closeSize: IconButtonSize;
+  /**
+   * True when there is no `close` and the cell is only holding space open.
+   * Nothing is drawn on this branch beyond an invisible box.
+   */
+  reserved: boolean;
+};
 
 export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(function ModalHeader(
   {
@@ -98,6 +131,7 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(function
     divided = true,
     reserveCloseSpace = false,
     closeSize = 'medium',
+    renderClose,
     padding,
     gap,
     fontSize,
@@ -110,6 +144,22 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(function
   ref,
 ) {
   const hasTrailing = extra != null || onClose != null || reserveCloseSpace;
+
+  const defaultClose = () =>
+    onClose ? (
+      <IconButton icon={IconXClose} size={closeSize} aria-label={closeLabel} onClick={onClose} />
+    ) : (
+      reserveCloseSpace && (
+        <span
+          aria-hidden
+          style={{
+            width: iconButton.size[closeSize],
+            height: iconButton.size[closeSize],
+            flexShrink: 0,
+          }}
+        />
+      )
+    );
 
   const style: CSSProperties = {
     boxSizing: 'border-box',
@@ -160,25 +210,15 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(function
         {hasTrailing && (
         <div style={{ display: 'flex', alignItems: 'center', gap: `${modal.footer.gap}px`, flexShrink: 0 }}>
           {extra}
-          {onClose ? (
-            <IconButton
-              icon={IconXClose}
-              size={closeSize}
-              aria-label={closeLabel}
-              onClick={onClose}
-            />
-          ) : (
-            reserveCloseSpace && (
-              <span
-                aria-hidden
-                style={{
-                  width: iconButton.size[closeSize],
-                  height: iconButton.size[closeSize],
-                  flexShrink: 0,
-                }}
-              />
-            )
-          )}
+          {renderClose
+            ? renderClose({
+                close: onClose,
+                closeLabel,
+                closeSize,
+                reserved: onClose == null,
+                defaultRender: defaultClose,
+              })
+            : defaultClose()}
         </div>
         )}
       </div>

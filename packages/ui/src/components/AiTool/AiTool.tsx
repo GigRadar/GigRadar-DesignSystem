@@ -1,6 +1,7 @@
 import { color, component, typography } from '@gigradar/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import type { IconDef } from '../../icons/defs.js';
 import { AiToolBadge, aiToolPalette, type AiToolCategory } from './AiToolBadge.js';
 
@@ -41,8 +42,61 @@ export type AiToolProps = {
   icon?: IconDef;
   /** Draws the badge's disabled slash — the agent cannot call this one. */
   crossed?: boolean;
+  /**
+   * Replaces the badge at the head of the row, keeping the row's layout.
+   *
+   * The payload carries the resolved `palette`, so a replacement badge can
+   * stay on the category's colour without re-deriving it.
+   *
+   * Call `defaultRender()` to wrap rather than replace.
+   */
+  renderBadge?: RenderProp<AiToolBadgeRenderProps>;
+  /**
+   * Replaces the category tag beside the name, keeping the header row.
+   *
+   * The usual reason is a tag that has to carry something extra — a link to
+   * the category's docs, a count, a tooltip. Not called when there is no
+   * `categoryLabel`, since there is no tag to draw.
+   *
+   * Call `defaultRender()` to wrap rather than replace.
+   */
+  renderTag?: RenderProp<AiToolTagRenderProps>;
 } & AiToolStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style'>;
+
+/**
+ * The colours a category resolves to, shared by the badge and the tag.
+ *
+ * Handed to both render props so a replacement cannot drift off the palette
+ * the other half of the row is using.
+ */
+export type AiToolPalette = ReturnType<typeof aiToolPalette>;
+
+/**
+ * What a `renderBadge` function receives — the head of the row.
+ */
+export type AiToolBadgeRenderProps = WithDefaultRender & {
+  /** The category the badge is drawing. */
+  category: AiToolCategory;
+  /** The glyph override, if the caller passed one. */
+  icon?: IconDef;
+  /** Whether the disabled slash is drawn. */
+  crossed: boolean;
+  /** The category's resolved colours. */
+  palette: AiToolPalette;
+};
+
+/**
+ * What a `renderTag` function receives — the category tag beside the name.
+ */
+export type AiToolTagRenderProps = WithDefaultRender & {
+  /** The tag's text, as passed. Never empty — the tag is skipped when it is. */
+  categoryLabel: ReactNode;
+  /** The category the label belongs to. */
+  category: AiToolCategory;
+  /** The category's resolved colours. */
+  palette: AiToolPalette;
+};
 
 /**
  * One capability available to the agent.
@@ -62,6 +116,8 @@ export const AiTool = forwardRef<HTMLDivElement, AiToolProps>(function AiTool(
     categoryLabel,
     icon,
     crossed = false,
+    renderBadge,
+    renderTag,
     paddingX,
     paddingY,
     gap,
@@ -91,9 +147,33 @@ export const AiTool = forwardRef<HTMLDivElement, AiToolProps>(function AiTool(
     overflow: 'hidden',
   };
 
+  const defaultBadge = () => <AiToolBadge category={category} icon={icon} crossed={crossed} />;
+
+  const defaultTag = () => (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+        padding: `${aiTool.tag.paddingY}px ${aiTool.tag.paddingX}px`,
+        borderRadius: aiTool.tag.radius,
+        backgroundColor: palette.background,
+        color: palette.accent,
+        ...typography.textStyle.sRegular,
+        lineHeight: 1,
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {categoryLabel}
+    </span>
+  );
+
   return (
     <div {...rest} ref={ref} style={style}>
-      <AiToolBadge category={category} icon={icon} crossed={crossed} />
+      {renderBadge
+        ? renderBadge({ category, icon, crossed, palette, defaultRender: defaultBadge })
+        : defaultBadge()}
 
       <div
         style={{
@@ -126,25 +206,10 @@ export const AiTool = forwardRef<HTMLDivElement, AiToolProps>(function AiTool(
           >
             {name}
           </code>
-          {categoryLabel && (
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                padding: `${aiTool.tag.paddingY}px ${aiTool.tag.paddingX}px`,
-                borderRadius: aiTool.tag.radius,
-                backgroundColor: palette.background,
-                color: palette.accent,
-                ...typography.textStyle.sRegular,
-                lineHeight: 1,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {categoryLabel}
-            </span>
-          )}
+          {categoryLabel &&
+            (renderTag
+              ? renderTag({ categoryLabel, category, palette, defaultRender: defaultTag })
+              : defaultTag())}
         </div>
 
         {description && (

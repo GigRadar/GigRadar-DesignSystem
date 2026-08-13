@@ -1,6 +1,13 @@
 import { color, component, typography } from '@gigradar/theme';
-import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
+import {
+  Fragment,
+  forwardRef,
+  type CSSProperties,
+  type HTMLAttributes,
+  type ReactNode,
+} from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { Icon } from '../../icons/Icon.js';
 import { IconCheckmarkCircleStroke, IconXCirlceRoundStroke } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
@@ -84,8 +91,97 @@ export type AuthorizationPopupProps = {
   onRetry?: () => void;
   /** Label for the retry action. */
   retryLabel?: ReactNode;
+  /**
+   * Replaces the head's glyph and message, keeping the header band and the
+   * close button's reserved space that holds every state at one height.
+   *
+   * `heading` and `description` arrive resolved against the state's defaults,
+   * so a replacement does not have to reach into the state table.
+   */
+  renderHead?: RenderProp<AuthorizationHeadRenderProps>;
+  /**
+   * Replaces the whole tinted panel — its title and its rows together. Not
+   * called when there are no rows, since the panel is dropped entirely then.
+   *
+   * Use `renderRow` instead to change only the rows inside it.
+   */
+  renderPanel?: RenderProp<AuthorizationPanelRenderProps>;
+  /**
+   * Replaces one row in the panel, keeping the panel's tint and title.
+   *
+   * The usual reason is a row that has to carry a link — a failed state
+   * pointing at a status page, a success row linking to the Inbox.
+   *
+   * Not called when `renderPanel` has replaced the panel around it.
+   */
+  renderRow?: RenderProp<AuthorizationRowRenderProps>;
+  /**
+   * Replaces the footer's buttons. Not called in the `progress` state, which
+   * draws no footer at all — an attempt in flight has nothing to offer but
+   * waiting.
+   *
+   * The payload carries each action and whether the default would draw it, so
+   * a replacement can reorder or relabel without re-deriving the state rules.
+   */
+  renderFooter?: RenderProp<AuthorizationFooterRenderProps>;
 } & AuthorizationPopupStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'title'>;
+
+/** What a `renderHead` function receives — the card's head. */
+export type AuthorizationHeadRenderProps = WithDefaultRender & {
+  /** Which state the card is in. */
+  state: AuthorizationState;
+  /** The heading, resolved against the state's default. */
+  heading: ReactNode;
+  /** The line under it, resolved against the state's default. */
+  description: ReactNode;
+  /** The state's accent colour, which the glyph is drawn in. */
+  accent: string;
+};
+
+/** What a `renderPanel` function receives — the tinted block of rows. */
+export type AuthorizationPanelRenderProps = WithDefaultRender & {
+  /** Which state the card is in. */
+  state: AuthorizationState;
+  /** The panel's heading, resolved against the state's default. */
+  panelTitle: ReactNode;
+  /** The rows, resolved against the state's defaults. Never empty. */
+  rows: ReactNode[];
+  /** The state's accent colour, which the row dots are drawn in. */
+  accent: string;
+  /** The panel's fill for this state. */
+  tint: string;
+};
+
+/** What a `renderRow` function receives — one row in the panel. */
+export type AuthorizationRowRenderProps = WithDefaultRender & {
+  /** The row's content. */
+  row: ReactNode;
+  /** Its position in the panel, for keying. */
+  index: number;
+  /** The state's accent colour, which the dot is drawn in. */
+  accent: string;
+};
+
+/** What a `renderFooter` function receives — the card's actions. */
+export type AuthorizationFooterRenderProps = WithDefaultRender & {
+  /** Which state the card is in. Never `progress`. */
+  state: AuthorizationState;
+  /** Whether the default draws the Inbox action. */
+  showGoToInbox: boolean;
+  /** Whether the default draws the connect-another action. */
+  showConnectAnother: boolean;
+  /** Whether the default draws the retry action. */
+  showRetry: boolean;
+  /** Opens the Inbox, if the caller wired it. */
+  goToInbox?: () => void;
+  /** Starts another connection, if the caller wired it. */
+  connectAnother?: () => void;
+  /** Retries the attempt, if the caller wired it. */
+  retry?: () => void;
+  /** Dismisses the card, if the caller wired it. */
+  close?: () => void;
+};
 
 /** Everything that differs between the three states, in one place. */
 const states: Record<
@@ -182,6 +278,10 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
       connectAnotherLabel = 'Connect Another Account',
       onRetry,
       retryLabel = 'Try Again',
+      renderHead,
+      renderPanel,
+      renderRow,
+      renderFooter,
       width,
       radius,
       panelPadding,
@@ -213,6 +313,161 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
       color: spec.accent,
     };
 
+    const resolvedHeading = heading ?? spec.heading;
+    const resolvedDescription = description ?? spec.description;
+    const resolvedPanelTitle = panelTitle ?? spec.panelTitle;
+
+    const defaultHead = () => (
+      <div style={{ display: 'flex', alignItems: 'center', gap: popup.headGap, minWidth: 0 }}>
+        <span style={glyphStyle}>
+          {state === 'progress' ? (
+            <Spinner size="medium" aria-label="Authorizing" />
+          ) : (
+            <Icon
+              icon={state === 'success' ? IconCheckmarkCircleStroke : IconXCirlceRoundStroke}
+              // Fills the slot. The slot itself is fixed, so a larger glyph
+              // cannot push the head — and the card — any taller.
+              size="100%"
+            />
+          )}
+        </span>
+
+        {/* The description sits under the heading here rather than at the
+            top of the body: it explains the outcome, so it belongs with it.
+            The body is then the panel alone. */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: popup.headTitleGap,
+            minWidth: 0,
+          }}
+        >
+          <span
+            style={{
+              ...typography.textStyle.lMedium,
+              color: color.main.black,
+              lineHeight: 1.2,
+            }}
+          >
+            {resolvedHeading}
+          </span>
+          <span style={{ ...typography.textStyle.mRegular, color: color.navbar.text }}>
+            {resolvedDescription}
+          </span>
+        </div>
+      </div>
+    );
+
+    const defaultRow = (row: ReactNode, index: number) => (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: popup.rowGap,
+          width: '100%',
+        }}
+      >
+        <span
+          aria-hidden
+          style={{
+            width: popup.dotSize,
+            height: popup.dotSize,
+            marginTop: popup.dotOffset,
+            borderRadius: '50%',
+            backgroundColor: spec.accent,
+            flexShrink: 0,
+          }}
+        />
+        <span
+          style={{
+            ...typography.textStyle.mRegular,
+            color: color.navbar.textActive,
+            minWidth: 0,
+          }}
+        >
+          {row}
+        </span>
+      </div>
+    );
+
+    const defaultPanel = () => (
+      <div
+        style={{
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: len(panelGap) ?? `${popup.panelGap}px`,
+          width: '100%',
+          padding: len(panelPadding) ?? `${popup.panelPadding}px`,
+          borderRadius: popup.panelRadius,
+          // Painted over white rather than the page: the failed tint is
+          // an alpha value that would otherwise pick up whatever is
+          // behind the card.
+          background: spec.tint,
+        }}
+      >
+        <span style={{ ...typography.textStyle.mSemibold, color: color.navbar.textActive }}>
+          {resolvedPanelTitle}
+        </span>
+
+        {/* Dots rather than numbered discs. A disc puts a row at a
+            position in an order, which is a claim none of these lists
+            makes: the success rows are alternatives, the failed rows are
+            candidate causes of one failure, and the progress reminders
+            are things to keep in mind rather than a checklist to work
+            down. `AuthorizationSteps` is deliberately not used here for
+            that reason — it numbers from position by design, because it
+            draws the walkthrough, where the order IS the content. */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: popup.rowPadding,
+            width: '100%',
+          }}
+        >
+          {rows.map((row, index) => (
+            <Fragment key={index}>
+              {renderRow
+                ? renderRow({
+                    row,
+                    index,
+                    accent: spec.accent,
+                    defaultRender: () => defaultRow(row, index),
+                  })
+                : defaultRow(row, index)}
+            </Fragment>
+          ))}
+        </div>
+      </div>
+    );
+
+    const defaultFooter = () => (
+      <>
+        {showRetry && (
+          <>
+            {onClose && (
+              <Button variant="secondary" onClick={onClose}>
+                Cancel
+              </Button>
+            )}
+            {/* The retry carries the danger tone: it is the action on a
+                failure, and the card is already red around it. */}
+            <Button tone="danger" onClick={onRetry}>
+              {retryLabel}
+            </Button>
+          </>
+        )}
+        {showConnectAnother && (
+          <Button variant="secondary" onClick={onConnectAnother}>
+            {connectAnotherLabel}
+          </Button>
+        )}
+        {showGoToInbox && <Button onClick={onGoToInbox}>{goToInboxLabel}</Button>}
+      </>
+    );
+
     return (
       <ModalCard
         {...rest}
@@ -232,118 +487,29 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
           reserveCloseSpace
           closeSize="small"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: popup.headGap, minWidth: 0 }}>
-            <span style={glyphStyle}>
-              {state === 'progress' ? (
-                <Spinner size="medium" aria-label="Authorizing" />
-              ) : (
-                <Icon
-                  icon={state === 'success' ? IconCheckmarkCircleStroke : IconXCirlceRoundStroke}
-                  // Fills the slot. The slot itself is fixed, so a larger glyph
-                  // cannot push the head — and the card — any taller.
-                  size="100%"
-                />
-              )}
-            </span>
-
-            {/* The description sits under the heading here rather than at the
-                top of the body: it explains the outcome, so it belongs with it.
-                The body is then the panel alone. */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: popup.headTitleGap,
-                minWidth: 0,
-              }}
-            >
-              <span
-                style={{
-                  ...typography.textStyle.lMedium,
-                  color: color.main.black,
-                  lineHeight: 1.2,
-                }}
-              >
-                {heading ?? spec.heading}
-              </span>
-              <span style={{ ...typography.textStyle.mRegular, color: color.navbar.text }}>
-                {description ?? spec.description}
-              </span>
-            </div>
-          </div>
+          {renderHead
+            ? renderHead({
+                state,
+                heading: resolvedHeading,
+                description: resolvedDescription,
+                accent: spec.accent,
+                defaultRender: defaultHead,
+              })
+            : defaultHead()}
         </ModalHeader>
 
         {rows.length > 0 && (
           <ModalContent>
-            <div
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: len(panelGap) ?? `${popup.panelGap}px`,
-                width: '100%',
-                padding: len(panelPadding) ?? `${popup.panelPadding}px`,
-                borderRadius: popup.panelRadius,
-                // Painted over white rather than the page: the failed tint is
-                // an alpha value that would otherwise pick up whatever is
-                // behind the card.
-                background: spec.tint,
-              }}
-            >
-              <span style={{ ...typography.textStyle.mSemibold, color: color.navbar.textActive }}>
-                {panelTitle ?? spec.panelTitle}
-              </span>
-
-              {/* Dots rather than numbered discs. A disc puts a row at a
-                  position in an order, which is a claim none of these lists
-                  makes: the success rows are alternatives, the failed rows are
-                  candidate causes of one failure, and the progress reminders
-                  are things to keep in mind rather than a checklist to work
-                  down. `AuthorizationSteps` is deliberately not used here for
-                  that reason — it numbers from position by design, because it
-                  draws the walkthrough, where the order IS the content. */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: popup.rowPadding,
-                  width: '100%',
-                }}
-              >
-                {rows.map((row, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: popup.rowGap,
-                      width: '100%',
-                    }}
-                  >
-                    <span
-                      aria-hidden
-                      style={{
-                        width: popup.dotSize,
-                        height: popup.dotSize,
-                        marginTop: popup.dotOffset,
-                        borderRadius: '50%',
-                        backgroundColor: spec.accent,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span
-                      style={{
-                        ...typography.textStyle.mRegular,
-                        color: color.navbar.textActive,
-                        minWidth: 0,
-                      }}
-                    >
-                      {row}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {renderPanel
+              ? renderPanel({
+                  state,
+                  panelTitle: resolvedPanelTitle,
+                  rows,
+                  accent: spec.accent,
+                  tint: spec.tint,
+                  defaultRender: defaultPanel,
+                })
+              : defaultPanel()}
           </ModalContent>
         )}
 
@@ -352,26 +518,19 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
             otherwise. */}
         {(showGoToInbox || showConnectAnother || showRetry) && (
           <ModalFooter>
-            {showRetry && (
-              <>
-                {onClose && (
-                  <Button variant="secondary" onClick={onClose}>
-                    Cancel
-                  </Button>
-                )}
-                {/* The retry carries the danger tone: it is the action on a
-                    failure, and the card is already red around it. */}
-                <Button tone="danger" onClick={onRetry}>
-                  {retryLabel}
-                </Button>
-              </>
-            )}
-            {showConnectAnother && (
-              <Button variant="secondary" onClick={onConnectAnother}>
-                {connectAnotherLabel}
-              </Button>
-            )}
-            {showGoToInbox && <Button onClick={onGoToInbox}>{goToInboxLabel}</Button>}
+            {renderFooter
+              ? renderFooter({
+                  state,
+                  showGoToInbox,
+                  showConnectAnother,
+                  showRetry,
+                  goToInbox: onGoToInbox,
+                  connectAnother: onConnectAnother,
+                  retry: onRetry,
+                  close: onClose,
+                  defaultRender: defaultFooter,
+                })
+              : defaultFooter()}
           </ModalFooter>
         )}
       </ModalCard>

@@ -1,6 +1,7 @@
 import { color, component, typography } from '@gigradar/theme';
 import { forwardRef, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { Icon } from '../../icons/Icon.js';
 import { IconLockFill, IconPlus } from '../../icons/defs.js';
 import { Avatar } from '../Avatar/Avatar.js';
@@ -77,8 +78,84 @@ export type AccountCardProps = {
   onClick?: () => void;
   /** Dims the card and blocks interaction. */
   disabled?: boolean;
+  /**
+   * Replaces the avatar on an `account` slot, keeping the row's layout.
+   *
+   * `muted` is already resolved from the suspended state, so a replacement
+   * does not have to re-derive which accounts are drawn greyed.
+   *
+   * Call `defaultRender()` to wrap rather than replace.
+   */
+  renderAvatar?: RenderProp<AccountAvatarRenderProps>;
+  /**
+   * Replaces the status pill under the name.
+   *
+   * The usual reason is a status that has to carry more than a tone — a
+   * reconnect link on a suspended account, a tooltip explaining a limit.
+   */
+  renderStatus?: RenderProp<AccountStatusRenderProps>;
+  /**
+   * Replaces the selection checkbox. Not called when `selected` is undefined,
+   * since an unselectable list draws no checkbox at all.
+   *
+   * `toggle` reports through `onSelectedChange`, so a replacement keeps the
+   * card's contract with the grid above it.
+   */
+  renderSelection?: RenderProp<AccountSelectionRenderProps>;
+  /**
+   * Replaces the icon and label of the three empty slots. Not called on an
+   * `account` slot.
+   *
+   * `label` arrives resolved against the per-variant defaults, and `isAction`
+   * says whether this slot does anything when clicked.
+   */
+  renderEmptyContent?: RenderProp<AccountEmptyRenderProps>;
 } & AccountCardStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'onClick'>;
+
+/** What a `renderAvatar` function receives — the head of an account slot. */
+export type AccountAvatarRenderProps = WithDefaultRender & {
+  /** The account holder's name, as passed. */
+  name?: string;
+  /** Their photo, as passed. Not drawn while `muted`. */
+  avatarSrc?: string;
+  /** True on a suspended account, which is drawn greyed with a placeholder. */
+  muted: boolean;
+};
+
+/** What a `renderStatus` function receives — the pill under the name. */
+export type AccountStatusRenderProps = WithDefaultRender & {
+  /** The connection state the pill is drawing. */
+  status: StatusTone;
+  /** The pill's label override, if the caller passed one. */
+  statusLabel: ReactNode;
+  /** True on a suspended account. */
+  muted: boolean;
+};
+
+/** What a `renderSelection` function receives — the card's trailing checkbox. */
+export type AccountSelectionRenderProps = WithDefaultRender & {
+  /** Whether the account is ticked. */
+  selected: boolean;
+  /** Whether the whole card is blocked. */
+  disabled: boolean;
+  /** The account holder's name, which names the control for a screen reader. */
+  name?: string;
+  /** Reports a new selection through `onSelectedChange`. */
+  toggle: (next: boolean) => void;
+};
+
+/** What a `renderEmptyContent` function receives — the body of an empty slot. */
+export type AccountEmptyRenderProps = WithDefaultRender & {
+  /** Which empty slot this is. Never `account`. */
+  variant: Exclude<AccountSlotVariant, 'account'>;
+  /** The label, resolved against the per-variant default. */
+  label: ReactNode;
+  /** True for `authorize` and `upgrade` — the two slots that do something. */
+  isAction: boolean;
+  /** Whether the card is actually taking clicks right now. */
+  clickable: boolean;
+};
 
 /** The default label per empty variant. */
 const emptyLabels: Record<Exclude<AccountSlotVariant, 'account'>, string> = {
@@ -113,6 +190,10 @@ export const AccountCard = forwardRef<HTMLDivElement, AccountCardProps>(function
     onSelectedChange,
     onClick,
     disabled = false,
+    renderAvatar,
+    renderStatus,
+    renderSelection,
+    renderEmptyContent,
     radius,
     padding,
     borderWidth,
@@ -172,50 +253,30 @@ export const AccountCard = forwardRef<HTMLDivElement, AccountCardProps>(function
     ...(clickable && hovered ? { borderStyle: 'solid' } : null),
   };
 
-  const content = isAccount ? (
-    <>
-      <div style={{ display: 'flex', flex: '1 1 auto', minWidth: 0, gap: upworkAccounts.card.gap }}>
-        <Avatar
-          size="medium"
-          name={name}
-          src={muted ? undefined : avatarSrc}
-          type={muted ? 'placeholder' : undefined}
-        />
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: upworkAccounts.card.textGap,
-            flex: '1 1 auto',
-            minWidth: 0,
-          }}
-        >
-          <span
-            style={{
-              ...typography.textStyle.mMedium,
-              color: textColor ?? (muted ? color.disable.text : color.navbar.textActive),
-              width: '100%',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {name}
-          </span>
-          <StatusBadge tone={status}>{statusLabel}</StatusBadge>
-        </div>
-      </div>
-      {selected !== undefined && (
-        <Checkbox
-          checked={selected}
-          disabled={disabled}
-          label={name ? `Select ${name}` : 'Select account'}
-          onCheckedChange={(next) => onSelectedChange?.(next)}
-        />
-      )}
-    </>
-  ) : (
+  const defaultAvatar = () => (
+    <Avatar
+      size="medium"
+      name={name}
+      src={muted ? undefined : avatarSrc}
+      type={muted ? 'placeholder' : undefined}
+    />
+  );
+
+  const defaultStatus = () => <StatusBadge tone={status}>{statusLabel}</StatusBadge>;
+
+  // Takes the tick as an argument rather than closing over `selected`, so the
+  // call site's `selected !== undefined` guard is what narrows it — the
+  // checkbox is only ever drawn on a list that can be selected.
+  const defaultSelection = (checked: boolean) => () => (
+    <Checkbox
+      checked={checked}
+      disabled={disabled}
+      label={name ? `Select ${name}` : 'Select account'}
+      onCheckedChange={(next) => onSelectedChange?.(next)}
+    />
+  );
+
+  const defaultEmptyContent = () => (
     <>
       {isAction && (
         <span
@@ -239,9 +300,65 @@ export const AccountCard = forwardRef<HTMLDivElement, AccountCardProps>(function
           whiteSpace: 'nowrap',
         }}
       >
-        {label ?? emptyLabels[variant]}
+        {label ?? emptyLabels[variant as Exclude<AccountSlotVariant, 'account'>]}
       </span>
     </>
+  );
+
+  const content = isAccount ? (
+    <>
+      <div style={{ display: 'flex', flex: '1 1 auto', minWidth: 0, gap: upworkAccounts.card.gap }}>
+        {renderAvatar
+          ? renderAvatar({ name, avatarSrc, muted, defaultRender: defaultAvatar })
+          : defaultAvatar()}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: upworkAccounts.card.textGap,
+            flex: '1 1 auto',
+            minWidth: 0,
+          }}
+        >
+          <span
+            style={{
+              ...typography.textStyle.mMedium,
+              color: textColor ?? (muted ? color.disable.text : color.navbar.textActive),
+              width: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {name}
+          </span>
+          {renderStatus
+            ? renderStatus({ status, statusLabel, muted, defaultRender: defaultStatus })
+            : defaultStatus()}
+        </div>
+      </div>
+      {selected !== undefined &&
+        (renderSelection
+          ? renderSelection({
+              selected,
+              disabled,
+              name,
+              toggle: (next) => onSelectedChange?.(next),
+              defaultRender: defaultSelection(selected),
+            })
+          : defaultSelection(selected)())}
+    </>
+  ) : renderEmptyContent ? (
+    renderEmptyContent({
+      variant: variant as Exclude<AccountSlotVariant, 'account'>,
+      label: label ?? emptyLabels[variant as Exclude<AccountSlotVariant, 'account'>],
+      isAction,
+      clickable,
+      defaultRender: defaultEmptyContent,
+    })
+  ) : (
+    defaultEmptyContent()
   );
 
   return (

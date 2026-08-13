@@ -45,6 +45,7 @@ export type {
   ModalCardStyleProps,
   ModalHeaderProps,
   ModalHeaderStyleProps,
+  ModalCloseRenderProps,
   ModalContentProps,
   ModalContentStyleProps,
   ModalFooterProps,
@@ -142,6 +143,9 @@ export type {
   AiToolProps,
   AiToolStyleProps,
   AiToolCategory,
+  AiToolPalette,
+  AiToolBadgeRenderProps,
+  AiToolTagRenderProps,
 } from './components/AiTool/AiTool.js';
 
 export { AiToolBadge, aiToolPalette } from './components/AiTool/AiToolBadge.js';
@@ -154,6 +158,10 @@ export { MentionPreset } from './components/MentionPreset/MentionPreset.js';
 export type {
   MentionPresetProps,
   MentionPresetStyleProps,
+  MentionHandleRenderProps,
+  MentionPriorityRenderProps,
+  MentionActionsRenderProps,
+  MentionCounterRenderProps,
 } from './components/MentionPreset/MentionPreset.js';
 
 export { MentionPresetList } from './components/MentionPreset/MentionPresetList.js';
@@ -173,7 +181,7 @@ export { Switch } from './components/Switch/Switch.js';
 export type {
   SwitchProps,
   SwitchItem,
-  SwitchItemRenderContext,
+  SwitchSegmentRenderProps,
   SwitchStyleProps,
   SwitchSize,
 } from './components/Switch/Switch.js';
@@ -250,6 +258,10 @@ export type {
   AccountCardProps,
   AccountCardStyleProps,
   AccountSlotVariant,
+  AccountAvatarRenderProps,
+  AccountStatusRenderProps,
+  AccountSelectionRenderProps,
+  AccountEmptyRenderProps,
 } from './components/UpworkAccounts/AccountCard.js';
 
 export { AuthorizeBanner } from './components/UpworkAccounts/AuthorizeBanner.js';
@@ -277,6 +289,10 @@ export type {
   AuthorizationPopupProps,
   AuthorizationPopupStyleProps,
   AuthorizationState,
+  AuthorizationHeadRenderProps,
+  AuthorizationPanelRenderProps,
+  AuthorizationRowRenderProps,
+  AuthorizationFooterRenderProps,
 } from './components/UpworkAccounts/AuthorizationPopup.js';
 
 export { UpworkConnectedAccounts } from './components/UpworkAccounts/UpworkConnectedAccounts.js';
@@ -285,6 +301,13 @@ export type {
   UpworkConnectedAccountsStyleProps,
   UpworkAccount,
   AccountListRenderProps,
+  AccountRenderProps,
+  EmptySlotRenderProps,
+  UpgradeSlotRenderProps,
+  AccountsEmptyStateRenderProps,
+  SelectionActionsRenderProps,
+  ColumnHeaderRenderProps,
+  AccountsSideRenderProps,
 } from './components/UpworkAccounts/UpworkConnectedAccounts.js';
 
 export { CustomPromptField } from './components/Prompt/CustomPromptField.js';

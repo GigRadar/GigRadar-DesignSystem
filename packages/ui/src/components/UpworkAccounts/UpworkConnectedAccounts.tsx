@@ -1,5 +1,11 @@
 import { color, component, radius as radiusToken, typography } from '@gigradar/theme';
-import { forwardRef, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
+import {
+  Fragment,
+  forwardRef,
+  type CSSProperties,
+  type HTMLAttributes,
+  type ReactNode,
+} from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { Icon } from '../../icons/Icon.js';
@@ -47,6 +53,106 @@ export type AccountListRenderProps = WithDefaultRender & {
   selected: string[];
 };
 
+/**
+ * What a `renderAccount` function receives — one connected account in the grid.
+ *
+ * Not called for the empty slots after it; those are `renderEmptySlot`.
+ */
+export type AccountRenderProps = WithDefaultRender & {
+  /** The account this card is drawing. */
+  account: UpworkAccount;
+  /** Whether it is ticked. Always false on a list that cannot be selected. */
+  selected: boolean;
+  /** Whether the list takes selections at all. */
+  selectable: boolean;
+  /** Its position among the connected accounts, for keying. */
+  index: number;
+  /** Flips this account's tick and reports through `onSelectionChange`. */
+  toggle: () => void;
+};
+
+/** What a `renderEmptySlot` function receives — one unfilled slot in the grid. */
+export type EmptySlotRenderProps = WithDefaultRender & {
+  /**
+   * Which kind of empty slot. Only the first is `authorize` — the rest are
+   * inert `available` slots, which is what keeps the next step unambiguous.
+   */
+  variant: 'authorize' | 'available';
+  /** Its position among the empty slots. */
+  index: number;
+  /** True for the one slot that is the call to action. */
+  isFirstEmpty: boolean;
+  /** Starts an authorization. Only present on the first slot. */
+  onActivate?: () => void;
+};
+
+/** What a `renderUpgradeSlot` function receives — the past-the-limit slot. */
+export type UpgradeSlotRenderProps = WithDefaultRender & {
+  /** Opens the upgrade route. */
+  onUpgrade: () => void;
+};
+
+/** What a `renderEmptyState` function receives — the left column with nothing in it. */
+export type AccountsEmptyStateRenderProps = WithDefaultRender & {
+  /** Whether the Upwork API is connected. The panel's fork. */
+  apiConnected: boolean;
+  /**
+   * The call to action, already routed: `onAuthorize` when the API is
+   * connected, `onConnectApi` when it is not.
+   */
+  connect?: () => void;
+  /** The panel's heading for this fork. */
+  heading: string;
+  /** The line under it. */
+  description: string;
+  /** The button's label. */
+  actionLabel: string;
+};
+
+/** What a `renderSelectionActions` function receives — the header's selection row. */
+export type SelectionActionsRenderProps = WithDefaultRender & {
+  /** How many accounts there are. */
+  total: number;
+  /** How many are ticked. */
+  selectedCount: number;
+  /** Whether every account is ticked. */
+  allSelected: boolean;
+  /** Ticks all of them. */
+  selectAll: () => void;
+  /** Unticks all of them. */
+  clear: () => void;
+  /** Removes the ticked ones, if the caller wired it. */
+  remove?: () => void;
+};
+
+/** What a `renderColumnHeader` function receives — the band above either column. */
+export type ColumnHeaderRenderProps = WithDefaultRender & {
+  /** Which of the two columns this header sits above. */
+  column: 'list' | 'side';
+  /** The title, or null while loading. */
+  title: ReactNode;
+  /** The subtitle, or null while loading. */
+  description: ReactNode;
+  /** How many accounts are connected. */
+  count: number;
+  /** How many the plan allows. */
+  capacity: number;
+  /** Whether the skeleton is drawn in place of the text. */
+  loading: boolean;
+  /** Goes back, if the caller drew the arrow. */
+  back?: () => void;
+};
+
+/** What a `renderSide` function receives — the right column's stack of cards. */
+export type AccountsSideRenderProps = WithDefaultRender & {
+  /** Whether the API is connected. The banner's authorize action is dead without it. */
+  apiConnected: boolean;
+  /** Starts an authorization. */
+  authorize?: () => void;
+  /** Opens Upwork's settings, which the safety notice links to. */
+  openUpworkSettings?: () => void;
+};
+
 export type UpworkConnectedAccountsProps = {
   /** The connected accounts. An empty list draws the empty state. */
   accounts?: UpworkAccount[];
@@ -85,8 +191,59 @@ export type UpworkConnectedAccountsProps = {
   onOpenUpworkSettings?: () => void;
   /** Called when the selection's Remove action is pressed. */
   onRemove?: (selected: string[]) => void;
-  /** Replaces the account grid. Call `defaultRender()` to decorate. */
+  /**
+   * Replaces the account grid whole — the connected cards, the empty slots,
+   * and the upgrade slot together.
+   *
+   * Prefer the per-slot props below when only one part has to change: they
+   * keep the grid's columns and the selection wiring, which this replaces
+   * along with everything else.
+   */
   renderAccounts?: RenderProp<AccountListRenderProps>;
+  /**
+   * Replaces one connected account's card, keeping the grid around it.
+   *
+   * The usual reason is a card that has to carry more than the design system's
+   * — a per-account menu, a last-synced time, a link to the profile.
+   *
+   * Not called when `renderAccounts` has replaced the grid.
+   */
+  renderAccount?: RenderProp<AccountRenderProps>;
+  /**
+   * Replaces an unfilled slot. `isFirstEmpty` marks the one that is the call
+   * to action; the rest are inert by design.
+   *
+   * Not called when `renderAccounts` has replaced the grid.
+   */
+  renderEmptySlot?: RenderProp<EmptySlotRenderProps>;
+  /**
+   * Replaces the past-the-limit upgrade slot. Not called unless `onUpgrade` is
+   * wired, since the slot is dropped entirely without it.
+   */
+  renderUpgradeSlot?: RenderProp<UpgradeSlotRenderProps>;
+  /**
+   * Replaces the panel shown when there is no API connection or no account
+   * yet. The payload's `connect` is already routed to whichever of the two
+   * the state calls for.
+   */
+  renderEmptyState?: RenderProp<AccountsEmptyStateRenderProps>;
+  /**
+   * Replaces the Select all / Clear selection / Remove row in the left
+   * column's header. Not called on a list that cannot be selected, or one with
+   * no accounts in it.
+   */
+  renderSelectionActions?: RenderProp<SelectionActionsRenderProps>;
+  /**
+   * Replaces either column's header band. `column` says which one, so a single
+   * function can handle both or defer one to `defaultRender()`.
+   */
+  renderColumnHeader?: RenderProp<ColumnHeaderRenderProps>;
+  /**
+   * Replaces the right column's stack — the authorize banner, the safety
+   * notice, and the walkthrough. Not called while loading, which draws its own
+   * skeleton.
+   */
+  renderSide?: RenderProp<AccountsSideRenderProps>;
 } & UpworkConnectedAccountsStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style'>;
 
@@ -123,6 +280,13 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
       onOpenUpworkSettings,
       onRemove,
       renderAccounts,
+      renderAccount,
+      renderEmptySlot,
+      renderUpgradeSlot,
+      renderEmptyState,
+      renderSelectionActions,
+      renderColumnHeader,
+      renderSide,
       listWidth,
       sideWidth,
       listBackground,
@@ -171,27 +335,153 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
           width: '100%',
         }}
       >
-        {accounts.map((account) => (
-          <AccountCard
-            key={account.id}
-            name={account.name}
-            avatarSrc={account.avatarSrc}
-            status={account.status}
-            statusLabel={account.statusLabel}
-            selected={selectable ? selectedIds.includes(account.id) : undefined}
-            onSelectedChange={() => toggle(account.id)}
-          />
-        ))}
+        {accounts.map((account, index) => {
+          const isSelected = selectable && selectedIds.includes(account.id);
+          const defaultRender = () => (
+            <AccountCard
+              name={account.name}
+              avatarSrc={account.avatarSrc}
+              status={account.status}
+              statusLabel={account.statusLabel}
+              selected={selectable ? isSelected : undefined}
+              onSelectedChange={() => toggle(account.id)}
+            />
+          );
 
-        {Array.from({ length: emptyCount }, (_, index) => (
-          <AccountCard
-            key={`empty-${index}`}
-            variant={index === 0 ? 'authorize' : 'available'}
-            onClick={index === 0 ? onAuthorize : undefined}
-          />
-        ))}
+          return (
+            <Fragment key={account.id}>
+              {renderAccount
+                ? renderAccount({
+                    account,
+                    selected: isSelected,
+                    selectable,
+                    index,
+                    toggle: () => toggle(account.id),
+                    defaultRender,
+                  })
+                : defaultRender()}
+            </Fragment>
+          );
+        })}
 
-        {onUpgrade && <AccountCard variant="upgrade" onClick={onUpgrade} />}
+        {Array.from({ length: emptyCount }, (_, index) => {
+          const isFirstEmpty = index === 0;
+          const variant = isFirstEmpty ? ('authorize' as const) : ('available' as const);
+          const onActivate = isFirstEmpty ? onAuthorize : undefined;
+          const defaultRender = () => <AccountCard variant={variant} onClick={onActivate} />;
+
+          return (
+            <Fragment key={`empty-${index}`}>
+              {renderEmptySlot
+                ? renderEmptySlot({ variant, index, isFirstEmpty, onActivate, defaultRender })
+                : defaultRender()}
+            </Fragment>
+          );
+        })}
+
+        {onUpgrade &&
+          (() => {
+            const defaultRender = () => <AccountCard variant="upgrade" onClick={onUpgrade} />;
+            return renderUpgradeSlot
+              ? renderUpgradeSlot({ onUpgrade, defaultRender })
+              : defaultRender();
+          })()}
+      </div>
+    );
+
+    const selectAll = () => onSelectionChange?.(accounts.map((a) => a.id));
+    const clearSelection = () => onSelectionChange?.([]);
+    const removeSelected = onRemove ? () => onRemove(selectedIds) : undefined;
+
+    const defaultSelectionActions = () => (
+      <SelectionActions
+        total={accounts.length}
+        selectedCount={selectedIds.length}
+        onSelectAll={selectAll}
+        onClear={clearSelection}
+        onRemove={removeSelected}
+      />
+    );
+
+    const showSelectionActions = !loading && selectable && accounts.length > 0;
+
+    const listTitle = loading ? null : (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+        <span style={{ ...typography.textStyle.h4, color: color.main.black }}>
+          Upwork Connected Account
+        </span>
+        <span
+          style={{
+            ...typography.textStyle.mRegular,
+            color: color.navbar.text,
+            opacity: 0.7,
+          }}
+        >
+          ({accounts.length}/{capacity})
+        </span>
+      </span>
+    );
+    const listDescription = loading ? null : 'All upwork connected account list';
+
+    const sideTitle = loading ? null : (
+      <span style={{ ...typography.textStyle.lMedium, color: color.main.black }}>
+        Connect Upwork Account
+      </span>
+    );
+    const sideDescription = loading ? null : 'Connect and authorize your account to proceed';
+
+    const defaultListHeader = () => (
+      <ColumnHeader
+        backButton={backButton}
+        onBack={onBack}
+        title={listTitle}
+        description={listDescription}
+        loading={loading}
+        actions={
+          showSelectionActions &&
+          (renderSelectionActions
+            ? renderSelectionActions({
+                total: accounts.length,
+                selectedCount: selectedIds.length,
+                allSelected: selectedIds.length === accounts.length,
+                selectAll,
+                clear: clearSelection,
+                remove: removeSelected,
+                defaultRender: defaultSelectionActions,
+              })
+            : defaultSelectionActions())
+        }
+      />
+    );
+
+    const defaultSideHeader = () => (
+      <ColumnHeader
+        backButton={backButton}
+        onBack={onBack}
+        loading={loading}
+        title={sideTitle}
+        description={sideDescription}
+      />
+    );
+
+    const defaultEmptyState = () => (
+      <EmptyState apiConnected={apiConnected} onConnectApi={onConnectApi} onAuthorize={onAuthorize} />
+    );
+
+    const defaultSide = () => (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          gap: upworkAccounts.sideGap,
+          width: len(sideWidth) ?? `${upworkAccounts.sideWidth}px`,
+          maxWidth: '100%',
+        }}
+      >
+        <AuthorizeBanner disabled={!apiConnected} onAuthorize={onAuthorize} />
+        <AccountSafetyNotice onAction={onOpenUpworkSettings} />
+        <AuthorizationSteps />
       </div>
     );
 
@@ -208,43 +498,18 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
             borderRight: `1px solid ${borderColor ?? color.main.backgroundAlt}`,
           }}
         >
-          <ColumnHeader
-            backButton={backButton}
-            onBack={onBack}
-            title={
-              loading ? null : (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ ...typography.textStyle.h4, color: color.main.black }}>
-                    Upwork Connected Account
-                  </span>
-                  <span
-                    style={{
-                      ...typography.textStyle.mRegular,
-                      color: color.navbar.text,
-                      opacity: 0.7,
-                    }}
-                  >
-                    ({accounts.length}/{capacity})
-                  </span>
-                </span>
-              )
-            }
-            description={loading ? null : 'All upwork connected account list'}
-            loading={loading}
-            actions={
-              !loading &&
-              selectable &&
-              accounts.length > 0 && (
-                <SelectionActions
-                  total={accounts.length}
-                  selectedCount={selectedIds.length}
-                  onSelectAll={() => onSelectionChange?.(accounts.map((a) => a.id))}
-                  onClear={() => onSelectionChange?.([])}
-                  onRemove={onRemove ? () => onRemove(selectedIds) : undefined}
-                />
-              )
-            }
-          />
+          {renderColumnHeader
+            ? renderColumnHeader({
+                column: 'list',
+                title: listTitle,
+                description: listDescription,
+                count: accounts.length,
+                capacity,
+                loading,
+                back: onBack,
+                defaultRender: defaultListHeader,
+              })
+            : defaultListHeader()}
 
           <div
             style={{
@@ -259,11 +524,16 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
             {loading ? (
               <SkeletonGrid columns={columns} rows={3} />
             ) : !apiConnected || accounts.length === 0 ? (
-              <EmptyState
-                apiConnected={apiConnected}
-                onConnectApi={onConnectApi}
-                onAuthorize={onAuthorize}
-              />
+              renderEmptyState ? (
+                renderEmptyState({
+                  apiConnected,
+                  connect: apiConnected ? onAuthorize : onConnectApi,
+                  ...(apiConnected ? emptyCopy.connected : emptyCopy.disconnected),
+                  defaultRender: defaultEmptyState,
+                })
+              ) : (
+                defaultEmptyState()
+              )
             ) : renderAccounts ? (
               renderAccounts({
                 accounts,
@@ -285,19 +555,18 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
             minWidth: 0,
           }}
         >
-          <ColumnHeader
-            backButton={backButton}
-            onBack={onBack}
-            loading={loading}
-            title={
-              loading ? null : (
-                <span style={{ ...typography.textStyle.lMedium, color: color.main.black }}>
-                  Connect Upwork Account
-                </span>
-              )
-            }
-            description={loading ? null : 'Connect and authorize your account to proceed'}
-          />
+          {renderColumnHeader
+            ? renderColumnHeader({
+                column: 'side',
+                title: sideTitle,
+                description: sideDescription,
+                count: accounts.length,
+                capacity,
+                loading,
+                back: onBack,
+                defaultRender: defaultSideHeader,
+              })
+            : defaultSideHeader()}
 
           <div
             style={{
@@ -312,21 +581,15 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
           >
             {loading ? (
               <SkeletonSide />
+            ) : renderSide ? (
+              renderSide({
+                apiConnected,
+                authorize: onAuthorize,
+                openUpworkSettings: onOpenUpworkSettings,
+                defaultRender: defaultSide,
+              })
             ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: upworkAccounts.sideGap,
-                  width: len(sideWidth) ?? `${upworkAccounts.sideWidth}px`,
-                  maxWidth: '100%',
-                }}
-              >
-                <AuthorizeBanner disabled={!apiConnected} onAuthorize={onAuthorize} />
-                <AccountSafetyNotice onAction={onOpenUpworkSettings} />
-                <AuthorizationSteps />
-              </div>
+              defaultSide()
             )}
           </div>
         </div>
@@ -472,6 +735,27 @@ function SelectionActions({
 }
 
 /**
+ * The empty panel's copy, per fork.
+ *
+ * Held here rather than inline in `EmptyState` because `renderEmptyState`
+ * hands the same three strings to a replacement — one table so the panel and
+ * the render payload cannot drift apart.
+ */
+const emptyCopy = {
+  connected: {
+    heading: 'No Connected Accounts',
+    description: 'Authorize your first Upwork account to get started',
+    actionLabel: 'Authorize Account',
+  },
+  disconnected: {
+    heading: 'No API Connection Yet',
+    description:
+      'Start by connecting Upwork API first, then authorizing your account to access more',
+    actionLabel: 'Connect Upwork API',
+  },
+} as const;
+
+/**
  * The left column before anything exists — Figma's "No Connected/API"
  * (node 2130:2470) and its API-connected sibling.
  *
@@ -488,6 +772,7 @@ function EmptyState({
   onAuthorize?: () => void;
 }) {
   const { empty } = upworkAccounts;
+  const copy = apiConnected ? emptyCopy.connected : emptyCopy.disconnected;
 
   return (
     <div
@@ -522,12 +807,10 @@ function EmptyState({
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <span style={{ ...typography.textStyle.mMedium, color: color.main.black }}>
-            {apiConnected ? 'No Connected Accounts' : 'No API Connection Yet'}
+            {copy.heading}
           </span>
           <span style={{ ...typography.textStyle.sRegular, color: color.navbar.text }}>
-            {apiConnected
-              ? 'Authorize your first Upwork account to get started'
-              : 'Start by connecting Upwork API first, then authorizing your account to access more'}
+            {copy.description}
           </span>
         </div>
       </div>
@@ -547,7 +830,7 @@ function EmptyState({
           <Icon icon={apiConnected ? IconGoToExternal : IconRightArrow} size={apiConnected ? 12.5 : 14} />
         }
       >
-        {apiConnected ? 'Authorize Account' : 'Connect Upwork API'}
+        {copy.actionLabel}
       </Button>
     </div>
   );

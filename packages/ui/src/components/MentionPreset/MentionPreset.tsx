@@ -1,6 +1,7 @@
 import { color, component, typography } from '@gigradar/theme';
 import { forwardRef, type CSSProperties, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { Icon } from '../../icons/Icon.js';
 import {
   IconDeleteTrashStroke,
@@ -78,7 +79,75 @@ export type MentionPresetProps = {
    */
   characterCount?: number;
   characterMax?: number;
+
+  /**
+   * Replaces the drag handle, keeping its place at the head of the row.
+   *
+   * The handle is drawn but inert by default — this is where an app wires it
+   * to whichever drag library it uses, without rebuilding the row around it.
+   */
+  renderHandle?: RenderProp<MentionHandleRenderProps>;
+  /**
+   * Replaces the priority badge.
+   *
+   * The usual reason is a badge that has to be editable — typing a position
+   * rather than stepping to it with the move buttons.
+   */
+  renderPriority?: RenderProp<MentionPriorityRenderProps>;
+  /**
+   * Replaces the trailing button group — move up, move down, delete.
+   *
+   * The payload carries the handlers and their disabled states, so a
+   * replacement can reorder or add to the group while keeping the delete
+   * confirmation the default draws.
+   */
+  renderActions?: RenderProp<MentionActionsRenderProps>;
+  /**
+   * Replaces the character counter in the description's corner. Not called
+   * unless both `characterCount` and `characterMax` are set.
+   */
+  renderCounter?: RenderProp<MentionCounterRenderProps>;
 } & MentionPresetStyleProps;
+
+/** What a `renderHandle` function receives — the row's drag grip. */
+export type MentionHandleRenderProps = WithDefaultRender & {
+  /** Whether the row is the one being edited. The default handle turns blue. */
+  active: boolean;
+};
+
+/** What a `renderPriority` function receives — the position badge. */
+export type MentionPriorityRenderProps = WithDefaultRender & {
+  /** The row's 1-based position, as passed. */
+  priority: number;
+  /** Whether the row is the one being edited. */
+  active: boolean;
+};
+
+/** What a `renderActions` function receives — the row's trailing controls. */
+export type MentionActionsRenderProps = WithDefaultRender & {
+  /** Moves the preset up. Undefined when the row cannot be moved up at all. */
+  moveUp?: () => void;
+  /** Moves it down. Undefined when the row has no move-down handler. */
+  moveDown?: () => void;
+  /** Deletes it. The default wraps this in a confirmation. */
+  remove?: () => void;
+  /** True on the first row — the up control is present but blocked. */
+  disableMoveUp: boolean;
+  /** True on the last row. */
+  disableMoveDown: boolean;
+  /** The preset's name, which the default uses to name each control. */
+  title: ReactNode;
+};
+
+/** What a `renderCounter` function receives — the description's corner count. */
+export type MentionCounterRenderProps = WithDefaultRender & {
+  /** Characters used. Never undefined — the counter is skipped when it is. */
+  characterCount: number;
+  /** The cap. */
+  characterMax: number;
+  /** Whether the count has passed the cap. */
+  over: boolean;
+};
 
 /**
  * One reusable @-mention snippet.
@@ -108,6 +177,10 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
       disableMoveDown = false,
       characterCount,
       characterMax,
+      renderHandle,
+      renderPriority,
+      renderActions,
+      renderCounter,
       padding,
       gap,
       radius,
@@ -135,6 +208,118 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
     };
 
     const showCounter = characterCount !== undefined && characterMax !== undefined;
+    const actionLabel = typeof title === 'string' ? title : 'preset';
+
+    const defaultHandle = () => (
+      <span
+        aria-hidden
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          width: mentionPreset.row.handleSize,
+          height: mentionPreset.row.handleSize,
+          // Blue while active, so the handle joins the row's outline rather
+          // than reading as a separate control.
+          color: active ? color.main.brand : color.navbar.border,
+          cursor: 'grab',
+        }}
+      >
+        <Icon icon={IconDragDot} size="100%" />
+      </span>
+    );
+
+    const defaultPriority = () => (
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          boxSizing: 'border-box',
+          minWidth: mentionPreset.row.badgeMinWidth,
+          alignSelf: 'stretch',
+          padding: '2px 4px',
+          borderRadius: mentionPreset.description.radius,
+          backgroundColor: color.badge.background,
+          color: color.badge.foreground,
+          ...typography.textStyle.mMedium,
+        }}
+      >
+        {priority}
+      </span>
+    );
+
+    const defaultActions = () => (
+      <>
+        {onMoveUp && (
+          <Button
+            variant="third"
+            size="medium"
+            paddingX={mentionPreset.row.actionPaddingX}
+            aria-label={`Move ${actionLabel} up`}
+            disabled={disableMoveUp}
+            startIcon={<Icon icon={IconDropdownArrowUp} size="100%" />}
+            onClick={onMoveUp}
+          />
+        )}
+        {onMoveDown && (
+          <Button
+            variant="third"
+            size="medium"
+            paddingX={mentionPreset.row.actionPaddingX}
+            aria-label={`Move ${actionLabel} down`}
+            disabled={disableMoveDown}
+            startIcon={<Icon icon={IconDropdownArrowDown} size="100%" />}
+            onClick={onMoveDown}
+          />
+        )}
+        {onDelete && (
+          <ConfirmTooltip
+            title={deleteTitle}
+            description={deleteDescription}
+            confirmLabel="Delete"
+            placement={deletePlacement}
+            align="start"
+            onConfirm={onDelete}
+          >
+            <Button
+              variant="secondary"
+              tone="danger"
+              size="medium"
+              paddingX={mentionPreset.row.actionPaddingX}
+              aria-label={`Delete ${actionLabel}`}
+              startIcon={<Icon icon={IconDeleteTrashStroke} size="100%" />}
+            />
+          </ConfirmTooltip>
+        )}
+      </>
+    );
+
+    const defaultCounter = () => (
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: `${mentionPreset.counter.paddingY}px ${mentionPreset.counter.paddingX}px`,
+          borderRadius: mentionPreset.counter.radius,
+          // A 10% wash of the disabled grey, so the counter sits on the
+          // description without introducing a fourth surface color.
+          // `color-mix` rather than a hard-coded rgba: the wash then
+          // tracks the token if the grey is ever retuned.
+          backgroundColor: `color-mix(in srgb, ${color.disable.text} 10%, transparent)`,
+          color: color.disable.text,
+          fontSize: mentionPreset.counter.fontSize,
+          letterSpacing: typography.letterSpacing.s,
+          lineHeight: 1,
+          opacity: 0.7,
+        }}
+      >
+        {characterCount}/{characterMax}
+      </span>
+    );
 
     return (
       <div ref={ref} style={style}>
@@ -146,42 +331,13 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
             width: '100%',
           }}
         >
-          <span
-            aria-hidden
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              width: mentionPreset.row.handleSize,
-              height: mentionPreset.row.handleSize,
-              // Blue while active, so the handle joins the row's outline rather
-              // than reading as a separate control.
-              color: active ? color.main.brand : color.navbar.border,
-              cursor: 'grab',
-            }}
-          >
-            <Icon icon={IconDragDot} size="100%" />
-          </span>
+          {renderHandle
+            ? renderHandle({ active, defaultRender: defaultHandle })
+            : defaultHandle()}
 
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              boxSizing: 'border-box',
-              minWidth: mentionPreset.row.badgeMinWidth,
-              alignSelf: 'stretch',
-              padding: '2px 4px',
-              borderRadius: mentionPreset.description.radius,
-              backgroundColor: color.badge.background,
-              color: color.badge.foreground,
-              ...typography.textStyle.mMedium,
-            }}
-          >
-            {priority}
-          </span>
+          {renderPriority
+            ? renderPriority({ priority, active, defaultRender: defaultPriority })
+            : defaultPriority()}
 
           <span
             style={{
@@ -211,47 +367,17 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
           </span>
 
           <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            {onMoveUp && (
-              <Button
-                variant="third"
-                size="medium"
-                paddingX={mentionPreset.row.actionPaddingX}
-                aria-label={`Move ${typeof title === 'string' ? title : 'preset'} up`}
-                disabled={disableMoveUp}
-                startIcon={<Icon icon={IconDropdownArrowUp} size="100%" />}
-                onClick={onMoveUp}
-              />
-            )}
-            {onMoveDown && (
-              <Button
-                variant="third"
-                size="medium"
-                paddingX={mentionPreset.row.actionPaddingX}
-                aria-label={`Move ${typeof title === 'string' ? title : 'preset'} down`}
-                disabled={disableMoveDown}
-                startIcon={<Icon icon={IconDropdownArrowDown} size="100%" />}
-                onClick={onMoveDown}
-              />
-            )}
-            {onDelete && (
-              <ConfirmTooltip
-                title={deleteTitle}
-                description={deleteDescription}
-                confirmLabel="Delete"
-                placement={deletePlacement}
-                align="start"
-                onConfirm={onDelete}
-              >
-                <Button
-                  variant="secondary"
-                  tone="danger"
-                  size="medium"
-                  paddingX={mentionPreset.row.actionPaddingX}
-                  aria-label={`Delete ${typeof title === 'string' ? title : 'preset'}`}
-                  startIcon={<Icon icon={IconDeleteTrashStroke} size="100%" />}
-                />
-              </ConfirmTooltip>
-            )}
+            {renderActions
+              ? renderActions({
+                  moveUp: onMoveUp,
+                  moveDown: onMoveDown,
+                  remove: onDelete,
+                  disableMoveUp,
+                  disableMoveDown,
+                  title,
+                  defaultRender: defaultActions,
+                })
+              : defaultActions()}
           </span>
         </div>
 
@@ -279,29 +405,15 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
             >
               {description}
             </p>
-            {showCounter && (
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: `${mentionPreset.counter.paddingY}px ${mentionPreset.counter.paddingX}px`,
-                  borderRadius: mentionPreset.counter.radius,
-                  // A 10% wash of the disabled grey, so the counter sits on the
-                  // description without introducing a fourth surface color.
-                  // `color-mix` rather than a hard-coded rgba: the wash then
-                  // tracks the token if the grey is ever retuned.
-                  backgroundColor: `color-mix(in srgb, ${color.disable.text} 10%, transparent)`,
-                  color: color.disable.text,
-                  fontSize: mentionPreset.counter.fontSize,
-                  letterSpacing: typography.letterSpacing.s,
-                  lineHeight: 1,
-                  opacity: 0.7,
-                }}
-              >
-                {characterCount}/{characterMax}
-              </span>
-            )}
+            {showCounter &&
+              (renderCounter
+                ? renderCounter({
+                    characterCount,
+                    characterMax,
+                    over: characterCount > characterMax,
+                    defaultRender: defaultCounter,
+                  })
+                : defaultCounter())}
           </div>
         )}
       </div>
