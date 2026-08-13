@@ -299,6 +299,7 @@ export { UpworkConnectedAccounts } from './components/UpworkAccounts/UpworkConne
 export type {
   UpworkConnectedAccountsProps,
   UpworkConnectedAccountsStyleProps,
+  UpworkColumns,
   UpworkAccount,
   AccountListRenderProps,
   AccountRenderProps,

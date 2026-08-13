@@ -894,12 +894,26 @@ export const aiTool = {
     iconSize: 16,
     /**
      * The diagonal slash marking a disabled capability — Figma's `crossIcon`.
-     * A 1.5px bar with a 1.75px white outline, so it stays legible over the
-     * glyph beneath it.
+     *
+     * A hairline bar with a slightly wider outline behind it. The outline is
+     * drawn in the badge's own fill rather than white, so the slash reads as
+     * carved out of the badge instead of laid over it — see `AiToolBadge`.
+     *
+     * Kept thin deliberately: the slash has to stay legible without competing
+     * with the glyph underneath, and the category is still the thing being
+     * read. A heavier bar turns the badge into a cross with a hint of icon.
      */
-    crossWidth: 1.5,
-    crossOutlineWidth: 1.75,
+    crossWidth: 1,
+    crossOutlineWidth: 1.5,
     crossAngle: -40.98,
+    /**
+     * Slash length, as a share of the badge's edge.
+     *
+     * Short of corner-to-corner on purpose: the slash marks the glyph, and a
+     * bar running the full diagonal reads as a border on the square instead.
+     * Ending inside the padding keeps it attached to the icon it disables.
+     */
+    crossLength: '64%',
   },
   /** The category tag beside the function name. */
   tag: {

@@ -3,6 +3,7 @@ import { useState, type ReactNode } from 'react';
 import { Icon, IconDropdownArrowDown, IconDropdownArrowUp, IconSearch, IconXClose } from '@gigradar/ui';
 import { Section, Shell } from './layout';
 import { NavigateProvider } from './navigation';
+import { AccountSlotPage } from './pages/AccountSlotPage';
 import { AiConfigurationPage } from './pages/AiConfigurationPage';
 import { AiToolsPage } from './pages/ai/AiToolsPage';
 import { AutoReplyPage } from './pages/ai/AutoReplyPage';
@@ -13,6 +14,7 @@ import { BadgePage } from './pages/BadgePage';
 import { ButtonPage } from './pages/ButtonPage';
 import { CheckboxPage } from './pages/CheckboxPage';
 import { IconsPage } from './pages/IconsPage';
+import { InfoDetailsPage } from './pages/InfoDetailsPage';
 import { LifecyclePage } from './pages/LifecyclePage';
 import { ModeTabPage } from './pages/ModeTabPage';
 import { OptionButtonPage } from './pages/OptionButtonPage';
@@ -26,6 +28,8 @@ import { SwitchPage } from './pages/SwitchPage';
 import { TokensPage } from './pages/TokensPage';
 import { TooltipPage } from './pages/TooltipPage';
 import { UpworkAccountsPage } from './pages/UpworkAccountsPage';
+import { AccountSlotsPage } from './pages/upwork/AccountSlotsPage';
+import { UpworkInfoDetailsPage } from './pages/upwork/InfoDetailsPage';
 
 /**
  * A nav entry. Every entry is a page; some also hold sub-pages.
@@ -115,6 +119,8 @@ const NAV: NavGroup[] = [
          */
         title: 'CRM',
         nodes: [
+          { id: 'account-slot', label: 'Account slot', render: () => <AccountSlotPage /> },
+          { id: 'info-details', label: 'Info details', render: () => <InfoDetailsPage /> },
           { id: 'mode-tab', label: 'Mode tab', render: () => <ModeTabPage /> },
           { id: 'option-button', label: 'Option button', render: () => <OptionButtonPage /> },
           { id: 'preset', label: 'Preset', render: () => <PresetPage /> },
@@ -146,6 +152,11 @@ const NAV: NavGroup[] = [
             id: 'crm-settings-upwork',
             label: 'Upwork Connected Account',
             render: () => <UpworkAccountsPage />,
+            // The screen's two columns, left to right as it draws them.
+            children: [
+              { id: 'crm-upwork-slots', label: 'Account slots', render: () => <AccountSlotsPage /> },
+              { id: 'crm-upwork-info', label: 'Info details', render: () => <UpworkInfoDetailsPage /> },
+            ],
           },
         ],
       },

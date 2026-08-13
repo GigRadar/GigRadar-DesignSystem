@@ -20,9 +20,11 @@ import {
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
+import { Frame } from '../components/Frame';
 import { PropsTable } from '../components/PropsTable';
 import { ACCOUNTS, FULL_ACCOUNTS, MORE_ACCOUNTS } from '../fixtures/upworkAccounts';
 import { PageHeader, Preview, Section } from '../layout';
+import { CrossLink } from '../navigation';
 
 /**
  * CRM ▸ Settings ▸ Upwork Connected Account — the screen, not the components.
@@ -38,6 +40,21 @@ export function UpworkAccountsPage() {
         title="Upwork Connected Account"
         description="CRM ▸ Settings ▸ Upwork Connected Account. Every Upwork account the workspace has authorized, the slots left on the plan, and the walkthrough for connecting another. Figma node 2105:34594."
       />
+
+      <CrossLink
+        eyebrow="The screen's two columns"
+        links={[
+          { label: 'Account slots', pageId: 'crm-upwork-slots' },
+          { label: 'Info details', pageId: 'crm-upwork-info' },
+          { label: 'Components ▸ CRM ▸ Account slot', pageId: 'account-slot' },
+          { label: 'Components ▸ CRM ▸ Info details', pageId: 'info-details' },
+        ]}
+      >
+        This page is the assembled screen. Each column has its own page under it — the left column's
+        states and capacity arithmetic under <strong>Account slots</strong>, the right column's three
+        cards under <strong>Info details</strong>. Both are built from components filed in{' '}
+        <strong>Components ▸ CRM</strong>, which is where their props are documented.
+      </CrossLink>
 
       <Section
         title="The screen"
@@ -557,28 +574,6 @@ function PopupDemo() {
         />
       </div>
     </Preview>
-  );
-}
-
-/**
- * A fixed-height bordered container for the screen.
- *
- * The screen fills whatever it is given, so without a height it would run the
- * length of the page and the two-column split would stop reading as a split.
- */
-function Frame({ children, height = 560 }: { children: ReactNode; height?: number }) {
-  return (
-    <div
-      style={{
-        height,
-        overflow: 'hidden',
-        borderRadius: radius.s,
-        border: `1px solid ${color.navbar.border}`,
-        marginBottom: spacing.s,
-      }}
-    >
-      {children}
-    </div>
   );
 }
 

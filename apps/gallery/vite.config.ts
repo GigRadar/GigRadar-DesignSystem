@@ -14,6 +14,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // Fail rather than fall forward to 5174. Without this, starting a second
+    // dev server silently succeeds on the next free port, and you end up with
+    // two galleries: edits land in one and you are looking at the other.
+    strictPort: true,
     open: true,
   },
 });

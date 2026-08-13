@@ -106,6 +106,10 @@ export const AiToolBadge = forwardRef<HTMLSpanElement, AiToolBadgeProps>(
   ) {
     const palette = categories[category];
     const accent = iconColor ?? palette.accent;
+    // Named once because the slash's outline has to be the same value: the
+    // outline is what carves the bar out of the badge, and a fill the two
+    // disagreed on would draw a halo instead.
+    const fill = background ?? palette.background;
 
     const style: CSSProperties = {
       position: 'relative',
@@ -117,7 +121,7 @@ export const AiToolBadge = forwardRef<HTMLSpanElement, AiToolBadgeProps>(
       width: len(size) ?? aiTool.badge.size,
       height: len(size) ?? aiTool.badge.size,
       borderRadius: len(radius) ?? `${aiTool.badge.radius}px`,
-      backgroundColor: background ?? palette.background,
+      backgroundColor: fill,
       color: accent,
       overflow: 'hidden',
     };
@@ -135,13 +139,15 @@ export const AiToolBadge = forwardRef<HTMLSpanElement, AiToolBadgeProps>(
               top: '50%',
               left: '50%',
               width: aiTool.badge.crossWidth,
-              height: '86%',
+              height: aiTool.badge.crossLength,
               transform: `translate(-50%, -50%) rotate(${aiTool.badge.crossAngle}deg)`,
               borderRadius: aiTool.badge.crossWidth,
               backgroundColor: accent,
-              // The white outline is what keeps the slash readable where it
-              // crosses the glyph rather than the background.
-              boxShadow: `0 0 0 ${aiTool.badge.crossOutlineWidth}px ${color.main.white}`,
+              // The outline separates the slash from the glyph it crosses, so
+              // it is drawn in the badge's own fill rather than a fixed white:
+              // on a tinted badge a white halo reads as a second stroke, and a
+              // caller passing `background` would be left with a hole in it.
+              boxShadow: `0 0 0 ${aiTool.badge.crossOutlineWidth}px ${fill}`,
             }}
           />
         )}

@@ -153,7 +153,23 @@ export type AccountsSideRenderProps = WithDefaultRender & {
   openUpworkSettings?: () => void;
 };
 
+/**
+ * Which of the screen's two columns to draw.
+ *
+ * `both` is the screen as the product ships it. The single-column values exist
+ * because each column is a coherent unit on its own — the account grid and the
+ * explanatory cards are documented and reviewed separately — and rendering one
+ * of them should not mean rendering the other and cropping it.
+ */
+export type UpworkColumns = 'both' | 'list' | 'side';
+
 export type UpworkConnectedAccountsProps = {
+  /**
+   * Which columns to draw.
+   *
+   * @default 'both'
+   */
+  show?: UpworkColumns;
   /** The connected accounts. An empty list draws the empty state. */
   accounts?: UpworkAccount[];
   /**
@@ -291,6 +307,7 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
       sideWidth,
       listBackground,
       borderColor,
+      show = 'both',
       columns = upworkAccounts.card.columns,
       ...rest
     },
@@ -485,17 +502,25 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
       </div>
     );
 
+    const showList = show !== 'side';
+    const showSide = show !== 'list';
+
     return (
       <div {...rest} ref={ref} style={style}>
+        {showList && (
         <div
           style={{
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
-            flexShrink: 0,
-            width: len(listWidth) ?? `${upworkAccounts.listColumn.width}px`,
+            // A column shown on its own takes the full width; beside the other
+            // it holds the fixed width Figma draws.
+            flexShrink: showSide ? 0 : 1,
+            flexGrow: showSide ? 0 : 1,
+            width: showSide ? (len(listWidth) ?? `${upworkAccounts.listColumn.width}px`) : '100%',
             backgroundColor: listBackground ?? upworkAccounts.listColumn.background,
-            borderRight: `1px solid ${borderColor ?? color.main.backgroundAlt}`,
+            // The divider belongs to the split, so it goes when the split does.
+            borderRight: showSide ? `1px solid ${borderColor ?? color.main.backgroundAlt}` : undefined,
           }}
         >
           {renderColumnHeader
@@ -545,7 +570,9 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
             )}
           </div>
         </div>
+        )}
 
+        {showSide && (
         <div
           style={{
             boxSizing: 'border-box',
@@ -593,6 +620,7 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
             )}
           </div>
         </div>
+        )}
       </div>
     );
   },
