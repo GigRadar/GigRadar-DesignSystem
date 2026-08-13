@@ -3,6 +3,10 @@ import { useState, type ReactNode } from 'react';
 import { Section, Shell } from './layout';
 import { NavigateProvider } from './navigation';
 import { AiConfigurationPage } from './pages/AiConfigurationPage';
+import { AiToolsPage } from './pages/ai/AiToolsPage';
+import { AutoReplyPage } from './pages/ai/AutoReplyPage';
+import { CustomPromptPage } from './pages/ai/CustomPromptPage';
+import { MentionPresetPage } from './pages/ai/MentionPresetPage';
 import { AvatarPage } from './pages/AvatarPage';
 import { BadgePage } from './pages/BadgePage';
 import { ButtonPage } from './pages/ButtonPage';
@@ -84,7 +88,18 @@ const NAV: { title: string; nodes: Page[] }[] = [
         label: 'Settings',
         render: () => <SettingsPanelPage />,
         children: [
-          { id: 'crm-settings-ai', label: 'AI Configuration', render: () => <AiConfigurationPage /> },
+          {
+            id: 'crm-settings-ai',
+            label: 'AI Configuration',
+            render: () => <AiConfigurationPage />,
+            // The screen's four sections, in the order it stacks them.
+            children: [
+              { id: 'crm-ai-prompt', label: 'Custom Prompt', render: () => <CustomPromptPage /> },
+              { id: 'crm-ai-auto-reply', label: 'Auto Reply', render: () => <AutoReplyPage /> },
+              { id: 'crm-ai-presets', label: 'Mention Preset', render: () => <MentionPresetPage /> },
+              { id: 'crm-ai-tools', label: 'AI Tools', render: () => <AiToolsPage /> },
+            ],
+          },
           {
             id: 'crm-settings-upwork',
             label: 'Upwork Connected Account',
@@ -109,16 +124,75 @@ export function App() {
   if (!page) return null;
 
   /**
-   * Switches pages, opening the folder the target sits in.
+   * Switches pages, opening every folder the target sits inside.
    *
    * Without the second step, a cross-page link could land the reader on a page
    * whose sidebar row is hidden inside a collapsed folder — the content
    * changes but nothing in the nav shows where they are.
+   *
+   * Every ancestor, not just the immediate parent: the tree nests more than one
+   * level (CRM ▸ Settings ▸ AI Configuration ▸ Custom Prompt), so opening the
+   * parent alone can still leave it hidden inside a collapsed grandparent.
    */
   const navigate = (pageId: string) => {
     setActive(pageId);
-    const parent = PAGES.find((p) => p.children?.some((child) => child.id === pageId));
-    if (parent) setCollapsed((state) => ({ ...state, [parent.id]: false }));
+
+    const ancestors: string[] = [];
+    const walk = (nodes: Page[], trail: string[]): boolean =>
+      nodes.some((node) => {
+        if (node.id === pageId) {
+          ancestors.push(...trail);
+          return true;
+        }
+        return walk(node.children ?? [], [...trail, node.id]);
+      });
+    walk(NAV.flatMap((group) => group.nodes), []);
+
+    if (ancestors.length) {
+      setCollapsed((state) => {
+        const next = { ...state };
+        ancestors.forEach((id) => {
+          next[id] = false;
+        });
+        return next;
+      });
+    }
+  };
+
+  /**
+   * Draws one nav row and, when it has children and is open, the rows beneath
+   * it — at any depth.
+   *
+   * Recursive rather than a parent case plus a child case: the flat version
+   * silently dropped a third level, so adding the AI Configuration sections
+   * put four pages in the router that the sidebar never rendered.
+   */
+  const renderNode = (node: Page, depth: number): ReactNode => {
+    if (!hasChildren(node)) {
+      return (
+        <NavItem
+          key={node.id}
+          label={node.label}
+          depth={depth}
+          active={active === node.id}
+          onClick={() => navigate(node.id)}
+        />
+      );
+    }
+
+    return (
+      <div key={node.id} style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}>
+        <NavItem
+          label={node.label}
+          depth={depth}
+          active={active === node.id}
+          open={!collapsed[node.id]}
+          onClick={() => navigate(node.id)}
+          onToggle={() => setCollapsed((state) => ({ ...state, [node.id]: !state[node.id] }))}
+        />
+        {!collapsed[node.id] && node.children.map((child) => renderNode(child, depth + 1))}
+      </div>
+    );
   };
 
   return (
@@ -142,38 +216,7 @@ export function App() {
                 {group.title}
               </div>
 
-              {group.nodes.map((node) =>
-                hasChildren(node) ? (
-                  <div key={node.id} style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}>
-                    <NavItem
-                      label={node.label}
-                      active={active === node.id}
-                      open={!collapsed[node.id]}
-                      onClick={() => navigate(node.id)}
-                      onToggle={() =>
-                        setCollapsed((state) => ({ ...state, [node.id]: !state[node.id] }))
-                      }
-                    />
-                    {!collapsed[node.id] &&
-                      node.children.map((child) => (
-                        <NavItem
-                          key={child.id}
-                          label={child.label}
-                          depth={1}
-                          active={active === child.id}
-                          onClick={() => navigate(child.id)}
-                        />
-                      ))}
-                  </div>
-                ) : (
-                  <NavItem
-                    key={node.id}
-                    label={node.label}
-                    active={active === node.id}
-                    onClick={() => navigate(node.id)}
-                  />
-                ),
-              )}
+              {group.nodes.map((node) => renderNode(node, 0))}
             </div>
           ))}
         </nav>

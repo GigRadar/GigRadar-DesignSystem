@@ -2,23 +2,18 @@ import { color, component, radius, spacing, textStyle } from '@gigradar/theme';
 import {
   AiTool,
   AiPromptConfig,
-  AutoReply,
   CustomPromptField,
-  IconTrunOffPower,
-  MentionPresetList,
-  type MentionPresetItem,
   PromptVariable,
   ModeBadge,
   SettingsHeader,
   SettingsSection,
-  type AutoReplyOption,
-  type AutoReplyTab,
-  type ReplyMode,
   VersionNumber,
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
+import { AutoReplyDemo, MentionPresetDemo } from '../demos/aiConfiguration';
+import { AI_TOOLS } from '../fixtures/aiConfiguration';
 import { OLDER_PROMPT, SAMPLE_PROMPT, VARIABLES, VERSIONS } from '../fixtures/prompt';
 import { PageHeader, Preview, Section } from '../layout';
 import { CrossLink } from '../navigation';
@@ -182,169 +177,6 @@ const field = useRef<CustomPromptFieldHandle>(null);
         />
       </Section>
     </>
-  );
-}
-
-/** The capabilities Figma lists on this screen (node 3777:9422). */
-const AI_TOOLS = [
-  {
-    name: 'post_comment_as_laziza',
-    category: 'message' as const,
-    categoryLabel: 'Public Communication',
-    description:
-      'Post the final assistant reply as an internal CRM comment authored by Laziza. Called exactly once per run with the full reply text and a short reasoning summary. The room is bound by the runtime — Laziza cannot post into a different room.',
-  },
-  {
-    name: 'schedule_wake_up',
-    category: 'schedule' as const,
-    categoryLabel: 'Scheduling',
-    description:
-      'Schedule a one-shot follow-up that re-invokes the agent at a future time. Use when the user asks for a deferred check ("ping me tomorrow", "check back when the client replies"). Takes inSeconds (30s minimum, 1 year max) and a concrete message (≥10 chars) Laziza will act on at wake-up time.',
-  },
-  {
-    name: 'cancel_wake_up',
-    category: 'schedule' as const,
-    categoryLabel: 'Scheduling',
-    description:
-      'Cancel a previously scheduled wake-up by id. Use when the user asks to retract a pending follow-up or when the situation that motivated the wake-up has resolved early.',
-  },
-  {
-    name: 'list_my_wakeups',
-    category: 'schedule' as const,
-    categoryLabel: 'Scheduling',
-    description:
-      'List pending wake-ups visible to this team on this room. Use sparingly — only when the user asks to see what is scheduled, or when Laziza needs to avoid duplicating an existing wake-up.',
-  },
-];
-
-/** Sample presets, in priority order. */
-const PRESETS: MentionPresetItem[] = [
-  {
-    id: 'case-study',
-    title: 'Top performing case study',
-    description:
-      'Inserts our flagship fintech case study link with a 1-line value framing. Used in cold-outreach replies.',
-    characterCount: 103,
-  },
-  {
-    id: 'discovery',
-    title: 'Book discovery call',
-    description:
-      "Drops the team's Cal.com link and a 30-minute scheduling line. Auto-tags the room as `Booked`.",
-    characterCount: 96,
-  },
-  {
-    id: 'pricing',
-    title: 'Send pricing tiers',
-    description: "Returns the three-tier pricing block with the current month's promo footnote.",
-    characterCount: 78,
-  },
-];
-
-/** The preset list, wired the way the settings screen wires it. */
-function MentionPresetDemo() {
-  const [presets, setPresets] = useState(PRESETS);
-  const [dirty, setDirty] = useState(false);
-
-  /** Swaps a preset with its neighbour, which is what the move buttons do. */
-  const move = (index: number, delta: number) =>
-    setPresets((list) => {
-      const next = [...list];
-      const target = index + delta;
-      if (target < 0 || target >= next.length) return list;
-      [next[index], next[target]] = [next[target]!, next[index]!];
-      setDirty(true);
-      return next;
-    });
-
-  return (
-    <MentionPresetList
-      items={presets}
-      activeId={presets[0]?.id}
-      characterMax={400}
-      onMoveUp={(_item, index) => move(index, -1)}
-      onMoveDown={(_item, index) => move(index, 1)}
-      onDelete={(item) => {
-        setDirty(true);
-        setPresets((list) => list.filter((p) => p.id !== item.id));
-      }}
-      dirty={dirty}
-      onAdd={() => {
-        setDirty(true);
-        setPresets((list) => [
-          ...list,
-          { id: `preset-${list.length + 1}`, title: 'New Presets', characterCount: 0 },
-        ]);
-      }}
-      onSave={() => setDirty(false)}
-      onCancel={() => {
-        setDirty(false);
-        setPresets(PRESETS);
-      }}
-      onReset={() => {
-        setDirty(false);
-        setPresets(PRESETS);
-      }}
-    />
-  );
-}
-
-/** The message classes and modes, exactly as Figma draws them. */
-const AUTO_REPLY_TABS: AutoReplyTab[] = [
-  { id: 'first', label: 'First Message', mode: 'fullAuto' },
-  { id: 'other', label: 'Other Message', mode: 'coPilot' },
-];
-
-const AUTO_REPLY_OPTIONS: AutoReplyOption[] = [
-  {
-    id: 'fullAuto',
-    label: 'Full Auto',
-    description: 'Replies are sent automatically',
-    markerLabel: 'Auto',
-  },
-  {
-    id: 'coPilot',
-    label: 'Co-pilot',
-    description: 'Drafts a reply for your approval',
-    markerLabel: '50%',
-    markerColor: color.accent.laziza.backgroundAlt,
-  },
-  {
-    id: 'off',
-    label: 'Turn Off',
-    description: 'Disable automatic replies',
-    markerIcon: IconTrunOffPower,
-    markerColor: color.navbar.text,
-  },
-];
-
-/** The Auto Reply card, wired the way the settings screen wires it. */
-function AutoReplyDemo() {
-  const [tabId, setTabId] = useState('first');
-  const [promptEnabled, setPromptEnabled] = useState(false);
-  // Each message class carries its own mode — switching tabs shows that
-  // class's setting rather than dragging the last one across.
-  const [modes, setModes] = useState<Record<string, ReplyMode>>({
-    first: 'fullAuto',
-    other: 'coPilot',
-  });
-
-  const tabs = AUTO_REPLY_TABS.map((tab) => ({ ...tab, mode: modes[tab.id] }));
-
-  return (
-    <AutoReply
-      tabs={tabs}
-      tabId={tabId}
-      onTabChange={(tab) => setTabId(tab.id)}
-      options={AUTO_REPLY_OPTIONS}
-      value={modes[tabId]}
-      onChange={(mode) => setModes((state) => ({ ...state, [tabId]: mode }))}
-      promptEnabled={promptEnabled}
-      onPromptEnabledChange={setPromptEnabled}
-      onSave={() => undefined}
-      onCancel={() => undefined}
-      onReset={() => undefined}
-    />
   );
 }
 
