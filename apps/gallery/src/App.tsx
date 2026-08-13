@@ -1,6 +1,6 @@
-import { color, radius, spacing, textStyle } from '@gigradar/theme';
+import { color, controlHeight, radius, spacing, textStyle } from '@gigradar/theme';
 import { useState, type ReactNode } from 'react';
-import { Icon, IconDropdownArrowDown, IconDropdownArrowUp } from '@gigradar/ui';
+import { Icon, IconDropdownArrowDown, IconDropdownArrowUp, IconSearch, IconXClose } from '@gigradar/ui';
 import { Section, Shell } from './layout';
 import { NavigateProvider } from './navigation';
 import { AiConfigurationPage } from './pages/AiConfigurationPage';
@@ -177,6 +177,10 @@ export function App() {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   // Groups too — keyed by title, which is what identifies a group.
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  // And the sections inside a group, keyed by "group/section".
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+  const [railCollapsed, setRailCollapsed] = useState(false);
+  const [query, setQuery] = useState('');
 
   const page = PAGES.find((p) => p.id === active) ?? PAGES[0];
   if (!page) return null;
@@ -219,8 +223,36 @@ export function App() {
     const group = NAV.find((g) =>
       groupPages(g).some((node) => flatten(node).some((p) => p.id === pageId)),
     );
-    if (group) setCollapsedGroups((state) => ({ ...state, [group.title]: false }));
+    if (group) {
+      setCollapsedGroups((state) => ({ ...state, [group.title]: false }));
+
+      const section = group.sections?.find((sec) =>
+        sec.nodes.some((node) => flatten(node).some((p) => p.id === pageId)),
+      );
+      if (section) {
+        const key = `${group.title}/${section.title}`;
+        setCollapsedSections((state) => ({ ...state, [key]: false }));
+      }
+    }
   };
+
+  /**
+   * Keeps a page when it matches, or when anything beneath it does.
+   *
+   * A parent whose child matched has to survive the filter, or the child has
+   * nothing to hang from — so this rebuilds the branch rather than testing
+   * each node in isolation.
+   */
+  const filterPage = (page: Page): Page | null => {
+    const hit = page.label.toLowerCase().includes(query.trim().toLowerCase());
+    const children = (page.children ?? []).map(filterPage).filter((c): c is Page => c !== null);
+    if (!hit && children.length === 0) return null;
+    // A matching parent keeps all of its children: the reader asked for that
+    // branch, not for the one row whose text happened to match.
+    return { ...page, children: hit ? page.children : children };
+  };
+
+  const searching = query.trim().length > 0;
 
   /**
    * Draws one nav row and, when it has children and is open, the rows beneath
@@ -243,27 +275,108 @@ export function App() {
       );
     }
 
+    const nodeOpen = searching || !collapsed[node.id];
+
     return (
       <div key={node.id} style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}>
         <NavItem
           label={node.label}
           depth={depth}
           active={active === node.id}
-          open={!collapsed[node.id]}
+          open={nodeOpen}
           onClick={() => navigate(node.id)}
           onToggle={() => setCollapsed((state) => ({ ...state, [node.id]: !state[node.id] }))}
         />
-        {!collapsed[node.id] && node.children.map((child) => renderNode(child, depth + 1))}
+        {nodeOpen && node.children.map((child) => renderNode(child, depth + 1))}
       </div>
     );
   };
 
   return (
     <Shell
+      collapsed={railCollapsed}
+      onCollapsedChange={setRailCollapsed}
+      search={
+        <label
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: spacing.xs,
+            boxSizing: 'border-box',
+            width: '100%',
+            height: controlHeight.medium,
+            padding: `0 ${spacing.xs}px`,
+            borderRadius: radius.xs,
+            border: `1px solid ${color.navbar.hover}`,
+            backgroundColor: color.main.white,
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              display: 'inline-flex',
+              flexShrink: 0,
+              width: 14,
+              height: 14,
+              color: color.navbar.text,
+            }}
+          >
+            <Icon icon={IconSearch} size="100%" />
+          </span>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search"
+            aria-label="Search pages"
+            style={{
+              ...textStyle.mRegular,
+              flex: '1 1 auto',
+              minWidth: 0,
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              color: color.main.black,
+            }}
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              aria-label="Clear search"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                width: 16,
+                height: 16,
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                color: color.navbar.text,
+                cursor: 'pointer',
+              }}
+            >
+              <Icon icon={IconXClose} size="100%" />
+            </button>
+          )}
+        </label>
+      }
       nav={
         <nav style={{ display: 'flex', flexDirection: 'column', gap: spacing.s }}>
           {NAV.map((group) => {
-            const open = !collapsedGroups[group.title];
+            const nodes = (group.nodes ?? []).map(filterPage).filter((n): n is Page => n !== null);
+            const sections = (group.sections ?? [])
+              .map((section) => ({
+                ...section,
+                nodes: section.nodes.map(filterPage).filter((n): n is Page => n !== null),
+              }))
+              .filter((section) => section.nodes.length > 0);
+
+            // A card with nothing left in it is noise, not an empty state.
+            if (searching && nodes.length === 0 && sections.length === 0) return null;
+
+            const open = searching || !collapsedGroups[group.title];
 
             return (
               <div
@@ -326,39 +439,39 @@ export function App() {
                   </span>
                 </button>
 
-                {open && group.nodes?.map((node) => renderNode(node, 0))}
+                {open && nodes.map((node) => renderNode(node, 0))}
                 {open &&
-                  group.sections?.map((section, sectionIndex) => (
-                    <div
-                      key={section.title}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: spacing.xxs,
-                        // A rule between sections, not above the first — the
-                        // card's own heading already separates that one, and a
-                        // second line under it would read as an empty band.
-                        borderTop:
-                          sectionIndex === 0 ? undefined : `1px solid ${color.navbar.hover}`,
-                        marginTop: sectionIndex === 0 ? undefined : spacing.xs,
-                        paddingTop: sectionIndex === 0 ? undefined : spacing.xs,
-                      }}
-                    >
-                      {/* A quieter label than the card's own heading: this
-                          divides one card's contents rather than naming a new
-                          card, so it does not compete with the heading above. */}
+                  sections.map((section) => {
+                    // Keyed by group and section, so two groups can both carry
+                    // a section called "CRM" without sharing one toggle.
+                    const key = `${group.title}/${section.title}`;
+                    const sectionOpen = searching || !collapsedSections[key];
+
+                    return (
                       <div
-                        style={{
-                          ...textStyle.sMedium,
-                          color: color.navbar.text,
-                          padding: `${spacing.xxs}px ${spacing.s}px`,
-                        }}
+                        key={section.title}
+                        style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}
                       >
-                        {section.title}
+                        {/* The same row the CRM folders use, rather than a
+                            static label: a section holds pages and opens and
+                            shuts, which is what that row already means. It
+                            carries no page of its own, so clicking the label
+                            toggles it too — there is nothing else for it to
+                            do. */}
+                        <NavItem
+                          label={section.title}
+                          open={sectionOpen}
+                          onClick={() =>
+                            setCollapsedSections((state) => ({ ...state, [key]: !state[key] }))
+                          }
+                          onToggle={() =>
+                            setCollapsedSections((state) => ({ ...state, [key]: !state[key] }))
+                          }
+                        />
+                        {sectionOpen && section.nodes.map((node) => renderNode(node, 1))}
                       </div>
-                      {section.nodes.map((node) => renderNode(node, 0))}
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
             );
           })}
