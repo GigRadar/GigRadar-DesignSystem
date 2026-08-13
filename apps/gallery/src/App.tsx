@@ -602,14 +602,14 @@ function NavItem({
           border: 'none',
           background: 'transparent',
           cursor: 'pointer',
-          textTransform: variant === 'section' ? 'uppercase' : undefined,
-          letterSpacing: variant === 'section' ? 0.5 : undefined,
+          letterSpacing: variant === 'section' ? 0.2 : undefined,
           color:
             variant === 'section'
               ? color.main.description
               : active
                 ? color.main.brand
-                : color.navbar.text,
+                : color.main.description,
+          fontWeight: active ? 600 : undefined,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -641,7 +641,7 @@ function NavItem({
             border: `1px solid ${color.navbar.hover}`,
             borderRadius: radius.xs,
             background: color.main.white,
-            color: active ? color.main.brand : color.navbar.text,
+            color: color.navbar.text,
             lineHeight: 1,
             cursor: 'pointer',
           }}
