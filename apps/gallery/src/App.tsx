@@ -1,5 +1,6 @@
 import { color, radius, spacing, textStyle } from '@gigradar/theme';
 import { useState, type ReactNode } from 'react';
+import { Icon, IconDropdownArrowDown, IconDropdownArrowUp } from '@gigradar/ui';
 import { Section, Shell } from './layout';
 import { NavigateProvider } from './navigation';
 import { AiConfigurationPage } from './pages/AiConfigurationPage';
@@ -152,6 +153,14 @@ const NAV: NavGroup[] = [
   },
 ];
 
+/**
+ * The group heading's expand control.
+ *
+ * Larger than the 9px glyph it replaces: it is the only control on the row,
+ * and at that size it read as punctuation rather than something to press.
+ */
+const NAV_CHEVRON = 16;
+
 /** Every page a group holds, whether it nests them in sections or not. */
 const groupPages = (group: NavGroup): Page[] => [
   ...(group.nodes ?? []),
@@ -280,6 +289,10 @@ export function App() {
                     ...textStyle.sSemibold,
                     display: 'flex',
                     alignItems: 'center',
+                    // The chevron sits at the far right, so every group's
+                    // control is in one column rather than tucked against a
+                    // label whose length varies.
+                    justifyContent: 'space-between',
                     gap: spacing.xxs,
                     width: '100%',
                     color: color.main.description,
@@ -293,29 +306,43 @@ export function App() {
                     appearance: 'none',
                   }}
                 >
+                  {group.title}
                   <span
                     aria-hidden
                     style={{
-                      display: 'inline-block',
-                      // The same quarter-turn the page rows use, so a heading
-                      // and a folder read as the same kind of control.
-                      transform: open ? 'rotate(0deg)' : 'rotate(-90deg)',
-                      transition: 'transform 120ms ease',
-                      fontSize: 9,
-                      lineHeight: 1,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      width: NAV_CHEVRON,
+                      height: NAV_CHEVRON,
+                      color: color.navbar.text,
                     }}
                   >
-                    ▾
+                    {/* Two drawn icons rather than one rotated: the set has
+                        both, and a real up-arrow reads more definitely as
+                        "this closes" than a down-arrow turned upside down. */}
+                    <Icon icon={open ? IconDropdownArrowUp : IconDropdownArrowDown} size="100%" />
                   </span>
-                  {group.title}
                 </button>
 
                 {open && group.nodes?.map((node) => renderNode(node, 0))}
                 {open &&
-                  group.sections?.map((section) => (
+                  group.sections?.map((section, sectionIndex) => (
                     <div
                       key={section.title}
-                      style={{ display: 'flex', flexDirection: 'column', gap: spacing.xxs }}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: spacing.xxs,
+                        // A rule between sections, not above the first — the
+                        // card's own heading already separates that one, and a
+                        // second line under it would read as an empty band.
+                        borderTop:
+                          sectionIndex === 0 ? undefined : `1px solid ${color.navbar.hover}`,
+                        marginTop: sectionIndex === 0 ? undefined : spacing.xs,
+                        paddingTop: sectionIndex === 0 ? undefined : spacing.xs,
+                      }}
                     >
                       {/* A quieter label than the card's own heading: this
                           divides one card's contents rather than naming a new
@@ -324,7 +351,7 @@ export function App() {
                         style={{
                           ...textStyle.sMedium,
                           color: color.navbar.text,
-                          padding: `${spacing.xs}px ${spacing.s}px ${spacing.xxs}px`,
+                          padding: `${spacing.xxs}px ${spacing.s}px`,
                         }}
                       >
                         {section.title}
@@ -398,14 +425,13 @@ function NavItem({
             borderRadius: radius.xs,
             background: 'transparent',
             color: active ? color.main.brand : color.navbar.text,
-            fontSize: 10,
             lineHeight: 1,
             cursor: 'pointer',
-            transform: open ? undefined : 'rotate(-90deg)',
-            transition: 'transform 120ms ease',
           }}
         >
-          ▾
+          {/* The same pair the group headings use, so a folder row and a card
+              heading read as the same control at two sizes. */}
+          <Icon icon={open ? IconDropdownArrowUp : IconDropdownArrowDown} size={14} />
         </button>
       )}
       <button
