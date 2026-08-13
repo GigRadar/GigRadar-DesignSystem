@@ -413,7 +413,7 @@ export function App() {
                     setCollapsedGroups((state) => ({ ...state, [group.title]: !state[group.title] }))
                   }
                   style={{
-                    ...textStyle.sSemibold,
+                    ...textStyle.mSemibold,
                     display: 'flex',
                     alignItems: 'center',
                     // The chevron sits at the far right, so every group's
@@ -422,10 +422,10 @@ export function App() {
                     justifyContent: 'space-between',
                     gap: spacing.xxs,
                     width: '100%',
-                    color: color.main.description,
                     padding: `${spacing.xs}px ${spacing.xxs}px ${spacing.xs}px ${spacing.s}px`,
                     border: 'none',
                     background: 'transparent',
+                    color: color.navbar.textActive,
                     textTransform: 'uppercase',
                     textAlign: 'left',
                     letterSpacing: 0.5,
@@ -559,10 +559,8 @@ function NavItem({
   /**
    * Whether the open page is nested somewhere beneath this row.
    *
-   * Goes bold, and takes neither the brand color nor the fill: it marks the
-   * branch you are in, where those two mark the page you are on. Giving an
-   * ancestor the same color would make a folder and its page compete for
-   * which one you are actually looking at.
+   * Goes bold and blue, but takes no fill: it marks the branch you are in,
+   * where the fill marks the page you are on.
    */
   onPath?: boolean;
   /** The live search, so the matched run can be marked. */
@@ -626,11 +624,10 @@ function NavItem({
           border: 'none',
           background: 'transparent',
           cursor: 'pointer',
-          color: active ? color.main.brand : color.main.description,
-          // An ancestor of the open page goes bold and nothing else: no color,
-          // no fill. That leaves the branch legible without a second row
-          // looking as selected as the page itself, which carries both the
-          // brand color and the fill.
+          color: active || onPath ? color.main.brand : color.main.description,
+          // An ancestor is bold and blue; the open page is bold, blue, AND
+          // filled. The fill is what separates the page you are on from the
+          // branch that leads to it.
           fontWeight: active || onPath ? 600 : undefined,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
