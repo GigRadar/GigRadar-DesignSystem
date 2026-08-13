@@ -154,14 +154,12 @@ const NAV: NavGroup[] = [
 ];
 
 /**
- * The group heading's expand control.
+ * The expand box on a nav row.
  *
- * Larger than the 9px glyph it replaces: it is the only control on the row,
- * and at that size it read as punctuation rather than something to press.
+ * Square, so it reads as a control rather than as punctuation, and one size
+ * for every level — a card heading, a section, and a page folder all fold
+ * what is under them, so all three draw the same box.
  */
-const NAV_CHEVRON = 16;
-
-/** The expand box on a nav row. Square, so it reads as a control. */
 const NAV_TOGGLE = 22;
 
 /** Every page a group holds, whether it nests them in sections or not. */
@@ -414,7 +412,7 @@ export function App() {
                     gap: spacing.xxs,
                     width: '100%',
                     color: color.main.description,
-                    padding: `${spacing.xs}px ${spacing.s}px`,
+                    padding: `${spacing.xs}px ${spacing.xxs}px ${spacing.xs}px ${spacing.s}px`,
                     border: 'none',
                     background: 'transparent',
                     textTransform: 'uppercase',
@@ -425,6 +423,10 @@ export function App() {
                   }}
                 >
                   {group.title}
+                  {/* The same bordered box the rows below use. A card heading
+                      has only one job — it opens no page — but drawing its
+                      control differently would say the two do different
+                      things, when both fold what is under them. */}
                   <span
                     aria-hidden
                     style={{
@@ -432,15 +434,18 @@ export function App() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
-                      width: NAV_CHEVRON,
-                      height: NAV_CHEVRON,
+                      width: NAV_TOGGLE,
+                      height: NAV_TOGGLE,
+                      border: `1px solid ${color.navbar.hover}`,
+                      borderRadius: radius.xs,
+                      backgroundColor: color.main.white,
                       color: color.navbar.text,
                     }}
                   >
                     {/* Two drawn icons rather than one rotated: the set has
                         both, and a real up-arrow reads more definitely as
                         "this closes" than a down-arrow turned upside down. */}
-                    <Icon icon={open ? IconDropdownArrowUp : IconDropdownArrowDown} size="100%" />
+                    <Icon icon={open ? IconDropdownArrowUp : IconDropdownArrowDown} size={12} />
                   </span>
                 </button>
 
@@ -571,7 +576,6 @@ function NavItem({
         display: 'flex',
         alignItems: 'center',
         gap: spacing.xxs,
-        paddingLeft: depth * spacing.s,
         // A section is a header, so it takes room above it rather than sitting
         // in the same rhythm as the links it introduces.
         marginTop: variant === 'section' ? spacing.xs : undefined,
@@ -589,6 +593,11 @@ function NavItem({
           minWidth: 0,
           textAlign: 'left',
           padding: `${spacing.xs}px ${spacing.s}px`,
+          // The indent lives on the label, not the row: indenting the row
+          // carried the toggle inward with it, so a nested row's box sat left
+          // of its parent's. Every box now lines up on the card's right edge
+          // however deep the row is.
+          paddingLeft: spacing.s + depth * spacing.s,
           borderRadius: radius.xs,
           border: 'none',
           background: 'transparent',
