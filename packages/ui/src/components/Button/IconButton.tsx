@@ -15,7 +15,7 @@ const { iconButton } = component;
  * hover, which is what a close or back control wants. `subtle` sits on the
  * pale badge fill at rest, and `solid` is the filled brand disc.
  */
-export type IconButtonVariant = 'ghost' | 'subtle' | 'solid' | 'outlined';
+export type IconButtonVariant = 'ghost' | 'subtle' | 'solid';
 
 export type IconButtonStyleProps = {
   /** The button's edge. Overrides the `size` step. */
@@ -30,11 +30,6 @@ export type IconButtonStyleProps = {
   textColor?: string;
   /** Fill on hover. */
   hoverBackground?: string;
-  /**
-   * The outline. Only drawn by the `outlined` variant — the others have no
-   * border, so setting this on them does nothing.
-   */
-  borderColor?: string;
 };
 
 export type IconButtonProps = {
@@ -70,20 +65,6 @@ const variants: Record<
     color: color.main.white,
     hover: color.badge.hover,
   },
-  /**
-   * A white square inside a neutral outline — the row action Figma draws
-   * beside a list item (mention presets 3774:8382, version history 3804:22191).
-   *
-   * The one variant with a border, and the reason it exists: those rows sit on
-   * white, so a `ghost` button has nothing to read against until you point at
-   * it. Pass `borderColor` to tint it — the destructive action takes the error
-   * background, which is how Figma marks delete without filling it red.
-   */
-  outlined: {
-    background: color.main.white,
-    color: color.navbar.text,
-    hover: color.navbar.hover,
-  },
 };
 
 /**
@@ -110,7 +91,6 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
     background,
     textColor,
     hoverBackground,
-    borderColor,
     disabled = false,
     onPointerEnter,
     onPointerLeave,
@@ -131,13 +111,9 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
     width: edge,
     height: edge,
     padding: 0,
-    // Only `outlined` carries an edge. Keeping the others border-less rather
-    // than transparent-bordered means their glyph sits where the token says,
-    // with no border width silently eating into the square.
-    border:
-      variant === 'outlined'
-        ? `1px solid ${borderColor ?? color.navbar.hover}`
-        : 'none',
+    // Border-less rather than transparent-bordered, so the glyph sits where
+    // the token says with no border width silently eating into the square.
+    border: 'none',
     borderRadius: len(radius) ?? `${iconButton.radius}px`,
     backgroundColor:
       hovered && !disabled
