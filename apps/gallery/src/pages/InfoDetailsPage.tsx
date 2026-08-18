@@ -32,7 +32,7 @@ export function InfoDetailsPage() {
       <CrossLink
         eyebrow="Where it is used"
         links={[
-          { label: 'CRM ▸ Settings ▸ Upwork ▸ Info details', pageId: 'crm-upwork-info' },
+          { label: 'CRM ▸ Settings ▸ Upwork ▸ Info details (Right)', pageId: 'crm-upwork-info' },
           { label: 'Components ▸ Button', pageId: 'button' },
         ]}
       >
@@ -45,16 +45,16 @@ export function InfoDetailsPage() {
         description="How the screen draws them. The banner carries a gradient wash and the notice is plain white — that contrast is what says which one is the thing to act on, since the two sit at the same width in the same column."
       >
         <Preview>
-          <VStack gap={sideGap} style={{ width: sideWidth }}>
+          <VStack gap={sideGap} width={sideWidth}>
             <AuthorizeBanner onAuthorize={() => undefined} />
-            <AccountSafetyNotice onAction={() => undefined} />
+            <AccountSafetyNotice onInvite={() => undefined} />
             <AuthorizationSteps />
           </VStack>
         </Preview>
         <CodeBlock
-          code={`<VStack gap={19} style={{ width: 285 }}>
+          code={`<VStack gap={19} width={285}>
   <AuthorizeBanner disabled={!apiConnected} onAuthorize={authorize} />
-  <AccountSafetyNotice onAction={openUpworkSettings} />
+  <AccountSafetyNotice onInvite={inviteToWorkspace} />
   <AuthorizationSteps />
 </VStack>`}
         />
@@ -85,21 +85,23 @@ export function InfoDetailsPage() {
 
       <Section
         title="AccountSafetyNotice"
-        description="White with an amber plate rather than a full amber card. The notice is permanent on the screen — nothing the user did raised it — and an amber card standing beside the blue banner would read as an error to act on. The link drops out entirely when no handler is passed."
+        description="White with an amber plate rather than a full amber card. The notice is permanent on the screen — nothing the user did raised it — and an amber card standing beside the blue banner would read as an error to act on. Its one action is the invite the paragraph asks for, and it drops out entirely when no handler is passed."
       >
         <Preview>
           <div style={{ width: sideWidth }}>
-            <AccountSafetyNotice onAction={() => undefined} />
+            <AccountSafetyNotice onInvite={() => undefined} />
           </div>
           <div style={{ width: sideWidth }}>
             <AccountSafetyNotice />
           </div>
         </Preview>
         <CodeBlock
-          code={`<AccountSafetyNotice onAction={() => window.open(UPWORK_SETTINGS_URL)} />
+          code={`// One action, and it is what the notice's own text asks for.
+// Omit the handler and the button drops out entirely.
+<AccountSafetyNotice onInvite={() => inviteOwnerToWorkspace()} />
 
 // Pass your own copy:
-<AccountSafetyNotice title="Account Safety Notice" actionLabel="Upwork Settings">
+<AccountSafetyNotice inviteLabel="Send Invite Link">
   For security reasons, logging into multiple Upwork accounts…
 </AccountSafetyNotice>`}
         />
@@ -147,7 +149,7 @@ export function InfoDetailsPage() {
             { name: 'AuthorizeBanner ▸ disabled', type: 'boolean', default: 'false', description: 'Greys the action out — the “API not connected” state.' },
             { name: 'AuthorizeBanner ▸ renderAction', type: 'RenderProp', description: 'Replaces the action. Call `defaultRender()` to decorate rather than replace.' },
             { name: 'AccountSafetyNotice ▸ title / children', type: 'ReactNode', description: 'The heading and the warning itself. Both have defaults.' },
-            { name: 'AccountSafetyNotice ▸ actionLabel / onAction', type: 'ReactNode / () => void', description: 'The trailing link. Omitting the handler drops the link.' },
+            { name: 'AccountSafetyNotice ▸ inviteLabel / onInvite', type: `ReactNode / () => void`, description: 'The workspace invite — the action the notice’s text asks for. Defaults to “Send Invite Link”. Omitting the handler drops the button.' },
             { name: 'AuthorizationSteps ▸ title', type: 'ReactNode', default: `'Authorization Steps'`, description: 'The heading. Pass `null` to drop it.' },
             { name: 'AuthorizationSteps ▸ steps', type: 'ReactNode[]', description: 'The steps, in order. Numbering comes from position.' },
             { name: 'AuthorizationSteps ▸ boxed', type: 'boolean', default: 'false', description: 'Wraps each row in its own white card — how the popup draws them.' },

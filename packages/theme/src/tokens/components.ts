@@ -266,6 +266,26 @@ export const badge = {
     },
     /** Figma draws 4px — the second step of the radius scale. */
     radius: radius.xxs + 2,
+
+    /**
+     * The connection pill — Figma node 4100:28304, the badge on the CRM
+     * notification cards.
+     *
+     * The same badge drawn as a round pill with a leading dot instead of a
+     * soft-cornered box. Its own metrics rather than a `size` step because the
+     * shape differs, not the scale: the pill is roomier horizontally to clear
+     * the dot, and rounds fully.
+     */
+    connection: {
+      paddingX: spacing.xs,
+      paddingY: 3,
+      /** Space between the dot and the label. */
+      gap: spacing.xxs,
+      /** Figma draws 999px — a pill at any height. */
+      radius: radius.round,
+      dotSize: 6,
+      fontSize: fontSize.s,
+    },
   },
 
   /** The rank badge sits a step wider than the credit badge — Figma draws 6px. */
@@ -1556,6 +1576,355 @@ export const upworkAccounts = {
 } as const;
 
 /**
+ * Upwork API key screen — CRM ▸ Settings ▸ Upwork API Key (node 2105:33765).
+ *
+ * The screen is the same two-column shell as the connected-accounts screen, so
+ * its columns, header band, and skeleton bars are read from `upworkAccounts`
+ * rather than restated here. What this block holds is the five components the
+ * screen is assembled from, none of which exist anywhere else: the credential
+ * text field, the API status card, the remove button, the test-result strip,
+ * and the two guide cards.
+ */
+export const upworkApiKey = {
+  /**
+   * The credential text field — Figma's "Settings Textfield" (node 2104:32695).
+   *
+   * A 33px box, which is below the `controlHeight.small` step of 28 plus its
+   * border; Figma draws it deliberately tighter than the system control so two
+   * of them stack inside a card without dominating it. Kept as a literal for
+   * that reason — pulling it onto the control scale would change the drawing.
+   */
+  field: {
+    height: 33,
+    paddingX: 8,
+    paddingY: spacing.xs,
+    radius: radius.xs,
+    borderWidth: 1,
+    gap: 8,
+    fontSize: fontSize.m,
+    /** Space between the field and the label above it. */
+    labelGap: spacing.xs,
+    /** Space between the label's icon and its text. */
+    labelGap2: spacing.xxs,
+    labelFontSize: fontSize.m,
+    labelIconSize: 16,
+    /** The trailing reveal/copy control inside the field. */
+    actionSize: 16,
+  },
+
+  /**
+   * The API status card (node 2105:32752) — the panel above the form that says
+   * what key, if any, is connected.
+   *
+   * Its empty state is a taller, quieter box: no key means nothing to list, so
+   * Figma pads it to 25px and centres a plate and two lines. Every other state
+   * fills with detail rows and drops to a 16px pad.
+   */
+  status: {
+    radius: 14,
+    borderWidth: 1,
+    /** The pad every populated state uses. */
+    padding: spacing.m,
+    /** The taller pad the empty state uses, top and bottom. */
+    emptyPaddingY: 25,
+    gap: spacing.s,
+    /** The round plate holding the state's glyph. */
+    plateSize: 40,
+    plateIconSize: 20,
+    /** Space between the plate and the title block beside it. */
+    headGap: spacing.s,
+    /** Space between the state's title and its description. */
+    headTitleGap: 2,
+    titleFontSize: fontSize.m,
+    descriptionFontSize: fontSize.s,
+    /** The detail rows under the divider — Client ID, Secret Key, Created. */
+    rows: {
+      gap: 8,
+      /** Space above the first row, below the divider. */
+      paddingTop: spacing.s,
+      fontSize: fontSize.s,
+      /** Row height, so a column of them stays evenly spaced. */
+      height: 16.5,
+    },
+    /**
+     * The rented-key explainer inside the card. A filled note rather than a
+     * bordered one — it sits inside an already-bordered card, and a second
+     * edge there reads as a nested box.
+     */
+    note: {
+      radius: radius.xs,
+      padding: 8,
+      gap: spacing.m,
+      fontSize: fontSize.s,
+    },
+  },
+
+  /**
+   * The remove/disconnect button (node 2133:1146).
+   *
+   * Not the design system's `Button` with `variant="danger"`: Figma draws a
+   * 30px full-width outline strip at 12px text, where Button's danger variant
+   * is a content-width 36px control at 14px. The gap is the shape, not the
+   * palette — this is a full-bleed strip closing a card, and Button has no
+   * step that draws one.
+   */
+  removeButton: {
+    height: 30,
+    paddingX: 8,
+    paddingY: spacing.xs,
+    radius: radius.xs,
+    borderWidth: 1,
+    gap: 8,
+    fontSize: fontSize.s,
+    iconSize: 12,
+    /** The hover wash — a 15% red over white, as Figma paints it. */
+    hoverSurface: 'rgba(250, 55, 55, 0.15)',
+  },
+
+  /**
+   * The test-result strip (node 2105:34122) — the line under the form that
+   * reports what happened when the key was tested.
+   *
+   * The `invalid` state is the odd one: Figma draws it as bare text with no
+   * fill and no border, because it reports a problem with what was typed
+   * rather than a result from the server.
+   */
+  testStatus: {
+    paddingX: spacing.s,
+    paddingY: 8,
+    radius: radius.xs,
+    borderWidth: 1,
+    gap: 8,
+    fontSize: fontSize.m,
+    iconSize: 16,
+    /** The failed state's wash and edge, both red over white. */
+    failedSurface: 'rgba(250, 55, 55, 0.15)',
+    failedBorder: '#FA3737',
+  },
+
+  /**
+   * The "How to get the key?" card (node 2133:1049) in the right column.
+   *
+   * Its border is the whole hover affordance — the card lifts from the page
+   * edge to brand blue and nothing else moves, so the fill stays put.
+   */
+  guideCard: {
+    width: 255,
+    radius: radius.m,
+    padding: spacing.s,
+    borderWidth: 1,
+    gap: spacing.s,
+    /** The square plate holding the book glyph. */
+    plateSize: 40,
+    plateRadius: radius.m,
+    plateIconSize: 20,
+    /** Space between the heading, the body, and the link row. */
+    textGap: spacing.xs,
+    titleFontSize: fontSize.m,
+    bodyFontSize: fontSize.s,
+    /** The link row's arrow, and the space before it. */
+    linkGap: spacing.xs,
+    linkIconSize: 12,
+  },
+
+  /**
+   * The rent-API banner (node 2112:1174) — the gradient card offering a rented
+   * key to anyone who has none of their own.
+   *
+   * Shares the authorize banner's gradient and 2px edge, restated rather than
+   * referenced: the two are different components that Figma happens to paint
+   * alike, and a shared reference would move both when one is retuned.
+   */
+  rentBanner: {
+    radius: 16,
+    padding: spacing.m,
+    borderWidth: 2,
+    gap: spacing.m,
+    gradientFrom: 'rgba(93, 173, 253, 0.1)',
+    gradientTo: 'rgba(24, 82, 211, 0.1)',
+    borderColor: 'rgba(93, 173, 253, 0.3)',
+    /** The square key tile on the left. Figma draws 41px at a 12px radius. */
+    tileSize: 41,
+    tileRadius: radius.m,
+    tileIconSize: 17,
+    /** The title and its supporting line. */
+    titleGap: spacing.xxs,
+    titleFontSize: fontSize.l,
+    bodyFontSize: fontSize.m,
+    /** The action button, drawn rounder than the system button. */
+    actionRadius: radius.s,
+    actionPaddingX: spacing.m,
+    actionPaddingY: spacing.s,
+  },
+
+  /**
+   * The form band holding the two credential fields, the divider, and the
+   * actions — the middle of the left column.
+   */
+  form: {
+    /** Space between the status card, the form, and the banner. */
+    sectionGap: 25,
+    /** Space between the fields and the action row. */
+    gap: spacing.m,
+    /** Space between the two action buttons. */
+    actionGap: 8,
+    /** The OR divider between the form and the rent banner. */
+    dividerGap: spacing.s,
+    dividerFontSize: fontSize.m,
+  },
+} as const;
+
+/**
+ * The on/off toggle — Figma node 3460:60145.
+ *
+ * Deliberately not part of `switchControl`. That block describes the segmented
+ * control, which is a different thing wearing a similar name: a row of labelled
+ * choices where exactly one is picked. This is a binary track with a sliding
+ * handle, so sharing metrics would mean overriding every one of them.
+ *
+ * Figma draws the track 43×17 with a 13px handle, and lets the handle carry an
+ * "ON"/"OFF" caption inside the track — which is why the padding is asymmetric:
+ * the caption sits on the side the handle is not.
+ */
+export const toggle = {
+  /**
+   * Track width with a caption inside it — Figma's 43px at the medium step.
+   *
+   * Only the captioned track needs a declared width: it has to reserve room
+   * for "OFF", the longer of the two words, or the handle would shift as the
+   * caption changed length.
+   */
+  width: {
+    small: 34,
+    medium: 43,
+    large: 52,
+  },
+  /**
+   * Track width with no caption — the bare switch on the notification cards.
+   *
+   * Derived rather than declared: the track is the handle plus the distance it
+   * travels plus the insets on both sides. Figma draws the bare track at 32px
+   * against the captioned 43px, and this arithmetic lands on that without the
+   * two widths being able to drift apart when the handle is retuned.
+   */
+  bareTravel: {
+    small: 8,
+    medium: 11,
+    large: 13,
+  },
+  handleSize: {
+    small: 10,
+    medium: 13,
+    large: 16,
+  },
+  /** The inset around the handle, on the side it rests against. */
+  padding: {
+    small: 2,
+    medium: 2,
+    large: 3,
+  },
+  /** The larger inset on the caption's side, which the handle slides toward. */
+  paddingWide: {
+    small: 3,
+    medium: 4,
+    large: 5,
+  },
+  /** Space between the handle and its caption. */
+  gap: 2,
+  captionFontSize: {
+    small: 10,
+    medium: fontSize.s,
+    large: fontSize.m,
+  },
+  radius: radius.round,
+  /** The handle's own lift off the track. */
+  handleShadow: '0px 2px 4px 0px rgba(0, 35, 11, 0.2)',
+  transition: '160ms ease',
+} as const;
+
+export type ToggleSize = keyof typeof toggle.width;
+
+/**
+ * CRM notification cards — Figma node 4102:3182.
+ *
+ * One card per delivery channel (Telegram, Slack, browser), each holding a
+ * header row and, once switched on, a numbered connection walkthrough that
+ * collapses to a settings panel when the channel is connected.
+ *
+ * The step metrics are their own block rather than a reuse of
+ * `upworkAccounts.step`: that list is a static set of instructions with a
+ * uniform disc, while these steps carry state — complete, active, pending —
+ * and a connector rail between them that has to line up with the disc above.
+ */
+export const notification = {
+  /** The card itself. */
+  card: {
+    radius: radius.m,
+    borderWidth: 1,
+    /** Space between stacked cards. */
+    gap: spacing.l,
+  },
+  /** The always-visible top row: logo, name, status, toggle, chevron. */
+  header: {
+    padding: spacing.m,
+    /** Space between the logo, the text stack, and the controls. */
+    gap: 8,
+    /** Space between the name row and the line under it. */
+    textGap: 2,
+    /** Space between the name and its status badge. */
+    titleGap: spacing.xxs,
+    /** Space between the toggle and the expand chevron. */
+    controlGap: 10,
+    chevronSize: 20,
+  },
+  /** The rounded tile holding the channel's logo. */
+  logo: {
+    size: 36,
+    radius: radius.s,
+    iconSize: 20,
+  },
+  /** The numbered walkthrough below the header. */
+  step: {
+    /** The numbered disc's diameter. */
+    markerSize: 24,
+    markerFontSize: fontSize.s,
+    /** The rail running from one disc to the next. */
+    railWidth: 2,
+    railRadius: 1,
+    /** Inset above and below the rail, so it does not touch the discs. */
+    railInset: 3,
+    /** Space between the disc column and the step's content. */
+    gap: spacing.s,
+    /** Space below an expanded step's content, before the next step. */
+    contentPaddingBottom: spacing.m,
+    /** Space between a step's heading, its body, and its actions. */
+    contentGap: 8,
+    titleFontSize: fontSize.m,
+    bodyFontSize: fontSize.s,
+    /** Space between the action buttons. */
+    actionGap: 8,
+  },
+  /** The body wrapping the steps or the connected settings. */
+  body: {
+    padding: spacing.m,
+    gap: spacing.m,
+  },
+  /** The two option cards drawn once a channel is connected. */
+  settings: {
+    radius: radius.m,
+    padding: spacing.m,
+    borderWidth: 1,
+    /** Space between the two cards. */
+    gap: spacing.m,
+    /** Space between a card's heading and its options. */
+    titleGap: spacing.m,
+    /** Space between the option rows. */
+    optionGap: 8,
+    titleFontSize: fontSize.m,
+  },
+} as const;
+
+/**
  * Documentation chrome.
  *
  * The gallery's own surfaces — preview panels, prop tables, code blocks. These
@@ -1599,6 +1968,7 @@ export const component = {
   confirm,
   iconButton,
   modal,
+  notification,
   pagination,
   mentionPreset,
   prompt,
@@ -1610,8 +1980,10 @@ export const component = {
   skeleton,
   spinner,
   switchControl,
+  toggle,
   tooltip,
   upworkAccounts,
+  upworkApiKey,
   docs,
 } as const;
 

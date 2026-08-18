@@ -44,8 +44,8 @@ export function UpworkAccountsPage() {
       <CrossLink
         eyebrow="The screen's two columns"
         links={[
-          { label: 'Account slots', pageId: 'crm-upwork-slots' },
-          { label: 'Info details', pageId: 'crm-upwork-info' },
+          { label: 'Account slots (Left)', pageId: 'crm-upwork-slots' },
+          { label: 'Info details (Right)', pageId: 'crm-upwork-info' },
           { label: 'Components ▸ CRM ▸ Account slot', pageId: 'account-slot' },
           { label: 'Components ▸ CRM ▸ Info details', pageId: 'info-details' },
         ]}
@@ -70,7 +70,7 @@ export function UpworkAccountsPage() {
   onAuthorize={() => startOAuth()}
   onRemove={(ids) => remove(ids)}
   onUpgrade={() => openBilling()}
-  onOpenUpworkSettings={() => window.open(UPWORK_SETTINGS_URL)}
+  onInviteToWorkspace={() => inviteOwnerToWorkspace()}
 />`}
         />
       </Section>
@@ -330,7 +330,7 @@ const authorize = async () => {
 
         <Part name="AccountSafetyNotice" role="The standing security warning. White with an amber plate, not an amber card — it is permanent, not something the user triggered.">
           <div style={{ width: 285 }}>
-            <AccountSafetyNotice onAction={() => {}} />
+            <AccountSafetyNotice onInvite={() => {}} />
           </div>
         </Part>
 
@@ -381,7 +381,7 @@ const authorize = async () => {
             { name: 'onConnectApi', type: '() => void', description: 'The empty state’s action while `apiConnected` is false.' },
             { name: 'onUpgrade', type: '() => void', description: 'The upgrade slot. Omitting it drops the slot entirely.' },
             { name: 'onRemove', type: '(selected: string[]) => void', description: 'The header’s Remove action. Appears with a count once something is ticked.' },
-            { name: 'onOpenUpworkSettings', type: '() => void', description: 'The safety notice’s link. Omitting it drops the link.' },
+            { name: 'onInviteToWorkspace', type: '() => void', description: 'The safety notice’s invite action — what its text tells the user to do instead of logging in as someone else. Omitting it drops the button.' },
             { name: 'renderAccounts', type: 'RenderProp<AccountListRenderProps>', description: 'Replaces the account grid. Call `defaultRender()` to decorate rather than replace.' },
             { name: 'listWidth / sideWidth', type: 'CssLength', description: 'Column widths. Figma draws 640px and 285px.' },
             { name: 'columns', type: 'number', default: '3', description: 'Slots per row in the account grid.' },
@@ -407,7 +407,7 @@ function ScreenDemo() {
           onSelectionChange={setSelected}
           onAuthorize={() => {}}
           onUpgrade={() => {}}
-          onOpenUpworkSettings={() => {}}
+          onInviteToWorkspace={() => {}}
           onRemove={(ids) => {
             setAccounts((current) => current.filter((account) => !ids.includes(account.id)));
             setSelected([]);
@@ -512,7 +512,7 @@ function FlowDemo() {
           accounts={accounts}
           capacity={10}
           onAuthorize={authorize}
-          onOpenUpworkSettings={() => {}}
+          onInviteToWorkspace={() => {}}
         />
       </Frame>
 

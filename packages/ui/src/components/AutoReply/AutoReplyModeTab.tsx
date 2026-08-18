@@ -1,4 +1,4 @@
-import { color, component, typography } from '@gigradar/theme';
+import { borderWidth, color, component, typography } from '@gigradar/theme';
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import { ModeBadge, type ReplyMode } from './ModeBadge.js';
@@ -64,8 +64,8 @@ export const AutoReplyModeTab = forwardRef<HTMLButtonElement, AutoReplyModeTabPr
       padding: len(padding) ?? autoReply.tab.padding,
       // Only the selected tab carries side and top borders — the unselected one
       // has a bottom border instead, which continues the panel's edge under it.
-      border: selected ? `1px solid ${edge}` : 'none',
-      borderBottom: selected ? 'none' : `1px solid ${edge}`,
+      border: selected ? `${borderWidth.thin}px solid ${edge}` : 'none',
+      borderBottom: selected ? 'none' : `${borderWidth.thin}px solid ${edge}`,
       borderTopLeftRadius: selected ? corner : 0,
       borderTopRightRadius: selected ? corner : 0,
       backgroundColor: selected ? color.main.white : color.main.background,

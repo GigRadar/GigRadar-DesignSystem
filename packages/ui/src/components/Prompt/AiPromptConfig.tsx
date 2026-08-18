@@ -1,4 +1,4 @@
-import { color, component, radius as radiusToken, spacing, typography } from '@gigradar/theme';
+import { borderWidth, color, component, radius as radiusToken, spacing, typography } from '@gigradar/theme';
 import {
   forwardRef,
   useCallback,
@@ -287,7 +287,7 @@ export const AiPromptConfig = forwardRef<HTMLDivElement, AiPromptConfigProps>(
       boxSizing: 'border-box',
       width: '100%',
       borderRadius: len(radius) ?? `${radiusToken.m}px`,
-      border: `1px solid ${border}`,
+      border: `${borderWidth.thin}px solid ${border}`,
       backgroundColor: background ?? color.main.white,
       overflow: 'hidden',
       fontFamily: typography.fontFamily.base,
@@ -316,7 +316,7 @@ export const AiPromptConfig = forwardRef<HTMLDivElement, AiPromptConfigProps>(
           gap: 8,
           boxSizing: 'border-box',
           padding: 8,
-          borderTop: `1px solid ${border}`,
+          borderTop: `${borderWidth.thin}px solid ${border}`,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: spacing.s }}>
@@ -380,7 +380,7 @@ export const AiPromptConfig = forwardRef<HTMLDivElement, AiPromptConfigProps>(
           gap: 8,
           boxSizing: 'border-box',
           padding: spacing.m,
-          borderTop: `1px solid ${border}`,
+          borderTop: `${borderWidth.thin}px solid ${border}`,
           flexWrap: 'wrap',
         }}
       >
@@ -395,7 +395,7 @@ export const AiPromptConfig = forwardRef<HTMLDivElement, AiPromptConfigProps>(
             height: prompt.version.size,
             padding: `0 ${prompt.version.paddingX}px`,
             borderRadius: prompt.version.radius,
-            border: `1px solid ${border}`,
+            border: `${borderWidth.thin}px solid ${border}`,
             backgroundColor: color.main.white,
             color: color.main.black,
             fontFamily: typography.fontFamily.base,

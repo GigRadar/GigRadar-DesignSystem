@@ -71,7 +71,7 @@ export function ModeTabPage() {
         description="The badge is the shared `ModeBadge`, so a tab reports a mode with exactly the palette the rest of the product uses for it."
       >
         <Preview>
-          <VStack gap={8} style={{ width: '100%', maxWidth: 560 }}>
+          <VStack gap={8} width="100%" maxWidth={560}>
             <div style={{ display: 'flex', width: '100%' }}>
               <AutoReplyModeTab label="Full auto" mode="fullAuto" selected />
               <AutoReplyModeTab label="Co-pilot" mode="coPilot" />

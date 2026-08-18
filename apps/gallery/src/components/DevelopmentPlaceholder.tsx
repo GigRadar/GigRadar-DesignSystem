@@ -55,7 +55,7 @@ export function DevelopmentPlaceholder({
       >
         <VStack gap="s">
           <HStack gap="s" alignItems="center" flexWrap="wrap">
-            <span style={{ ...textStyle.lSemibold, color: color.navbar.textActive }}>{title}</span>
+            <span style={{ ...textStyle.lSemibold, color: color.navbar.text2 }}>{title}</span>
             <LifecycleBadge stage="development" />
           </HStack>
 
@@ -122,7 +122,7 @@ export function Proposal({
             style={{
               ...textStyle.sSemibold,
               color: color.main.white,
-              backgroundColor: color.navbar.textActive,
+              backgroundColor: color.navbar.text2,
               borderRadius: 9999,
               minWidth: 22,
               height: 22,
@@ -135,7 +135,7 @@ export function Proposal({
           >
             {number}
           </span>
-          <span style={{ ...textStyle.lSemibold, color: color.navbar.textActive }}>{approach}</span>
+          <span style={{ ...textStyle.lSemibold, color: color.navbar.text2 }}>{approach}</span>
         </HStack>
         <span style={{ ...textStyle.mRegular, color: color.main.description }}>{rationale}</span>
       </VStack>

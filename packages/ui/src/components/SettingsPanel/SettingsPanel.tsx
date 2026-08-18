@@ -1,4 +1,4 @@
-import { color, component, typography } from '@gigradar/theme';
+import { borderWidth, color, component, typography } from '@gigradar/theme';
 import {
   forwardRef,
   useCallback,
@@ -152,7 +152,7 @@ export const SettingsPanel = forwardRef<HTMLElement, SettingsPanelProps>(functio
     width: isCollapsed
       ? (len(collapsedWidth) ?? settingsPanel.collapsedWidth)
       : (len(width) ?? settingsPanel.width),
-    borderRight: `1px solid ${borderColor ?? color.main.backgroundAlt}`,
+    borderRight: `${borderWidth.thin}px solid ${borderColor ?? color.main.backgroundAlt}`,
     backgroundColor: background ?? color.main.white,
     fontFamily: typography.fontFamily.base,
     overflow: 'hidden',

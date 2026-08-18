@@ -324,7 +324,7 @@ export const AccountCard = forwardRef<HTMLDivElement, AccountCardProps>(function
           <span
             style={{
               ...typography.textStyle.mMedium,
-              color: textColor ?? (muted ? color.disable.text : color.navbar.textActive),
+              color: textColor ?? (muted ? color.disable.text : color.navbar.text2),
               width: '100%',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

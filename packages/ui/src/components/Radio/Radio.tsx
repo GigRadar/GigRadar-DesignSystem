@@ -136,7 +136,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
     cursor: disabled ? 'not-allowed' : 'pointer',
     fontFamily: typography.fontFamily.base,
     fontSize: len(fontSize) ?? `${checkbox.fontSize[size]}px`,
-    color: textColor ?? color.navbar.textActive,
+    color: textColor ?? color.navbar.text2,
     userSelect: 'none',
     // Dimmed as a whole rather than given a third palette, matching Checkbox.
     opacity: disabled ? 0.4 : undefined,

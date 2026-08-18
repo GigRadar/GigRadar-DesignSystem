@@ -265,7 +265,7 @@ function paletteFor(variant: ButtonVariant, tone: ButtonTone) {
     hoverBackground: color.main.white,
     border: outline,
     hoverBorder: main,
-    text: tone === 'brand' ? color.navbar.textActive : color.navbar.text,
+    text: tone === 'brand' ? color.navbar.text2 : color.navbar.text,
     hoverText: main,
   };
 }

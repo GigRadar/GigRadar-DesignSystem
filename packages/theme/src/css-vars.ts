@@ -1,6 +1,6 @@
 import { color } from './tokens/color.js';
 import { component, controlHeight } from './tokens/components.js';
-import { radius, shadow, spacing } from './tokens/space.js';
+import { borderWidth, radius, shadow, spacing } from './tokens/space.js';
 import { fontFamily, fontSize, fontWeight, lineHeight } from './tokens/typography.js';
 
 /**
@@ -73,6 +73,7 @@ export function buildCssVars(): Record<string, string> {
   // Spacing / radius
   for (const [key, value] of Object.entries(spacing)) set(`space-${key}`, value);
   for (const [key, value] of Object.entries(radius)) set(`radius-${key}`, value);
+  for (const [key, value] of Object.entries(borderWidth)) set(`border-${key}`, value);
 
   // Shadow — every elevation, so a new one does not need a change here
   for (const [key, value] of Object.entries(shadow)) {

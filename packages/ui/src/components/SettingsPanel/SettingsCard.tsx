@@ -148,7 +148,7 @@ export const SettingsCard = forwardRef<HTMLButtonElement, SettingsCardProps>(fun
         : restingBackground,
     color: selected
       ? (selectedTextColor ?? color.main.white)
-      : (textColor ?? color.navbar.textActive),
+      : (textColor ?? color.navbar.text2),
     fontFamily: typography.fontFamily.base,
     fontSize: len(fontSize) ?? `${settingsPanel.item.fontSize}px`,
     fontWeight: typography.fontWeight.medium,

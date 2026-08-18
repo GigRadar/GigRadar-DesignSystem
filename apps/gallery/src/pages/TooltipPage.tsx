@@ -261,7 +261,7 @@ export function TooltipPage() {
                       variant="secondary"
                       background={color.navbar.disabledBackground}
                       borderColor={color.navbar.disabledBackground}
-                      textColor={color.navbar.textActive}
+                      textColor={color.navbar.text2}
                     >
                       Later
                     </Button>
@@ -442,7 +442,7 @@ export function TooltipPage() {
                       px="s"
                       py="xs"
                       radius="xs"
-                      background={color.navbar.textActive}
+                      background={color.navbar.text2}
                     >
                       <span style={{ ...textStyle.sMedium, color: color.main.white }}>{content}</span>
                       <kbd
@@ -483,7 +483,7 @@ export function TooltipPage() {
 <Tooltip
   content="Save changes"
   renderCard={({ content }) => (
-    <HStack gap="xs" px="s" py="xs" radius="xs" background={color.navbar.textActive}>
+    <HStack gap="xs" px="s" py="xs" radius="xs" background={color.navbar.text2}>
       <Text>{content}</Text>
       <kbd>⌘S</kbd>
     </HStack>
@@ -518,7 +518,7 @@ export function TooltipPage() {
                 <Shown
                   content="On a dark surface"
                   placement="bottom"
-                  background={color.navbar.textActive}
+                  background={color.navbar.text2}
                   textColor={color.main.white}
                 >
                   <Button variant="secondary">Dark</Button>
@@ -526,7 +526,7 @@ export function TooltipPage() {
                 <Shown
                   content="A title in the heading color"
                   title="Neutral"
-                  titleColor={color.navbar.textActive}
+                  titleColor={color.navbar.text2}
                   placement="bottom"
                 >
                   <Button variant="secondary">Neutral title</Button>
@@ -537,8 +537,8 @@ export function TooltipPage() {
         </Preview>
         <CodeBlock
           code={`// One-offs only. If the same override recurs, it belongs in the theme.
-<Tooltip background={color.navbar.textActive} textColor={color.main.white} />
-<Tooltip titleColor={color.navbar.textActive} />  // a neutral title
+<Tooltip background={color.navbar.text2} textColor={color.main.white} />
+<Tooltip titleColor={color.navbar.text2} />  // a neutral title
 <Tooltip maxWidth={200} offset={12} hideArrow />`}
         />
       </Section>

@@ -24,7 +24,7 @@ export function AccountSlotPage() {
       <CrossLink
         eyebrow="Where it is used"
         links={[
-          { label: 'CRM ▸ Settings ▸ Upwork ▸ Account slots', pageId: 'crm-upwork-slots' },
+          { label: 'CRM ▸ Settings ▸ Upwork ▸ Account slots (Left)', pageId: 'crm-upwork-slots' },
           { label: 'Components ▸ Badge', pageId: 'badge' },
         ]}
       >
@@ -142,7 +142,7 @@ function SelectionDemo() {
 
   return (
     <Preview>
-      <VStack gap={spacing.s} style={{ width: 200 }}>
+      <VStack gap={spacing.s} width={200}>
         {accounts.map((account) => (
           <AccountCard
             key={account.id}

@@ -18,7 +18,7 @@ export function AccountSlotsPage() {
   return (
     <>
       <PageHeader
-        title="Account slots"
+        title="Account slots (Left)"
         description="The left column of the Upwork Connected Account screen — every slot the plan allows, filled or empty. Figma node 2105:34594."
       />
 

@@ -44,7 +44,7 @@ export function LifecyclePage() {
               >
                 {index + 1}
               </span>
-              <span style={{ ...textStyle.mRegular, color: color.navbar.textActive }}>{line}</span>
+              <span style={{ ...textStyle.mRegular, color: color.navbar.text2 }}>{line}</span>
             </HStack>
           ))}
         </VStack>

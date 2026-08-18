@@ -1,6 +1,7 @@
-import { color, controlHeight, radius, spacing, textStyle } from '@gigradar/theme';
+import { borderWidth, color, radius, spacing, textStyle } from '@gigradar/theme';
 import { useState, type ReactNode } from 'react';
-import { Icon, IconDropdownArrowDown, IconDropdownArrowUp, IconSearch, IconXClose } from '@gigradar/ui';
+import { Icon, IconDropdownArrowDown, IconDropdownArrowUp } from '@gigradar/ui';
+import { SearchField } from './components/SearchField';
 import { Section, Shell } from './layout';
 import { NavigateProvider } from './navigation';
 import { AccountSlotPage } from './pages/AccountSlotPage';
@@ -17,6 +18,12 @@ import { IconsPage } from './pages/IconsPage';
 import { InfoDetailsPage } from './pages/InfoDetailsPage';
 import { LifecyclePage } from './pages/LifecyclePage';
 import { ModeTabPage } from './pages/ModeTabPage';
+import { NotificationsPage } from './pages/NotificationsPage';
+import {
+  BrowserNotificationPage,
+  SlackNotificationPage,
+  TelegramNotificationPage,
+} from './pages/notifications/ChannelPages';
 import { OptionButtonPage } from './pages/OptionButtonPage';
 import { PaginationPage } from './pages/PaginationPage';
 import { PresetPage } from './pages/PresetPage';
@@ -25,11 +32,89 @@ import { ScrollbarPage } from './pages/ScrollbarPage';
 import { SettingsPanelPage } from './pages/SettingsPanelPage';
 import { SpinnerPage } from './pages/SpinnerPage';
 import { SwitchPage } from './pages/SwitchPage';
+import { TextFieldPage } from './pages/TextFieldPage';
+import { TogglePage } from './pages/TogglePage';
 import { TokensPage } from './pages/TokensPage';
 import { TooltipPage } from './pages/TooltipPage';
 import { UpworkAccountsPage } from './pages/UpworkAccountsPage';
 import { AccountSlotsPage } from './pages/upwork/AccountSlotsPage';
+import { ApiKeyFormPage } from './pages/upwork/ApiKeyFormPage';
+import { ApiKeyInfoPage } from './pages/upwork/ApiKeyInfoPage';
+import { ApiKeyPage } from './pages/upwork/ApiKeyPage';
+import { ApiKeyPartsPage } from './pages/upwork/ApiKeyPartsPage';
 import { UpworkInfoDetailsPage } from './pages/upwork/InfoDetailsPage';
+
+/**
+ * The nav's guide rails — the spine down an open branch and the elbow into
+ * each child row.
+ *
+ * Chrome grey rather than an accent: the rails say how the tree is shaped, not
+ * which row is selected. Colouring them would compete with the blue that marks
+ * the open page and the branch leading to it.
+ */
+const NAV_RAIL = {
+  /** How far the elbow reaches out from the spine. */
+  elbow: spacing.xs,
+  /**
+   * The gap between the elbow's end and the label it points at.
+   *
+   * The rail is chrome and the label is content, so they should not touch —
+   * an elbow running right up to the text reads as an underline fragment
+   * rather than as part of the tree.
+   */
+  labelGap: spacing.xs,
+  /**
+   * How far short of the container's bottom the spine stops.
+   *
+   * Half a row plus its gap, so the line ends at the last child's elbow rather
+   * than running past the final label into empty space.
+   */
+  stopShort: 16,
+} as const;
+
+/**
+ * The vertical spine down one open branch, with its children beside it.
+ *
+ * Shared by the two places a branch opens — a folder row's children and a
+ * section's pages — because both draw rows at a nested depth and both need
+ * something for those rows' elbows to hang from. Before this was shared, the
+ * section path rendered its pages at depth 1 with no spine, so the Components
+ * card drew elbows attached to nothing.
+ *
+ * One line for the whole branch rather than a border per row: a per-row border
+ * breaks at every gap between rows, which reads as a dashed line.
+ */
+function NavBranch({ depth, children }: { depth: number; children: ReactNode }) {
+  return (
+    <div
+      style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: spacing.xxs }}
+    >
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: 0,
+          bottom: NAV_RAIL.stopShort,
+          left: railLeft(depth),
+          width: borderWidth.thin,
+          backgroundColor: color.navbar.border,
+        }}
+      />
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Where a row's rail sits, in px from the card's left edge.
+ *
+ * Derived from the same indent NavItem applies to its label, so the two cannot
+ * drift: the spine for a row's children sits half a step inside that row's own
+ * label rather than at an independently chosen offset.
+ */
+function railLeft(depth: number) {
+  return spacing.s + (depth - 1) * spacing.s + spacing.xs;
+}
 
 /**
  * A nav entry. Every entry is a page; some also hold sub-pages.
@@ -104,6 +189,8 @@ const NAV: NavGroup[] = [
           { id: 'scrollbar', label: 'Scrollbar', render: () => <ScrollbarPage /> },
           { id: 'spinner', label: 'Spinner', render: () => <SpinnerPage /> },
           { id: 'switch', label: 'Switch', render: () => <SwitchPage /> },
+          { id: 'text-field', label: 'Text field', render: () => <TextFieldPage /> },
+          { id: 'toggle', label: 'Toggle', render: () => <TogglePage /> },
           { id: 'tooltip', label: 'Tooltip', render: () => <TooltipPage /> },
         ],
       },
@@ -120,6 +207,7 @@ const NAV: NavGroup[] = [
         title: 'CRM',
         nodes: [
           { id: 'account-slot', label: 'Account slot', render: () => <AccountSlotPage /> },
+          { id: 'api-key-parts', label: 'API key parts', render: () => <ApiKeyPartsPage /> },
           { id: 'info-details', label: 'Info details', render: () => <InfoDetailsPage /> },
           { id: 'mode-tab', label: 'Mode tab', render: () => <ModeTabPage /> },
           { id: 'option-button', label: 'Option button', render: () => <OptionButtonPage /> },
@@ -149,13 +237,36 @@ const NAV: NavGroup[] = [
             ],
           },
           {
+            id: 'crm-settings-api-key',
+            label: 'Upwork API Key',
+            render: () => <ApiKeyPage />,
+            // The screen's two columns, left to right as it draws them.
+            children: [
+              { id: 'crm-api-key-form', label: 'API status (Left)', render: () => <ApiKeyFormPage /> },
+              { id: 'crm-api-key-info', label: 'Info details (Right)', render: () => <ApiKeyInfoPage /> },
+            ],
+          },
+          {
             id: 'crm-settings-upwork',
             label: 'Upwork Connected Account',
             render: () => <UpworkAccountsPage />,
             // The screen's two columns, left to right as it draws them.
             children: [
-              { id: 'crm-upwork-slots', label: 'Account slots', render: () => <AccountSlotsPage /> },
-              { id: 'crm-upwork-info', label: 'Info details', render: () => <UpworkInfoDetailsPage /> },
+              { id: 'crm-upwork-slots', label: 'Account slots (Left)', render: () => <AccountSlotsPage /> },
+              { id: 'crm-upwork-info', label: 'Info details (Right)', render: () => <UpworkInfoDetailsPage /> },
+            ],
+          },
+          {
+            id: 'crm-settings-notifications',
+            label: 'CRM Notifications',
+            render: () => <NotificationsPage />,
+            // One child per delivery channel. Each connection flow is its own
+            // screen to walk through, which is what earns them separate pages
+            // rather than three tabs on one.
+            children: [
+              { id: 'crm-notif-telegram', label: 'Telegram', render: () => <TelegramNotificationPage /> },
+              { id: 'crm-notif-slack', label: 'Slack', render: () => <SlackNotificationPage /> },
+              { id: 'crm-notif-browser', label: 'Browser', render: () => <BrowserNotificationPage /> },
             ],
           },
         ],
@@ -312,7 +423,11 @@ export function App() {
           onClick={() => navigate(node.id)}
           onToggle={() => setCollapsed((state) => ({ ...state, [node.id]: !state[node.id] }))}
         />
-        {nodeOpen && node.children.map((child) => renderNode(child, depth + 1))}
+        {nodeOpen && (
+          <NavBranch depth={depth + 1}>
+            {node.children.map((child) => renderNode(child, depth + 1))}
+          </NavBranch>
+        )}
       </div>
     );
   };
@@ -322,70 +437,7 @@ export function App() {
       collapsed={railCollapsed}
       onCollapsedChange={setRailCollapsed}
       search={
-        <label
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: spacing.xs,
-            boxSizing: 'border-box',
-            width: '100%',
-            height: controlHeight.medium,
-            padding: `0 ${spacing.xs}px`,
-            borderRadius: radius.xs,
-            border: `1px solid ${color.navbar.hover}`,
-            backgroundColor: color.main.white,
-          }}
-        >
-          <span
-            aria-hidden
-            style={{
-              display: 'inline-flex',
-              flexShrink: 0,
-              width: 14,
-              height: 14,
-              color: color.navbar.text,
-            }}
-          >
-            <Icon icon={IconSearch} size="100%" />
-          </span>
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search"
-            aria-label="Search pages"
-            style={{
-              ...textStyle.mRegular,
-              flex: '1 1 auto',
-              minWidth: 0,
-              border: 'none',
-              outline: 'none',
-              background: 'transparent',
-              color: color.main.black,
-            }}
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery('')}
-              aria-label="Clear search"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                width: 16,
-                height: 16,
-                padding: 0,
-                border: 'none',
-                background: 'transparent',
-                color: color.navbar.text,
-                cursor: 'pointer',
-              }}
-            >
-              <Icon icon={IconXClose} size="100%" />
-            </button>
-          )}
-        </label>
+        <SearchField value={query} onValueChange={setQuery} label="Search pages" />
       }
       nav={
         <nav style={{ display: 'flex', flexDirection: 'column', gap: spacing.s }}>
@@ -436,7 +488,7 @@ export function App() {
                     padding: `${spacing.xs}px ${spacing.xxs}px ${spacing.xs}px ${spacing.s}px`,
                     border: 'none',
                     background: 'transparent',
-                    color: color.navbar.textActive,
+                    color: color.navbar.text2,
                     textTransform: 'uppercase',
                     textAlign: 'left',
                     letterSpacing: 0.5,
@@ -505,7 +557,11 @@ export function App() {
                             setCollapsedSections((state) => ({ ...state, [key]: !state[key] }))
                           }
                         />
-                        {sectionOpen && section.nodes.map((node) => renderNode(node, 1))}
+                        {sectionOpen && (
+                          <NavBranch depth={1}>
+                            {section.nodes.map((node) => renderNode(node, 1))}
+                          </NavBranch>
+                        )}
                       </div>
                     );
                   })}
@@ -606,6 +662,7 @@ function NavItem({
   return (
     <div
       style={{
+        position: 'relative',
         display: 'flex',
         alignItems: 'center',
         gap: spacing.xxs,
@@ -616,6 +673,26 @@ function NavItem({
         backgroundColor: active ? color.navbar.hover : 'transparent',
       }}
     >
+      {/* The elbow off the parent's spine. Only on nested rows: a top-level
+          row has no spine to hang from, and a section header introduces a band
+          rather than sitting inside one. */}
+      {depth > 0 && variant === 'page' && (
+        <span
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: railLeft(depth),
+            // Stops short of the label rather than reaching it, so the rail
+            // stays chrome the eye can skip past. The label's own indent is
+            // widened by the same amount, so the gap is real space rather
+            // than the elbow simply falling short of where the text begins.
+            width: NAV_RAIL.elbow,
+            height: borderWidth.thin,
+            backgroundColor: color.navbar.border,
+          }}
+        />
+      )}
       <button
         onClick={onClick}
         style={{
@@ -630,7 +707,14 @@ function NavItem({
           // carried the toggle inward with it, so a nested row's box sat left
           // of its parent's. Every box now lines up on the card's right edge
           // however deep the row is.
-          paddingLeft: spacing.s + depth * spacing.s,
+          // Nested rows clear the rail: the spine sits at railLeft(depth) and
+          // the elbow reaches out from it, so the label starts past both plus
+          // a breathing gap. Top-level rows have no rail and keep the plain
+          // indent.
+          paddingLeft:
+            depth > 0 && variant === 'page'
+              ? railLeft(depth) + NAV_RAIL.elbow + NAV_RAIL.labelGap
+              : spacing.s + depth * spacing.s,
           borderRadius: radius.xs,
           border: 'none',
           background: 'transparent',

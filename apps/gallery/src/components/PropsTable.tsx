@@ -48,7 +48,7 @@ export function PropsTable({ rows }: { rows: PropRow[] }) {
               <td style={{ ...textStyle.sRegular, padding: `${spacing.xs}px ${spacing.s}px`, fontFamily: typography.fontFamily.mono, color: color.main.description }}>
                 {row.default ?? '—'}
               </td>
-              <td style={{ ...textStyle.sRegular, padding: `${spacing.xs}px ${spacing.s}px`, color: color.navbar.textActive }}>
+              <td style={{ ...textStyle.sRegular, padding: `${spacing.xs}px ${spacing.s}px`, color: color.navbar.text2 }}>
                 {row.description}
               </td>
             </tr>

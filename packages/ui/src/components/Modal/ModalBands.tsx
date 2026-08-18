@@ -268,7 +268,7 @@ export const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(functi
     fontFamily: typography.fontFamily.base,
     fontSize: len(fontSize) ?? `${modal.content.fontSize}px`,
     letterSpacing: typography.letterSpacing.m,
-    color: textColor ?? color.navbar.textActive,
+    color: textColor ?? color.navbar.text2,
   };
 
   return (

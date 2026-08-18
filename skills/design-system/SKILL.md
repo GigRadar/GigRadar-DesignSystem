@@ -74,7 +74,7 @@ Everything is extracted from the Figma guidebook. Do not invent values.
 **Colors** — semantic groups, not a raw ramp:
 - `color.main` — `brand`, `description`, `background`, `backgroundAlt`, `border`, `highlight`, `black`, `white`
 - `color.status` — `success`, `error`, `warning`, `info`; each has `.main`, `.background`, `.text`
-- `color.navbar` — nav chrome only: `text`, `textActive`, `hover`, `background`, `border`
+- `color.navbar` — nav chrome only: `text`, `text2`, `hover`, `background`, `border`
 - `color.badge` — `foreground`, `hover`, `background`
 - `color.disable` — `background`, `backgroundAlt`, `text`
 - `color.accent` — `laziza`, `decrease`, `schedule`, `meetings`
@@ -94,6 +94,13 @@ wanted; that is what `accent.schedule` is for.
 
 > The spacing and radius scales share T-shirt names but differ. `s` is 12 in
 > spacing and 8 in radius. Do not assume they match.
+
+**Border width** (px): `hairline` 0.5, `thin` 1, `medium` 1.5, `thick` 2
+
+`thin` is the default — card edges, dividers, input outlines. Reach for
+`medium` on a slot or placeholder edge, and `thick` on a banner that has to
+hold its own against a wash behind it. A bare `1px` in a border shorthand is
+what the lint rule catches.
 
 **Typography** — use `textStyle`, which bundles size, weight, letter-spacing,
 and line-height:
@@ -159,6 +166,22 @@ from antd's — our `Button` uses `variant="primary"` where antd used
 
 - `color.deprecated.errorAlt` — use `color.status.error`. Figma had two
   near-duplicate reds; `#FA3737` is canonical.
+
+## Text input
+
+`TextField` is the system's single-line input. Use it rather than a bare
+`<input>` or an antd `Input` — it carries the label, the four drawn states, and
+the two behaviours every credential form was otherwise rebuilding:
+
+```tsx
+<TextField label="Client ID" labelIcon={IconClientIdPeopleStroke} placeholder="Input Client ID" />
+<TextField label="Secret Key" secret />           // masks the value, adds a reveal control
+<TextField label="Client ID" error="Wrong format." />  // flag or message
+```
+
+`error` takes either a boolean or a node, because an error is the only state a
+caller sets deliberately — hover and focus come from the pointer and the
+keyboard, so the component owns those.
 
 ## Render props on higher-level components
 

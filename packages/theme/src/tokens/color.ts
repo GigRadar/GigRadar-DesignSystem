@@ -94,10 +94,17 @@ export const disable = {
  * Navigation chrome. Sidebar and top-nav only — not general UI.
  */
 export const navbar = {
-  /** Inactive nav item label. */
+  /** Inactive nav item label. Figma: "NavBar/Text". */
   text: '#6C82A4',
-  /** Active nav item label. */
-  textActive: '#2D323E',
+  /**
+   * The darker nav label — Figma's "NavBar/Text-2".
+   *
+   * Named for the Figma style rather than for a state: it is the darker half
+   * of a pair, and it is drawn on things that are not nav items at all (a
+   * settings card's label, a detail row's value), so calling it "active"
+   * described only the first place it happened to be used.
+   */
+  text2: '#2D323E',
   hover: '#E4EAF5',
   /** High-contrast hover, for dark nav surfaces. Figma: "Hover-2". */
   hoverStrong: '#0A0B0E',

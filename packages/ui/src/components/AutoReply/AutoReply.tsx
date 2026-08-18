@@ -1,4 +1,4 @@
-import { color, component, controlHeight, typography } from '@gigradar/theme';
+import { borderWidth, color, component, controlHeight, typography } from '@gigradar/theme';
 import {
   forwardRef,
   useCallback,
@@ -198,7 +198,7 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
     boxSizing: 'border-box',
     width: '100%',
     borderRadius: len(radius) ?? `${autoReply.radius}px`,
-    border: `1px solid ${border}`,
+    border: `${borderWidth.thin}px solid ${border}`,
     backgroundColor: background ?? color.main.background,
     overflow: 'hidden',
     fontFamily: typography.fontFamily.base,
@@ -213,7 +213,7 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
         gap: 8,
         boxSizing: 'border-box',
         padding: autoReply.padding,
-        borderTop: `1px solid ${border}`,
+        borderTop: `${borderWidth.thin}px solid ${border}`,
         backgroundColor: color.main.white,
         flexWrap: 'wrap',
       }}

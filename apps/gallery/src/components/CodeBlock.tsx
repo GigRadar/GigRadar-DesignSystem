@@ -108,7 +108,7 @@ export function CodeBlock({ code, readingOnly = false, label, defaultOpen = true
               fontFamily: typography.fontFamily.mono,
               fontSize: 12,
               lineHeight: 1.6,
-              color: color.navbar.textActive,
+              color: color.navbar.text2,
             }}
           >
             <code>{code}</code>

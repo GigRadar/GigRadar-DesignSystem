@@ -80,3 +80,32 @@ export const shadow = {
 } as const;
 
 export type ShadowToken = keyof typeof shadow;
+
+/**
+ * Border widths.
+ *
+ * Four steps, named for what a border is doing rather than for its size:
+ *
+ *   `hairline` 0.5  the thinnest line that renders — a glyph outline on a
+ *                   control that is already small. Sub-pixel at 1x, so it
+ *                   softens rather than disappears.
+ *   `thin`     1    the default. Card edges, dividers, input outlines — 20 of
+ *                   the 24 borders drawn in this package are this.
+ *   `medium`   1.5  a slot or placeholder edge, where 1px reads as an
+ *                   accidental hairline and 2px reads as a filled state.
+ *   `thick`    2    a banner or callout that has to hold its own against a
+ *                   gradient wash behind it.
+ *
+ * Not extracted from the Figma guidebook, which documents no border scale —
+ * these are the widths the components were already drawing, given names. The
+ * point is that a divider and a card edge now reference the same token, so
+ * retuning the hairline is one edit rather than twenty.
+ */
+export const borderWidth = {
+  hairline: 0.5,
+  thin: 1,
+  medium: 1.5,
+  thick: 2,
+} as const;
+
+export type BorderWidthToken = keyof typeof borderWidth;

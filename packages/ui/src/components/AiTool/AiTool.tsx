@@ -1,4 +1,4 @@
-import { color, component, typography } from '@gigradar/theme';
+import { borderWidth, color, component, typography } from '@gigradar/theme';
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
@@ -141,7 +141,7 @@ export const AiTool = forwardRef<HTMLDivElement, AiToolProps>(function AiTool(
       len(paddingX) ?? `${aiTool.row.paddingX}px`
     }`,
     borderRadius: len(radius) ?? `${aiTool.row.radius}px`,
-    border: `1px solid ${borderColor ?? color.navbar.hover}`,
+    border: `${borderWidth.thin}px solid ${borderColor ?? color.navbar.hover}`,
     backgroundColor: background ?? color.main.white,
     fontFamily: typography.fontFamily.base,
     overflow: 'hidden',

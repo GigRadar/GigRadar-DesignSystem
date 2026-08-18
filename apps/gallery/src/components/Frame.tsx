@@ -3,7 +3,13 @@ import type { ReactNode } from 'react';
 
 export type FrameProps = {
   children: ReactNode;
-  height?: number;
+  /**
+   * Fixed height in px, for a screen that would otherwise run the length of
+   * the page. Omit — or pass `"auto"` — to let the content set its own
+   * height, which is what a screen that is already a finite composition
+   * wants: a fixed box crops it instead of showing it.
+   */
+  height?: number | 'auto';
   /**
    * Shrinks the box to its content instead of filling the page.
    *
@@ -32,13 +38,17 @@ export type FrameProps = {
  * decision everywhere, and a page that redraws them by hand drifts.
  */
 export function Frame({ children, height = 560, hug = false, scroll = false }: FrameProps) {
+  const auto = height === 'auto';
   return (
     <div
       style={{
         display: hug ? 'inline-block' : undefined,
-        height,
-        overflow: scroll ? undefined : 'hidden',
-        overflowY: scroll ? 'auto' : undefined,
+        // An auto frame is sized by what is inside it, so it neither crops
+        // nor scrolls — the clipping and the scrollbar both belong to the
+        // fixed-height case.
+        height: auto ? undefined : height,
+        overflow: auto ? undefined : scroll ? undefined : 'hidden',
+        overflowY: auto ? undefined : scroll ? 'auto' : undefined,
         borderRadius: radius.s,
         border: `1px solid ${color.navbar.border}`,
         marginBottom: spacing.s,

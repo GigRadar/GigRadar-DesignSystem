@@ -25,7 +25,7 @@ export function UpworkInfoDetailsPage() {
   return (
     <>
       <PageHeader
-        title="Info details"
+        title="Info details (Right)"
         description="The right column of the Upwork Connected Account screen — the authorize banner, the safety notice, and the numbered walkthrough. Figma node 2105:34594."
       />
 
@@ -58,7 +58,7 @@ export function UpworkInfoDetailsPage() {
             accounts={ACCOUNTS}
             capacity={10}
             onAuthorize={() => undefined}
-            onOpenUpworkSettings={() => undefined}
+            onInviteToWorkspace={() => undefined}
           />
         </Frame>
         <CodeBlock code={`<UpworkConnectedAccounts show="side" onAuthorize={authorize} />`} />
@@ -71,7 +71,7 @@ export function UpworkInfoDetailsPage() {
         <Preview>
           <VStack gap={sideGap} width={sideWidth}>
             <AuthorizeBanner onAuthorize={() => undefined} />
-            <AccountSafetyNotice onAction={() => undefined} />
+            <AccountSafetyNotice onInvite={() => undefined} />
             <AuthorizationSteps />
           </VStack>
         </Preview>
@@ -92,7 +92,7 @@ export function UpworkInfoDetailsPage() {
         <CodeBlock
           code={`<VStack gap={19} style={{ width: 285 }}>
   <AuthorizeBanner disabled={!apiConnected} onAuthorize={authorize} />
-  <AccountSafetyNotice onAction={openUpworkSettings} />
+  <AccountSafetyNotice onInvite={inviteToWorkspace} />
   <AuthorizationSteps />
 </VStack>`}
         />

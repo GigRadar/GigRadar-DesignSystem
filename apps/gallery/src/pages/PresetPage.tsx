@@ -59,7 +59,7 @@ export function PresetPage() {
         description="The row is an ordering control as much as a list item — a drag handle, the priority number, and a pair of move buttons — because the order is the feature: the top preset shows first in the mention picker. The handle is drawn but inert; wiring it to a drag library is the app's call, and the move buttons mean the ordering still works by keyboard without one."
       >
         <Preview>
-          <VStack gap={8} style={{ width: '100%' }}>
+          <VStack gap={8} width="100%">
             <MentionPreset
               priority={1}
               title="Top performing case study"

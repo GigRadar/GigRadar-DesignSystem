@@ -1,4 +1,4 @@
-import { color, component, shadow, typography } from '@gigradar/theme';
+import { borderWidth, color, component, shadow, typography } from '@gigradar/theme';
 import {
   forwardRef,
   useCallback,
@@ -356,7 +356,7 @@ function VersionRow({
         boxSizing: 'border-box',
         padding: prompt.version.menu.itemPadding,
         borderRadius: prompt.version.menu.itemRadius,
-        border: `1px solid ${highlighted ? color.main.brand : color.navbar.hover}`,
+        border: `${borderWidth.thin}px solid ${highlighted ? color.main.brand : color.navbar.hover}`,
         backgroundColor: color.main.white,
         cursor: 'pointer',
         transition: 'border-color 120ms ease',
@@ -372,7 +372,7 @@ function VersionRow({
           width: prompt.version.size,
           height: prompt.version.size,
           borderRadius: prompt.version.radius,
-          border: `1px solid ${selected ? 'transparent' : color.navbar.hover}`,
+          border: `${borderWidth.thin}px solid ${selected ? 'transparent' : color.navbar.hover}`,
           backgroundColor: selected ? color.main.brand : color.main.white,
           color: selected ? color.main.white : color.navbar.text,
           fontFamily: typography.fontFamily.base,
@@ -397,7 +397,7 @@ function VersionRow({
         <span
           style={{
             ...typography.textStyle.mMedium,
-            color: color.navbar.textActive,
+            color: color.navbar.text2,
             maxWidth: '100%',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -490,7 +490,7 @@ function RowAction({
         height: prompt.version.size,
         padding: 0,
         borderRadius: prompt.version.radius,
-        border: `1px solid ${borderColor}`,
+        border: `${borderWidth.thin}px solid ${borderColor}`,
         backgroundColor: color.main.white,
         color: iconColor,
         cursor: 'pointer',

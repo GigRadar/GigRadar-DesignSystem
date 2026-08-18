@@ -1,4 +1,4 @@
-import { color, component, typography } from '@gigradar/theme';
+import { borderWidth, color, component, typography } from '@gigradar/theme';
 import { forwardRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import { Icon } from '../../icons/Icon.js';
@@ -127,7 +127,7 @@ export const AutoReplyButton = forwardRef<HTMLLabelElement, AutoReplyButtonProps
       width: '100%',
       padding: len(padding) ?? autoReply.option.padding,
       borderRadius: len(radius) ?? `${autoReply.option.radius}px`,
-      border: `1px solid ${
+      border: `${borderWidth.thin}px solid ${
         selected || isHovered ? accent : (borderColor ?? color.navbar.hover)
       }`,
       backgroundColor: selected
@@ -186,7 +186,7 @@ export const AutoReplyButton = forwardRef<HTMLLabelElement, AutoReplyButtonProps
                 // The title takes the accent only once chosen — on hover the
                 // border alone moves, so a pointer sweeping the row does not
                 // read as three selections in a row.
-                color: selected ? accent : color.navbar.textActive,
+                color: selected ? accent : color.navbar.text2,
               }}
             >
               {title}

@@ -130,7 +130,7 @@ function CreditMark({
         height="16"
         rx="8"
         transform="matrix(1 0 0 -1 0 16)"
-        fill={background ?? color.navbar.textActive}
+        fill={background ?? color.navbar.text2}
       />
       <path d="M3.5 6.75C5 2.75 11 2.75 12.5 6.74999" stroke="#FFAC33" strokeLinecap="round" />
       <path

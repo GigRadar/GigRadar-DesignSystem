@@ -1,4 +1,4 @@
-import { color, component, radius as radiusToken, typography } from '@gigradar/theme';
+import { borderWidth, color, component, radius as radiusToken, typography } from '@gigradar/theme';
 import {
   Fragment,
   forwardRef,
@@ -149,8 +149,8 @@ export type AccountsSideRenderProps = WithDefaultRender & {
   apiConnected: boolean;
   /** Starts an authorization. */
   authorize?: () => void;
-  /** Opens Upwork's settings, which the safety notice links to. */
-  openUpworkSettings?: () => void;
+  /** Sends a workspace invite, the safety notice's own call to action. */
+  inviteToWorkspace?: () => void;
 };
 
 /**
@@ -203,8 +203,14 @@ export type UpworkConnectedAccountsProps = {
   onConnectApi?: () => void;
   /** Called when an upgrade slot is pressed. Omit to drop the slot. */
   onUpgrade?: () => void;
-  /** Called when the safety notice's link is pressed. */
-  onOpenUpworkSettings?: () => void;
+  /**
+   * Sends a workspace invite from the safety notice.
+   *
+   * The notice's text tells the user to invite the other account's owner
+   * rather than log in as them; without this handler that instruction has no
+   * button behind it. Omit it to drop the invite action.
+   */
+  onInviteToWorkspace?: () => void;
   /** Called when the selection's Remove action is pressed. */
   onRemove?: (selected: string[]) => void;
   /**
@@ -293,7 +299,7 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
       onAuthorize,
       onConnectApi,
       onUpgrade,
-      onOpenUpworkSettings,
+      onInviteToWorkspace,
       onRemove,
       renderAccounts,
       renderAccount,
@@ -497,7 +503,7 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
         }}
       >
         <AuthorizeBanner disabled={!apiConnected} onAuthorize={onAuthorize} />
-        <AccountSafetyNotice onAction={onOpenUpworkSettings} />
+        <AccountSafetyNotice onInvite={onInviteToWorkspace} />
         <AuthorizationSteps />
       </div>
     );
@@ -520,7 +526,7 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
             width: showSide ? (len(listWidth) ?? `${upworkAccounts.listColumn.width}px`) : '100%',
             backgroundColor: listBackground ?? upworkAccounts.listColumn.background,
             // The divider belongs to the split, so it goes when the split does.
-            borderRight: showSide ? `1px solid ${borderColor ?? color.main.backgroundAlt}` : undefined,
+            borderRight: showSide ? `${borderWidth.thin}px solid ${borderColor ?? color.main.backgroundAlt}` : undefined,
           }}
         >
           {renderColumnHeader
@@ -612,7 +618,7 @@ export const UpworkConnectedAccounts = forwardRef<HTMLDivElement, UpworkConnecte
               renderSide({
                 apiConnected,
                 authorize: onAuthorize,
-                openUpworkSettings: onOpenUpworkSettings,
+                inviteToWorkspace: onInviteToWorkspace,
                 defaultRender: defaultSide,
               })
             ) : (
@@ -661,7 +667,7 @@ function ColumnHeader({
           aria-label="Back"
           size="small"
           onClick={onBack}
-          textColor={color.navbar.textActive}
+          textColor={color.navbar.text2}
         />
       )}
 

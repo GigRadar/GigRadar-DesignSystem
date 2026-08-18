@@ -253,6 +253,51 @@ export type {
   SettingsHeaderRenderProps,
 } from './components/SettingsPanel/SettingsPanel.js';
 
+export { Toggle } from './components/Toggle/Toggle.js';
+export type { ToggleProps, ToggleStyleProps, ToggleSize } from './components/Toggle/Toggle.js';
+
+export { ChannelLogo, channelPalette } from './components/Notification/ChannelLogo.js';
+export type {
+  ChannelLogoProps,
+  ChannelLogoStyleProps,
+  NotificationChannel,
+} from './components/Notification/ChannelLogo.js';
+
+export { NotificationStep } from './components/Notification/NotificationStep.js';
+export type {
+  NotificationStepProps,
+  NotificationStepStyleProps,
+  NotificationStepState,
+} from './components/Notification/NotificationStep.js';
+
+export { NotificationCard } from './components/Notification/NotificationCard.js';
+export type {
+  NotificationCardProps,
+  NotificationCardStyleProps,
+  NotificationControlsRenderProps,
+} from './components/Notification/NotificationCard.js';
+
+export {
+  NotificationWalkthrough,
+  NotificationSettingsGroup,
+} from './components/Notification/NotificationWalkthrough.js';
+export type {
+  NotificationWalkthroughProps,
+  NotificationWalkthroughStyleProps,
+  WalkthroughStep,
+  WalkthroughStepRenderProps,
+  NotificationSettingsGroupProps,
+  NotificationSettingsStyleProps,
+} from './components/Notification/NotificationWalkthrough.js';
+
+export { CrmNotifications } from './components/Notification/CrmNotifications.js';
+export type {
+  CrmNotificationsProps,
+  CrmNotificationsStyleProps,
+  NotificationChannelConfig,
+  NotificationChannelRenderProps,
+} from './components/Notification/CrmNotifications.js';
+
 export { AccountCard } from './components/UpworkAccounts/AccountCard.js';
 export type {
   AccountCardProps,
@@ -310,6 +355,53 @@ export type {
   ColumnHeaderRenderProps,
   AccountsSideRenderProps,
 } from './components/UpworkAccounts/UpworkConnectedAccounts.js';
+
+export { TextField } from './components/Field/TextField.js';
+export type { TextFieldProps, TextFieldStyleProps } from './components/Field/TextField.js';
+
+export { ApiStatus } from './components/UpworkApiKey/ApiStatus.js';
+export type {
+  ApiStatusProps,
+  ApiStatusStyleProps,
+  ApiKeyStatus,
+  ApiStatusDetail,
+  ApiStatusDetailsRenderProps,
+  ApiStatusActionRenderProps,
+} from './components/UpworkApiKey/ApiStatus.js';
+
+export { RemoveApiButton } from './components/UpworkApiKey/RemoveApiButton.js';
+export type {
+  RemoveApiButtonProps,
+  RemoveApiButtonStyleProps,
+  RemoveApiButtonState,
+} from './components/UpworkApiKey/RemoveApiButton.js';
+
+export { TestStatus } from './components/UpworkApiKey/TestStatus.js';
+export type {
+  TestStatusProps,
+  TestStatusStyleProps,
+  TestStatusTone,
+} from './components/UpworkApiKey/TestStatus.js';
+
+export { ViewGuide } from './components/UpworkApiKey/ViewGuide.js';
+export type { ViewGuideProps, ViewGuideStyleProps } from './components/UpworkApiKey/ViewGuide.js';
+
+export { RentApiBanner } from './components/UpworkApiKey/RentApiBanner.js';
+export type {
+  RentApiBannerProps,
+  RentApiBannerStyleProps,
+  RentApiBannerActionRenderProps,
+} from './components/UpworkApiKey/RentApiBanner.js';
+
+export { UpworkApiKey } from './components/UpworkApiKey/UpworkApiKey.js';
+export type {
+  UpworkApiKeyProps,
+  UpworkApiKeyStyleProps,
+  ApiKeyColumns,
+  SetupStep,
+  ApiKeyFormRenderProps,
+  ApiKeySideRenderProps,
+} from './components/UpworkApiKey/UpworkApiKey.js';
 
 export { CustomPromptField } from './components/Prompt/CustomPromptField.js';
 export type {

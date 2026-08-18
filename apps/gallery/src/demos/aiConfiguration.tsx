@@ -71,7 +71,10 @@ export function AutoReplyDemo() {
     other: 'coPilot',
   });
 
-  const tabs = AUTO_REPLY_TABS.map((tab) => ({ ...tab, mode: modes[tab.id] }));
+  // `modes` is keyed by tab id, so indexing it is `ReplyMode | undefined` to
+  // the compiler. The tab's own mode is the fixture default, which is exactly
+  // the right fallback for an id the state has not been told about yet.
+  const tabs = AUTO_REPLY_TABS.map((tab) => ({ ...tab, mode: modes[tab.id] ?? tab.mode }));
 
   return (
     <AutoReply

@@ -1,4 +1,4 @@
-import { color, component, typography } from '@gigradar/theme';
+import { borderWidth, color, component, typography } from '@gigradar/theme';
 import { forwardRef, useRef, type CSSProperties, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
@@ -184,7 +184,7 @@ export const MentionPresetList = forwardRef<HTMLDivElement, MentionPresetListPro
       boxSizing: 'border-box',
       width: '100%',
       borderRadius: mentionPreset.list.radius,
-      border: `1px solid ${color.navbar.hover}`,
+      border: `${borderWidth.thin}px solid ${color.navbar.hover}`,
       backgroundColor: background ?? color.main.white,
       overflow: 'hidden',
       fontFamily: typography.fontFamily.base,
@@ -198,7 +198,7 @@ export const MentionPresetList = forwardRef<HTMLDivElement, MentionPresetListPro
           gap: mentionPreset.list.footerGap,
           boxSizing: 'border-box',
           padding: mentionPreset.list.footerPadding,
-          borderTop: `1px solid ${color.navbar.hover}`,
+          borderTop: `${borderWidth.thin}px solid ${color.navbar.hover}`,
           flexWrap: 'wrap',
         }}
       >

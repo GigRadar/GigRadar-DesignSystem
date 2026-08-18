@@ -134,7 +134,7 @@ export const AuthorizeBanner = forwardRef<HTMLDivElement, AuthorizeBannerProps>(
         <span
           style={{
             ...typography.textStyle.lSemibold,
-            color: titleColor ?? color.navbar.textActive,
+            color: titleColor ?? color.navbar.text2,
           }}
         >
           {title}

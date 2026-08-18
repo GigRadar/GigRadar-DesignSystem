@@ -87,7 +87,7 @@ export function IconsPage() {
             padding: `${spacing.xs}px ${spacing.s}px`,
             border: `1px solid ${color.main.border}`,
             borderRadius: radius.s,
-            color: color.navbar.textActive,
+            color: color.navbar.text2,
             backgroundColor: color.main.white,
           }}
         />
@@ -120,7 +120,7 @@ export function IconsPage() {
                     borderRadius: radius.s,
                     backgroundColor: copied === icon.name ? color.status.success.background : 'transparent',
                     cursor: 'pointer',
-                    color: color.navbar.textActive,
+                    color: color.navbar.text2,
                   }}
                   onMouseEnter={(event) => {
                     if (copied !== icon.name) event.currentTarget.style.backgroundColor = color.navbar.hover;

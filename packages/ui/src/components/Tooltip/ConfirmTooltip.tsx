@@ -286,7 +286,7 @@ export function ConfirmTooltip({
               fontWeight: typography.fontWeight.medium,
               letterSpacing: typography.letterSpacing.m,
               lineHeight: 1.4,
-              color: titleColor ?? color.navbar.textActive,
+              color: titleColor ?? color.navbar.text2,
             }}
           >
             {title}

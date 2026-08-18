@@ -382,7 +382,7 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
         <span
           style={{
             ...typography.textStyle.mRegular,
-            color: color.navbar.textActive,
+            color: color.navbar.text2,
             minWidth: 0,
           }}
         >
@@ -407,7 +407,7 @@ export const AuthorizationPopup = forwardRef<HTMLDivElement, AuthorizationPopupP
           background: spec.tint,
         }}
       >
-        <span style={{ ...typography.textStyle.mSemibold, color: color.navbar.textActive }}>
+        <span style={{ ...typography.textStyle.mSemibold, color: color.navbar.text2 }}>
           {resolvedPanelTitle}
         </span>
 

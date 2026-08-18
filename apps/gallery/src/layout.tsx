@@ -60,7 +60,7 @@ export function Shell({
         >
           {!collapsed && (
             <div style={{ flex: '1 1 auto', minWidth: 0 }}>
-              <div style={{ ...textStyle.lSemibold, color: color.navbar.textActive }}>GigRadar</div>
+              <div style={{ ...textStyle.lSemibold, color: color.navbar.text2 }}>GigRadar</div>
               <div style={{ ...textStyle.sRegular, color: color.main.description }}>
                 Design System
               </div>
@@ -120,7 +120,7 @@ export function Section({
           flexWrap: 'wrap',
         }}
       >
-        <h2 style={{ ...textStyle.h3, color: color.navbar.textActive, margin: 0 }}>
+        <h2 style={{ ...textStyle.h3, color: color.navbar.text2, margin: 0 }}>
           {title}
         </h2>
         {stage && <LifecycleBadge stage={stage} />}
@@ -159,7 +159,7 @@ export function Preview({ children }: { children: ReactNode }) {
 export function PageHeader({ title, description }: { title: string; description: string }) {
   return (
     <header style={{ marginBottom: spacing.xl }}>
-      <h1 style={{ ...textStyle.h2, color: color.navbar.textActive, margin: 0, marginBottom: spacing.xs }}>{title}</h1>
+      <h1 style={{ ...textStyle.h2, color: color.navbar.text2, margin: 0, marginBottom: spacing.xs }}>{title}</h1>
       <p style={{ ...textStyle.lRegular, color: color.main.description, margin: 0, maxWidth: 680 }}>{description}</p>
     </header>
   );

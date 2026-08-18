@@ -1,4 +1,4 @@
-import { color, component, typography } from '@gigradar/theme';
+import { borderWidth, color, component, typography } from '@gigradar/theme';
 import { forwardRef, type CSSProperties, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
@@ -199,7 +199,7 @@ export const MentionPreset = forwardRef<HTMLDivElement, MentionPresetProps>(
       width: '100%',
       padding: len(padding) ?? mentionPreset.row.padding,
       borderRadius: len(radius) ?? `${mentionPreset.row.radius}px`,
-      border: `1px solid ${
+      border: `${borderWidth.thin}px solid ${
         active ? (activeBorderColor ?? color.main.brand) : (borderColor ?? color.navbar.hover)
       }`,
       backgroundColor: color.main.white,

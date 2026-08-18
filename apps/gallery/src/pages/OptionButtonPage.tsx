@@ -78,7 +78,7 @@ export function OptionButtonPage() {
         description="The square at the head takes either a short label or a glyph. A label when the option abbreviates cleanly — “Auto”, “50%” — and an icon when it does not."
       >
         <Preview>
-          <VStack gap={12} style={{ width: '100%' }}>
+          <VStack gap={12} width="100%">
             <AutoReplyButton title="Full Auto" description="Label marker" markerLabel="Auto" />
             <AutoReplyButton
               title="Turn Off"
@@ -159,7 +159,7 @@ function OptionDemo() {
 
   return (
     <Preview>
-      <VStack gap={12} style={{ width: '100%' }}>
+      <VStack gap={12} width="100%">
         <AutoReplyButton
           title="Full Auto"
           description="Replies are sent automatically"

@@ -136,7 +136,7 @@ export const AuthorizationSteps = forwardRef<HTMLDivElement, AuthorizationStepsP
           style={{
             ...(boxed ? typography.textStyle.mMedium : typography.textStyle.sMedium),
             fontSize: len(fontSize) ?? (boxed ? undefined : step.labelFontSize),
-            color: textColor ?? color.navbar.textActive,
+            color: textColor ?? color.navbar.text2,
             flex: '1 1 auto',
             minWidth: 0,
           }}
@@ -152,7 +152,7 @@ export const AuthorizationSteps = forwardRef<HTMLDivElement, AuthorizationStepsP
           <span
             style={{
               ...typography.textStyle.mMedium,
-              color: titleColor ?? color.navbar.textActive,
+              color: titleColor ?? color.navbar.text2,
             }}
           >
             {title}

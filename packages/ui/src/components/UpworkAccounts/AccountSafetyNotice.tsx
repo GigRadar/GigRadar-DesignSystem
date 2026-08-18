@@ -2,7 +2,7 @@ import { color, component, radius as radiusToken, typography } from '@gigradar/t
 import { forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import { Icon } from '../../icons/Icon.js';
-import { IconRightArrow, IconWarningTriangleFill } from '../../icons/defs.js';
+import { IconSendPlaneFill, IconWarningTriangleFill } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
 
 const { upworkAccounts } = component;
@@ -36,10 +36,21 @@ export type AccountSafetyNoticeProps = {
   title?: ReactNode;
   /** The warning itself. */
   children?: ReactNode;
-  /** The trailing link's label. Omit the handler to drop the link entirely. */
-  actionLabel?: ReactNode;
-  /** Called when the link is pressed. */
-  onAction?: () => void;
+  /**
+   * The invite action's label.
+   *
+   * @default 'Send Invite Link'
+   */
+  inviteLabel?: ReactNode;
+  /**
+   * Sends a workspace invite to the other account's owner.
+   *
+   * The one action the notice carries, and the one its own text asks for:
+   * connecting a second Upwork account from the same machine is the risk being
+   * warned about, and inviting its owner to log in themselves is the way
+   * around it. Omit the handler to drop the button.
+   */
+  onInvite?: () => void;
 } & AccountSafetyNoticeStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'title'>;
 
@@ -60,8 +71,8 @@ export const AccountSafetyNotice = forwardRef<HTMLDivElement, AccountSafetyNotic
     {
       title = 'Account Safety Notice',
       children = DEFAULT_BODY,
-      actionLabel = 'Upwork Settings',
-      onAction,
+      inviteLabel = 'Send Invite Link',
+      onInvite,
       radius,
       padding,
       borderWidth,
@@ -143,16 +154,16 @@ export const AccountSafetyNotice = forwardRef<HTMLDivElement, AccountSafetyNotic
           6px box. Radius and colors are the only divergence, so they are passed
           through rather than the button being rebuilt.
         */}
-        {onAction && (
+        {onInvite && (
           <Button
             variant="third"
-            onClick={onAction}
+            onClick={onInvite}
             radius={radiusToken.round}
             background={color.badge.background}
             textColor={color.badge.foreground}
-            endIcon={<Icon icon={IconRightArrow} size={14} />}
+            endIcon={<Icon icon={IconSendPlaneFill} size={14} />}
           >
-            {actionLabel}
+            {inviteLabel}
           </Button>
         )}
       </div>

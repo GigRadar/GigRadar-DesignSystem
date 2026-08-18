@@ -145,7 +145,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
     fontWeight: typography.fontWeight.medium,
     letterSpacing: typography.letterSpacing.s,
     lineHeight: 1,
-    color: textColor ?? (disabled ? color.disable.text : color.navbar.textActive),
+    color: textColor ?? (disabled ? color.disable.text : color.navbar.text2),
     cursor: disabled ? 'not-allowed' : 'pointer',
     userSelect: 'none',
     // Figma has no disabled state for this component; the whole control is
