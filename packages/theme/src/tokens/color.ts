@@ -187,6 +187,12 @@ export const accent = {
     hover: '#DE7B11',
     background: '#FFFBE6',
     backgroundAlt: '#F7B716',
+    /**
+     * The softer wash the chat-filter popover gives the AI row (node
+     * 4486:31137). Warmer than `background` and not in the guidebook frame —
+     * taken from the component, which is the only place it is drawn.
+     */
+    backgroundSoft: '#FFF9DA',
   },
   /**
    * Figma group: "Decrease". Reads as a metric-delta color (a falling number),
@@ -276,6 +282,16 @@ export const stage = {
     unreachable: '#FBDDDD',
     /** Figma: "[L] Not Interest - Already Equipped". */
     notInterested: '#F7B8B8',
+    /**
+     * Two further lost reasons the Lead Stage Badge draws (node 3523:37527).
+     *
+     * Figma gives all three lost stages the same fill — the badge distinguishes
+     * them by label, not by color. They are named separately anyway so a screen
+     * can key off the stage it means, and so a later divergence in the palette
+     * is a token change rather than a new name.
+     */
+    wrongTarget: '#F7B8B8',
+    alreadyEquipped: '#F7B8B8',
   },
 } as const;
 
@@ -292,6 +308,8 @@ export const stageFlat = {
   converted: stage.pipeline.converted,
   unreachable: stage.lost.unreachable,
   notInterested: stage.lost.notInterested,
+  wrongTarget: stage.lost.wrongTarget,
+  alreadyEquipped: stage.lost.alreadyEquipped,
 } as const;
 
 export type StageName = keyof typeof stageFlat;

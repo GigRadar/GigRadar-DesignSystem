@@ -302,6 +302,22 @@ export const badge = {
       large: 10,
     },
   },
+
+  /**
+   * The plan badge — which subscription the workspace is on.
+   *
+   * Figma: node 4016:22052. Roomier than the credit badge because it carries a
+   * word rather than a number, and optionally a trailing "(7D Remaining)".
+   */
+  plan: {
+    paddingX: spacing.xs + 2,
+    paddingY: spacing.xxs,
+    gap: spacing.xxs,
+    radius: spacing.m,
+    fontSize: fontSize.m,
+    /** The trailing countdown, a step down from the plan name. */
+    noteFontSize: fontSize.s,
+  },
 } as const;
 
 export type BadgeSize = keyof typeof badge.fontSize;
@@ -1957,6 +1973,453 @@ export const docs = {
   },
 } as const;
 
+/**
+ * The Inbox — the CRM's conversation screen.
+ *
+ * Figma: "Leads Inbox" (node 1362:26728), left column at 381:10203. One block
+ * rather than a dozen, because these metrics are only meaningful in relation
+ * to each other: the room list, the controls above it, and the search panel
+ * that opens over them all share a column and have to line up inside it.
+ */
+const inbox = {
+  /**
+   * The wash applied to a supporting line — the account count under a name,
+   * the search placeholder, the resting mark-as-read label.
+   *
+   * Figma draws these at 70% of the nav text rather than as a paler token, so
+   * they stay tied to whatever that text color becomes.
+   */
+  mutedOpacity: 0.7,
+  /** The left column — the room list and everything stacked above it. */
+  list: {
+    /** Figma draws the column at 328px, of which 304 is the card. */
+    width: 328,
+    /** The header band holding "Inbox", the plan badge, and the bell. */
+    headerHeight: 75,
+    headerPaddingX: spacing.xl,
+    headerPaddingY: spacing.m,
+    /** The search-and-filter band under the header. */
+    controlsPadding: spacing.s,
+    controlsGap: spacing.s,
+    /** The scrolling list of rooms. */
+    chatPadding: spacing.s,
+    chatGap: 10,
+    /**
+     * The empty state's glyph disc and the width its explanation wraps at.
+     *
+     * The text is held narrower than the column so it breaks into two or three
+     * short lines under the glyph, rather than one long line the eye has to
+     * track back across.
+     */
+    emptyMarkSize: 40,
+    emptyIconSize: 20,
+    emptyWidth: 220,
+    /** One node in the onboarding step track. */
+    stepSize: 28,
+    stepIconSize: 14,
+  },
+  /** One room in the list. */
+  room: {
+    height: 71,
+    radius: radius.m,
+    paddingX: spacing.m,
+    paddingY: spacing.s,
+    gap: 10,
+    /** Space between the title row and the preview line. */
+    stackGap: spacing.xxs,
+    avatarSize: 40,
+    /** Space between the title block and the timestamp. */
+    rowGap: spacing.xs + 2,
+    /** Space between the stage pill and the title it prefixes. */
+    titleGap: spacing.xxs,
+    /** Space between the sender and the message it introduces. */
+    senderGap: 2,
+    /**
+     * The round checkbox that replaces the unread counter while the list is
+     * selecting. A circle rather than the square `Checkbox` because it stands
+     * in for the counter, and the counter is round.
+     */
+    checkSize: 24,
+    checkIconSize: 12,
+    checkBorderWidth: 1,
+    /**
+     * The mini avatar in the client avatar's corner — which BM handles this
+     * room. Figma draws 20px, matching the `large` avatar's own badge slot.
+     */
+    accountMarkSize: 20,
+    /** The clock disc marking a room with a scheduled message. */
+    scheduleSize: 24,
+    scheduleIconSize: 12,
+  },
+  /**
+   * The stage pill — the lead's position in the pipeline.
+   *
+   * Its own block because the same pill is drawn in three places: on a room
+   * card, in the stage filter's option list, and as an applied filter chip.
+   */
+  stagePill: {
+    paddingX: spacing.xs + 2,
+    paddingY: 2,
+    radius: 1000,
+    /** Smaller than the `s` step: the pill sits inside a 14px line. */
+    fontSize: 11,
+  },
+  /**
+   * The account picker above the search field.
+   *
+   * Taller when it names a person (56px) than when it reads "All accounts",
+   * because the avatar it swaps in is the taller of the two leading marks.
+   */
+  selector: {
+    radius: radius.m,
+    padding: spacing.s,
+    height: 56,
+    /** One account row in the open dropdown. */
+    itemRadius: radius.m,
+    itemPaddingX: spacing.s,
+    itemPaddingY: spacing.xs,
+    itemGap: spacing.s,
+    markSize: 32,
+    /** The "All" disc's label, sized to fit a 32px circle. */
+    markFontSize: 11,
+    /** The trigger's chevron. */
+    chevronSize: 20,
+    /** Space between rows in the open dropdown. */
+    menuGap: 2,
+    /** How far the dropdown sits below its trigger. */
+    menuOffset: spacing.xxs,
+    /** The counter and the reconnect prompt. */
+    counterRadius: 10000,
+    promptPaddingX: spacing.xs,
+    promptPaddingY: spacing.xxs,
+  },
+  /** The search field, and the "mark as read" control beside it. */
+  search: {
+    height: 32,
+    /** A pill, matching the controls it sits between. */
+    radius: radius.round,
+    paddingLeft: spacing.s,
+    paddingRight: spacing.xs,
+    /**
+     * The mark-as-read pill.
+     *
+     * Fully round in both states, but the padding differs: icon-only it is a
+     * circle, so the inset is whatever centres a glyph in a `height`-wide box
+     * and is derived rather than set. With a label the leading edge needs more
+     * room than the trailing one — the text starts there, and the tight `xs`
+     * inset let it touch the curve.
+     */
+    actionRadius: radius.round,
+    actionPaddingX: spacing.s,
+    actionPaddingRight: spacing.xs,
+    actionGap: spacing.xs,
+    /** Space between the field's glyph, its input, and its clear button. */
+    innerGap: spacing.xxs,
+    /** Space between the field and the control beside it. */
+    rowGap: spacing.xs,
+    iconSize: 16,
+    clearIconSize: 14,
+    /** Inset of the collapsed circular button's glyph. */
+    collapsedPadding: spacing.xxs,
+    /** Dimming applied to the mark-as-read pill while it cannot be used. */
+    disabledOpacity: 0.5,
+  },
+  /**
+   * The explainer that appears over the push-notification switch.
+   *
+   * Wider than the default tooltip: it carries a heading, a paragraph, a help
+   * link, and a button, and at the tooltip's usual width that stack becomes a
+   * narrow ribbon of six-word lines.
+   */
+  pushTooltip: {
+    maxWidth: 280,
+    /** Space between the body copy and the help link under it. */
+    helpGap: 2,
+  },
+  /** The push-notification switch in the header. */
+  bell: {
+    width: 60,
+    height: 36,
+    padding: spacing.xxs,
+    radius: radius.round,
+    handleSize: 28,
+    /**
+     * The bell inside the handle.
+     *
+     * Sized against the handle rather than the track: the glyph is the whole
+     * affordance here — there is no caption beside it — so it has to read as a
+     * bell at a glance rather than as a dot on a switch.
+     */
+    iconSize: 17,
+    transition: 'background-color 120ms ease',
+  },
+  /**
+   * The advanced search panel, which opens over the list.
+   *
+   * Figma: node 4685:5014. Wider than the column it drops from — it is a
+   * popover, not an inline expansion, so it is free to overhang.
+   */
+  panel: {
+    width: 520,
+    radius: radius.m,
+    /** One filter row: Client, Stage, Date. */
+    rowPaddingX: spacing.m,
+    rowPaddingY: 10,
+    rowGap: spacing.s,
+    /** The circle carrying the row's glyph. */
+    rowMarkSize: 32,
+    /** Options nested under an expanded row, indented past the glyph. */
+    optionInset: 48,
+    optionHeight: 32,
+    optionRadius: radius.s,
+    optionPaddingX: spacing.xs,
+    optionPaddingY: spacing.xs,
+    optionGap: spacing.xxs,
+    /** Space between an option's tick, its label, and its count. */
+    optionInnerGap: 10,
+    /** The glyph inside a row's circle. */
+    rowIconSize: 16,
+    /** Space between a row's title and its supporting line. */
+    rowStackGap: 2,
+    /** The per-row counter. */
+    counterSize: 24,
+    counterRadius: 10000,
+    /** The summary band along the top, and the chips inside it. */
+    summaryGap: spacing.xs,
+    chipGap: spacing.xs,
+    /** "Clear all". */
+    clearHeight: 24,
+    clearPaddingX: spacing.xs + 2,
+    clearRadius: radius.xs,
+    /** The stage checkbox, drawn rather than rendered. */
+    tickSize: 14,
+    tickRadius: spacing.xxs,
+    tickIconSize: 10,
+    /** The recent-search band and the footer hint. */
+    sectionGap: spacing.xs + 2,
+    sectionPaddingY: spacing.xs + 2,
+    footerPaddingTop: 13,
+    footerPaddingBottom: spacing.s,
+  },
+  /** A filter chip — an applied filter, or a date preset. */
+  chip: {
+    height: 28,
+    radius: radius.round,
+    paddingX: 13,
+    paddingY: 5,
+    gap: spacing.xs,
+    iconSize: 12,
+  },
+  /** The connection indicator floating at the column's foot. */
+  connection: {
+    radius: radius.round,
+    paddingX: spacing.l,
+    paddingY: spacing.xs,
+    gap: spacing.s,
+    /** The three-bar signal glyph. */
+    barWidth: 4,
+    barGap: 1.5,
+    barRadius: 1,
+    height: 12,
+    /** The middle bar, as a fraction of the tallest. */
+    midBarRatio: 0.667,
+    /** The stroke drawn through the bars in the error state. */
+    strikeWidth: 1,
+    strikeHeight: 18,
+    strikeAngle: '130deg',
+    /** The reconnecting spinner. */
+    spinnerWidth: 2,
+    spinnerDuration: '0.8s',
+    /** Where the pill sits inside the column. */
+    offsetLeft: 14,
+    offsetBottom: spacing.s,
+  },
+} as const;
+
+/**
+ * The middle column — the chat room itself.
+ *
+ * Figma: "Middle - Chat Room", node 426:23179. Its own block rather than more
+ * keys under `inbox`: the two columns share a screen but not a scale — the room
+ * list is built on 328px and truncates everything, while the thread is 788px on
+ * desktop and 402px on mobile and wraps instead.
+ */
+const middle = {
+  /** The band across the top of the thread. */
+  header: {
+    /** The two widths Figma draws the header at. */
+    desktopWidth: 788,
+    mobileWidth: 402,
+    /**
+     * The horizontal inset. Desktop uses the main separator step; mobile drops
+     * to `m`, because 32px either side of a 402px column leaves too little for
+     * the title.
+     */
+    desktopPaddingX: spacing.xl,
+    mobilePaddingX: spacing.m,
+    paddingY: spacing.m,
+    /** Space between the identity block and the controls beside it. */
+    desktopGap: spacing.xl,
+    mobileGap: spacing.m,
+    /** Space between the avatar and the title it labels. */
+    identityGap: spacing.xs + 2,
+    /** Space between the title and the meta row under it. */
+    stackGap: spacing.xxs,
+    /** Space between the items in the meta row, and between the controls. */
+    metaGap: spacing.xs + 2,
+    avatarSize: 40,
+    /** The back chevron on mobile, and the sidebar toggle on the scheduled header. */
+    backSize: 24,
+    /** The scheduled header's own title line height, which Figma sets explicitly. */
+    titleLineHeight: 22,
+    /** A meta tag — the preset the room replies with, or the person assigned to it. */
+    tag: {
+      paddingX: spacing.xs + 2,
+      paddingY: 2,
+      radius: radius.round,
+      gap: spacing.xxs,
+      iconSize: 12,
+      /**
+       * The preset tag's border, which Figma draws thinner than the hairline
+       * step. Kept as its own value rather than rounded to `thin`: at 12px type
+       * the difference between 0.8 and 1 is visible.
+       */
+      brandBorderWidth: 0.8,
+    },
+  },
+  /**
+   * The auto-cancel switch on the scheduled-messages header.
+   *
+   * Figma: node 3523:37238. Its own block rather than keys under `header`: the
+   * control is drawn wherever a scheduled queue is, and the header is only the
+   * first of those places.
+   */
+  autoCancel: {
+    radius: radius.s,
+    paddingX: spacing.s,
+    paddingY: spacing.xs + 2,
+    gap: spacing.xs + 2,
+    iconSize: 14,
+    /** Dimming applied while the switch cannot be used. */
+    disabledOpacity: 0.5,
+  },
+  /** The round icon buttons at the header's trailing edge. */
+  menuButton: {
+    size: 30,
+    radius: 31.5,
+    /**
+     * Figma's own padding. It has no effect on a fixed-size circle centring one
+     * glyph, but is carried so an app retuning `size` keeps the same inset.
+     */
+    paddingX: 9,
+    paddingY: spacing.xxs,
+    /**
+     * Figma draws 15. Raised because that number measures the 24×24 box, not the
+     * drawing inside it: these glyphs fill only part of their box — the funnel
+     * about half — so a 15px box puts a far smaller mark in a 30px circle than
+     * the number suggests, and the marks read as specks.
+     *
+     * 18 reads at the intended weight without crowding the ring. The outlined
+     * glyphs the header uses carry more visual size than their filled twins at
+     * the same number, which is why this sits below the 22 the filled marks
+     * needed.
+     */
+    iconSize: 18,
+    /** The count bubble that overhangs the button's top-right. */
+    badgeSize: 16,
+    badgeFontSize: 9,
+    badgeRadius: 10000,
+    badgeOffsetTop: -7,
+    badgeOffsetRight: -5,
+  },
+  /** The lead-stage pill, and the menu it opens. */
+  leadStage: {
+    /**
+     * Two sizes. `l` is what Figma draws in the header (node 3523:37527); `m`
+     * is the same pill one step down, for rows that cannot spend 30px — it
+     * keeps the type size and trims the box, because 12px is already the
+     * smallest step the pill reads at.
+     */
+    height: { l: 30, m: 24 },
+    paddingX: { l: spacing.s, m: spacing.xs + 2 },
+    paddingY: 2,
+    radius: 1000,
+    gap: spacing.xxs,
+    /** The trailing chevron, which Figma sets smaller than the label. */
+    chevronSize: { l: 8, m: 7 },
+  },
+  /**
+   * The "add our Business Manager" band under the header.
+   *
+   * Figma: node 3541:29473, and inline in the header at 3994:21968.
+   */
+  addBm: {
+    paddingX: spacing.xs + 2,
+    paddingY: spacing.xxs,
+    gap: spacing.xs + 2,
+    /** The chip naming the manager being added. */
+    chipRadius: radius.xs,
+    chipPaddingX: spacing.xs,
+    chipPaddingY: 3,
+    chipGap: spacing.xs,
+    avatarSize: 20,
+    /** The Add button. */
+    actionRadius: radius.xs,
+    actionPaddingLeft: spacing.xs,
+    actionPaddingRight: spacing.s,
+    actionPaddingY: spacing.xs,
+    actionGap: spacing.xs,
+    actionIconSize: 14,
+  },
+  /**
+   * The filter-chat popover, which the header's filter button opens.
+   *
+   * Figma: node 4486:31137. A menu rather than an inline panel, so it carries
+   * the popup shadow and its own width.
+   */
+  filterChat: {
+    width: 230,
+    radius: radius.m,
+    padding: spacing.xs,
+    /** The "Show in chat" / "Hide all" band along the top. */
+    headerPadding: spacing.xs,
+    /** One toggle row. */
+    rowPadding: spacing.xs,
+    rowRadius: radius.s,
+    rowGap: 10,
+    /** The tinted square carrying the row's glyph. */
+    markSize: 24,
+    markRadius: 7,
+    markIconSize: 14,
+    /** The row's tick. */
+    tickSize: 18,
+    tickRadius: 1000,
+    tickBorderWidth: 0.75,
+    tickIconSize: 9,
+  },
+} as const;
+
+/**
+ * The date picker — two months side by side, selecting a range.
+ *
+ * Figma: node 351:11760. Cells are 24px on a 7-column grid; the card's own
+ * width follows from that rather than being set, so the grid stays square.
+ */
+const datePicker = {
+  cardPaddingX: spacing.m,
+  cardPaddingY: spacing.s,
+  radius: radius.s,
+  /** Space between the two month panels. */
+  monthGap: spacing.xl,
+  headerHeight: 24,
+  headerGap: spacing.xs,
+  cellSize: 24,
+  /** The cell's hit area, which is wider than the cell so rows read as bands. */
+  cellWidth: 36,
+  cellRadius: radius.xxs,
+  navIconSize: 12,
+} as const;
+
 export const component = {
   aiTool,
   autoReply,
@@ -1966,7 +2429,10 @@ export const component = {
   button,
   checkbox,
   confirm,
+  datePicker,
   iconButton,
+  inbox,
+  middle,
   modal,
   notification,
   pagination,

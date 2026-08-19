@@ -14,7 +14,21 @@ import { AvatarPage } from './pages/AvatarPage';
 import { BadgePage } from './pages/BadgePage';
 import { ButtonPage } from './pages/ButtonPage';
 import { CheckboxPage } from './pages/CheckboxPage';
+import { DatePickerPage } from './pages/DatePickerPage';
 import { IconsPage } from './pages/IconsPage';
+import { InboxPage } from './pages/InboxPage';
+import { MiddlePage } from './pages/MiddlePage';
+import { ChatHeaderPage } from './pages/middle/ChatHeaderPage';
+import { AddBmInfoPage } from './pages/middle/AddBmInfoPage';
+import { FilterChatPage } from './pages/middle/FilterChatPage';
+import { MenuButtonPage } from './pages/middle/MenuButtonPage';
+import { LeadStageButtonPage } from './pages/middle/LeadStageButtonPage';
+import { CardsPage } from './pages/inbox/CardsPage';
+import { RoomListPage } from './pages/inbox/RoomListPage';
+import { InboxSelectorPage } from './pages/inbox/SelectorPages';
+import { MarkAsReadPage } from './pages/inbox/MarkAsReadPages';
+import { SearchbarPage } from './pages/inbox/SearchPages';
+import { WebsocketIndicatorsPage } from './pages/inbox/WebsocketPages';
 import { InfoDetailsPage } from './pages/InfoDetailsPage';
 import { LifecyclePage } from './pages/LifecyclePage';
 import { ModeTabPage } from './pages/ModeTabPage';
@@ -184,6 +198,7 @@ const NAV: NavGroup[] = [
           { id: 'badge', label: 'Badge', render: () => <BadgePage /> },
           { id: 'button', label: 'Button', render: () => <ButtonPage /> },
           { id: 'checkbox', label: 'Checkbox & Radio', render: () => <CheckboxPage /> },
+          { id: 'date-picker', label: 'Date picker', render: () => <DatePickerPage /> },
           { id: 'pagination', label: 'Pagination', render: () => <PaginationPage /> },
           { id: 'prompt', label: 'Prompt field', render: () => <PromptPage /> },
           { id: 'scrollbar', label: 'Scrollbar', render: () => <ScrollbarPage /> },
@@ -267,6 +282,115 @@ const NAV: NavGroup[] = [
               { id: 'crm-notif-telegram', label: 'Telegram', render: () => <TelegramNotificationPage /> },
               { id: 'crm-notif-slack', label: 'Slack', render: () => <SlackNotificationPage /> },
               { id: 'crm-notif-browser', label: 'Browser', render: () => <BrowserNotificationPage /> },
+            ],
+          },
+        ],
+      },
+      {
+        /**
+         * The conversation screen. Sits below Settings because that is the
+         * order the product's own navigation uses.
+         *
+         * Its children are the three parts of the left column, in the order
+         * the column stacks them. The message thread and the client panel that
+         * sit to its right are not built yet.
+         */
+        id: 'crm-inbox',
+        label: 'Inbox',
+        render: () => <InboxPage />,
+        children: [
+          {
+            /**
+             * The left column, and everything drawn inside it.
+             *
+             * The nesting mirrors Figma's own: each SubNav is a child of the
+             * column, and the pieces a SubNav opens are children of it in
+             * turn. A flat list would lose which surface a part belongs to —
+             * "Search - Date" only exists inside the advanced searchbar, and
+             * filing it beside the searchbar would imply it stands alone.
+             */
+            id: 'crm-inbox-left',
+            label: 'List of Room (Left)',
+            render: () => <RoomListPage />,
+            /**
+             * One page per SubNav, and no deeper.
+             *
+             * Figma files what a SubNav opens — the selector's dropdown, the
+             * panel's filter rows — as its own component, but none of those is
+             * reachable except through the SubNav that owns it. A row nested
+             * under a row would also sit four levels into the rail, past the
+             * point the indent still reads as hierarchy rather than as noise.
+             * So each SubNav's page documents everything inside it.
+             */
+            children: [
+              {
+                id: 'crm-inbox-cards',
+                label: 'Cards',
+                render: () => <CardsPage />,
+              },
+              {
+                id: 'crm-inbox-selector',
+                label: 'Inbox Selector',
+                render: () => <InboxSelectorPage />,
+              },
+              {
+                id: 'crm-inbox-markasread',
+                label: 'Mark as read',
+                render: () => <MarkAsReadPage />,
+              },
+              {
+                id: 'crm-inbox-searchbar',
+                label: 'Searchbar',
+                render: () => <SearchbarPage />,
+              },
+              {
+                id: 'crm-inbox-websocket',
+                label: 'Websocket indicators',
+                render: () => <WebsocketIndicatorsPage />,
+              },
+            ],
+          },
+          {
+            /**
+             * The middle column — the conversation itself.
+             *
+             * A sibling of the room list rather than a child of it: the two are
+             * columns of one screen, and nesting the thread under the list would
+             * imply it only exists inside it.
+             *
+             * Its children are the pieces Figma files inside the header, in the
+             * order the header stacks them — the band first, then the controls
+             * along its trailing edge.
+             */
+            id: 'crm-mid',
+            label: 'Chat Room (Mid)',
+            render: () => <MiddlePage />,
+            children: [
+              {
+                id: 'crm-mid-header',
+                label: 'Chat Header',
+                render: () => <ChatHeaderPage />,
+              },
+              {
+                id: 'crm-mid-addbm',
+                label: 'Add BM Information',
+                render: () => <AddBmInfoPage />,
+              },
+              {
+                id: 'crm-mid-filterchat',
+                label: 'Filter Chat',
+                render: () => <FilterChatPage />,
+              },
+              {
+                id: 'crm-mid-menubutton',
+                label: 'Menu Button',
+                render: () => <MenuButtonPage />,
+              },
+              {
+                id: 'crm-mid-leadstage',
+                label: 'Lead Stage Button',
+                render: () => <LeadStageButtonPage />,
+              },
             ],
           },
         ],

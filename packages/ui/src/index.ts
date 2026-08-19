@@ -87,6 +87,9 @@ export type { EyebrowBadgeProps, EyebrowBadgeStyleProps } from './components/Bad
 export { CounterBadge } from './components/Badge/CounterBadge.js';
 export type { CounterBadgeProps, CounterBadgeStyleProps } from './components/Badge/CounterBadge.js';
 
+export { PlanBadge } from './components/Badge/PlanBadge.js';
+export type { PlanBadgeProps, PlanBadgeStyleProps, PlanTone } from './components/Badge/PlanBadge.js';
+
 export { StatusBadge } from './components/Badge/StatusBadge.js';
 export type {
   StatusBadgeProps,
@@ -211,6 +214,7 @@ export type {
   TooltipProps,
   TooltipStyleProps,
   TooltipPlacement,
+  TooltipAlign,
   TooltipSize,
   TooltipCardRenderProps,
 } from './components/Tooltip/Tooltip.js';
@@ -441,6 +445,175 @@ export type { RenderProp, WithDefaultRender } from './internal/render.js';
 
 export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
 export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/AvatarGroup.js';
+
+export { DatePicker } from './components/DatePicker/DatePicker.js';
+export type {
+  DatePickerProps,
+  DatePickerStyleProps,
+  DateRange,
+} from './components/DatePicker/DatePicker.js';
+
+/**
+ * The Inbox — the CRM's conversation screen.
+ *
+ * `InboxList` is the assembled left column; everything else is a piece of it,
+ * exported because the screen composes them directly and Figma files them as
+ * their own components.
+ */
+export { InboxList } from './components/Inbox/InboxList.js';
+export type { InboxListProps, InboxListStyleProps } from './components/Inbox/InboxList.js';
+
+/**
+ * The room list's non-default states. Exported because they are what a screen
+ * passes to `InboxList` as children — the column draws the frame, and what
+ * fills it is the consumer's to decide.
+ */
+export { InboxEmpty, InboxLoading, InboxOnboarding } from './components/Inbox/InboxStates.js';
+export type {
+  InboxEmptyProps,
+  InboxLoadingProps,
+  InboxOnboardingProps,
+  InboxOnboardingStep,
+} from './components/Inbox/InboxStates.js';
+
+export { InboxRoom } from './components/Inbox/InboxRoom.js';
+export type { InboxRoomProps, InboxRoomStyleProps } from './components/Inbox/InboxRoom.js';
+
+export { InboxSelector, InboxAccountRow } from './components/Inbox/InboxSelector.js';
+export type {
+  InboxSelectorProps,
+  InboxSelectorStyleProps,
+  InboxAccountRowProps,
+  InboxAccount,
+} from './components/Inbox/InboxSelector.js';
+
+export {
+  InboxSearchField,
+  MarkAsReadButton,
+  FilterChip,
+} from './components/Inbox/InboxSearch.js';
+export type {
+  InboxSearchFieldProps,
+  InboxSearchFieldStyleProps,
+  MarkAsReadButtonProps,
+  MarkAsReadButtonStyleProps,
+  FilterChipProps,
+  FilterChipStyleProps,
+} from './components/Inbox/InboxSearch.js';
+
+export { AdvancedSearch } from './components/Inbox/AdvancedSearch.js';
+export type {
+  AdvancedSearchProps,
+  AdvancedSearchStyleProps,
+  InboxFilters,
+  ClientFilterOption,
+  StageFilterOption,
+  DatePresetOption,
+  FilterRowName,
+} from './components/Inbox/AdvancedSearch.js';
+
+/**
+ * The Inbox's small reusable marks and controls.
+ *
+ * Exported alongside the bigger pieces because screens compose them directly:
+ * a stage pill appears wherever a lead's stage is shown, and the tick is the
+ * mark every selectable row in the column draws.
+ */
+export { NotificationToggle } from './components/Inbox/NotificationToggle.js';
+export type {
+  NotificationToggleProps,
+  NotificationToggleStyleProps,
+} from './components/Inbox/NotificationToggle.js';
+
+export { PushNotificationToggle } from './components/Inbox/PushNotificationToggle.js';
+export type {
+  PushNotificationToggleProps,
+  PushPermission,
+} from './components/Inbox/PushNotificationToggle.js';
+
+export { HighlightedText } from './components/Inbox/HighlightedText.js';
+export type {
+  HighlightedTextProps,
+  HighlightedTextStyleProps,
+} from './components/Inbox/HighlightedText.js';
+
+export { StagePill } from './components/Inbox/StagePill.js';
+export type { StagePillProps, StagePillStyleProps } from './components/Inbox/StagePill.js';
+
+export { SelectTick } from './components/Inbox/SelectTick.js';
+export type {
+  SelectTickProps,
+  SelectTickStyleProps,
+  SelectTickShape,
+} from './components/Inbox/SelectTick.js';
+
+export { ScheduleMark } from './components/Inbox/ScheduleMark.js';
+export type { ScheduleMarkProps, ScheduleMarkStyleProps } from './components/Inbox/ScheduleMark.js';
+
+export { ConnectionIndicator, SignalIcon } from './components/Inbox/ConnectionIndicator.js';
+export type {
+  ConnectionIndicatorProps,
+  ConnectionIndicatorStyleProps,
+  ConnectionState,
+  SignalIconProps,
+} from './components/Inbox/ConnectionIndicator.js';
+
+export { SelectionBar } from './components/Inbox/SelectionBar.js';
+export type { SelectionBarProps } from './components/Inbox/SelectionBar.js';
+
+/**
+ * The Middle column — the chat room itself.
+ *
+ * `ChatHeader` is the assembled band; everything else is a control it composes,
+ * exported on its own because Figma files each as its own component and a screen
+ * building its own header band should reach for these rather than redraw them.
+ */
+export { ChatHeader } from './components/Middle/ChatHeader.js';
+export type {
+  ChatHeaderProps,
+  ChatHeaderStyleProps,
+  ChatHeaderLayout,
+} from './components/Middle/ChatHeader.js';
+
+export { AddBmInfo } from './components/Middle/AddBmInfo.js';
+export type { AddBmInfoProps, AddBmInfoStyleProps } from './components/Middle/AddBmInfo.js';
+
+export { FilterChat, defaultChatFilters } from './components/Middle/FilterChat.js';
+export type {
+  FilterChatProps,
+  FilterChatStyleProps,
+  ChatFilter,
+} from './components/Middle/FilterChat.js';
+
+export { MenuButton } from './components/Middle/MenuButton.js';
+export type { MenuButtonProps, MenuButtonStyleProps } from './components/Middle/MenuButton.js';
+
+export { LeadStageButton } from './components/Middle/LeadStageButton.js';
+export type {
+  LeadStageButtonProps,
+  LeadStageButtonStyleProps,
+  LeadStageSize,
+} from './components/Middle/LeadStageButton.js';
+
+export { HeaderMetaTag } from './components/Middle/HeaderMetaTag.js';
+export type {
+  HeaderMetaTagProps,
+  HeaderMetaTagStyleProps,
+  HeaderMetaTagVariant,
+} from './components/Middle/HeaderMetaTag.js';
+
+export { HeaderNavButton } from './components/Middle/HeaderNavButton.js';
+export type {
+  HeaderNavButtonProps,
+  HeaderNavButtonStyleProps,
+  HeaderNavAction,
+} from './components/Middle/HeaderNavButton.js';
+
+export { AutoCancelSwitch } from './components/Middle/AutoCancelSwitch.js';
+export type {
+  AutoCancelSwitchProps,
+  AutoCancelSwitchStyleProps,
+} from './components/Middle/AutoCancelSwitch.js';
 
 /**
  * The icon set — `Icon` plus one `IconDef` per glyph (`IconLockFill`,

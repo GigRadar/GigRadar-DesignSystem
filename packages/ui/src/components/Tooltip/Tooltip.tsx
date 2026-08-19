@@ -29,6 +29,14 @@ const { tooltip } = component;
  */
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
 
+/**
+ * Which edge of the card lines up with the anchor's, across the placement axis.
+ *
+ * For `top`/`bottom` these are the left and right edges; for `left`/`right`,
+ * the top and bottom.
+ */
+export type TooltipAlign = 'center' | 'start' | 'end';
+
 /** Per-instance overrides for the tooltip's own metrics. */
 export type TooltipStyleProps = {
   /** Horizontal padding inside the card. */
@@ -86,6 +94,17 @@ export type TooltipProps = {
    */
   actions?: ReactNode;
   placement?: TooltipPlacement;
+  /**
+   * Which edge of the card lines up with the anchor's.
+   *
+   * `center` is the default and what Figma draws. Use `start` or `end` when the
+   * card is much wider than its anchor and sits near the edge of a column: a
+   * centred card puts half its width past the anchor, and that half is what
+   * gets clipped.
+   *
+   * @default 'center'
+   */
+  align?: TooltipAlign;
   size?: TooltipSize;
   /**
    * Opens on click instead of hover, and stays open until dismissed.
@@ -159,6 +178,7 @@ export function Tooltip({
   title,
   actions,
   placement = 'top',
+  align = 'center',
   size = 'medium',
   trigger,
   open,
@@ -290,7 +310,7 @@ export function Tooltip({
             // Never intercepts the pointer on a hover tooltip — moving onto the
             // card would otherwise count as leaving the anchor and close it.
             pointerEvents: mode === 'click' ? 'auto' : 'none',
-            ...placementStyle(placement, gapToAnchor),
+            ...placementStyle(placement, gapToAnchor, align),
           }}
         >
           {(() => {
@@ -354,16 +374,38 @@ function compose<E>(theirs: ((event: E) => void) | undefined, ours: () => void) 
  * with a 50% offset and a translate — which centres correctly whatever the
  * card's own width turns out to be, since the width is content-driven.
  */
-function placementStyle(placement: TooltipPlacement, offset: number): CSSProperties {
+function placementStyle(
+  placement: TooltipPlacement,
+  offset: number,
+  align: TooltipAlign,
+): CSSProperties {
+  // Centring is what Figma draws and what a short tooltip wants. A card much
+  // wider than its anchor centres half of itself past the anchor's edge, and
+  // against the side of a column that half is clipped — `start` and `end` pin
+  // the matching edges together instead.
+  const cross =
+    align === 'center'
+      ? { left: '50%', transform: 'translateX(-50%)' }
+      : align === 'start'
+        ? { left: 0 }
+        : { right: 0 };
+
+  const crossVertical =
+    align === 'center'
+      ? { top: '50%', transform: 'translateY(-50%)' }
+      : align === 'start'
+        ? { top: 0 }
+        : { bottom: 0 };
+
   switch (placement) {
     case 'top':
-      return { bottom: '100%', left: '50%', transform: 'translateX(-50%)', paddingBottom: offset };
+      return { bottom: '100%', ...cross, paddingBottom: offset };
     case 'bottom':
-      return { top: '100%', left: '50%', transform: 'translateX(-50%)', paddingTop: offset };
+      return { top: '100%', ...cross, paddingTop: offset };
     case 'left':
-      return { right: '100%', top: '50%', transform: 'translateY(-50%)', paddingRight: offset };
+      return { right: '100%', ...crossVertical, paddingRight: offset };
     case 'right':
-      return { left: '100%', top: '50%', transform: 'translateY(-50%)', paddingLeft: offset };
+      return { left: '100%', ...crossVertical, paddingLeft: offset };
   }
 }
 
