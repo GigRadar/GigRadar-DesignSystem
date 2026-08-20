@@ -20,8 +20,8 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "tsc -p tsconfig.json --watch"
+    "build": "tsc --build tsconfig.json",
+    "dev": "tsc --build tsconfig.json --watch"
   },
   "peerDependencies": {
     "eslint": ">=8"
