@@ -35,15 +35,44 @@ jobs:
       - name: Build packages
         run: npm run build --workspaces --if-present
 
-      # Opens a "Version Packages" PR when changesets are pending.
-      # Publishes to GitHub Packages when that PR is merged.
-      - name: Version or publish
-        uses: changesets/action@v1
-        with:
-          version: npm run version-packages
-          publish: npm run release
-          commit: 'chore: version packages'
-          title: 'chore: version packages'
+      # Versions and publishes in one run — there is no "Version Packages" PR.
+      #
+      # A push to `main` carrying pending changesets bumps the versions, writes
+      # the changelogs, publishes to GitHub Packages, and pushes the version
+      # commit back here. Nothing to review or merge.
+      #
+      # The tradeoff is deliberate: publishing is irreversible, and this removes
+      # the step where the computed version and changelog could be read first.
+      # Anything wrong in a changeset ships. Re-read `.changeset/*.md` before
+      # pushing, especially where several have accumulated — Changesets
+      # concatenates them without noticing that a later one contradicts an
+      # earlier one.
+      #
+      # A push with NO pending changesets publishes nothing, so ordinary commits
+      # are safe.
+      - name: Version and publish
+        run: |
+          set -euo pipefail
+
+          if [ -z "$(ls .changeset/*.md 2>/dev/null | grep -v README || true)" ]; then
+            echo "No pending changesets — nothing to publish."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          npm run version-packages
+          npm install --package-lock-only --no-audit --no-fund
+
+          git add -A
+          git commit -m "chore: version packages [skip ci]"
+
+          npm run release
+
+          # Push the version bump and the tags Changesets created, so the repo
+          # reflects what is on the registry.
+          git push origin HEAD:main --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
