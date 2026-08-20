@@ -32,8 +32,8 @@ export function FilterChatPage() {
         ]}
       >
         The header's filter <strong>Menu Button</strong> opens this panel and takes its selected fill
-        while it is showing. The count on that button is how many kinds are hidden — the panel itself
-        does not report it.
+        while it is showing. The count on that button is how many kinds are being shown — the panel
+        itself does not report it.
       </CrossLink>
 
       <Section
@@ -73,14 +73,14 @@ export function FilterChatPage() {
 
       <Section
         title="In place, under its button"
-        description="How the pair actually reads: the button holds its selected fill for as long as the panel is up, so the two are visibly one control rather than a button and a floating menu."
+        description="How the pair actually reads: the button holds its selected fill for as long as the panel is up, so the two are visibly one control rather than a button and a floating menu. Its badge counts the kinds being shown, so it reads as the number of message kinds currently in the thread and empties out only when everything has been hidden."
       >
         <Surface>
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <MenuButton
               icon={IconFilterChatStroke}
               label="Filter chat"
-              count={defaultChatFilters.length - shown.length}
+              count={shown.length}
               selected={open}
               onClick={() => setOpen((showing) => !showing)}
             />
@@ -91,7 +91,10 @@ export function FilterChatPage() {
             )}
           </div>
         </Surface>
-        <Caption>Click the button to close and reopen the panel.</Caption>
+        <Caption>
+          Click the button to close and reopen the panel. The badge follows the ticked rows — untick
+          all three and it disappears, since there is nothing left to count.
+        </Caption>
       </Section>
 
       <Section

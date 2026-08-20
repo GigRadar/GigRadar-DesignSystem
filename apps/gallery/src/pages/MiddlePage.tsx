@@ -1,4 +1,12 @@
-import { AutoCancelSwitch, ChatHeader, HeaderMetaTag, HeaderNavButton, IconSearch } from '@gigradar/ui';
+import {
+  AutoCancelSwitch,
+  ChatHeader,
+  HeaderMetaTag,
+  HeaderNavButton,
+  IconSearch,
+  defaultChatFilters,
+  type StageName,
+} from '@gigradar/ui';
 import { useState } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
 import { PageHeader, Section } from '../layout';
@@ -15,6 +23,10 @@ import { Caption, Row, Surface, Thread } from './middle/parts';
  */
 export function MiddlePage() {
   const [autoCancel, setAutoCancel] = useState(true);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [shownFilters, setShownFilters] = useState(defaultChatFilters.map((f) => f.name));
+  const [stageOpen, setStageOpen] = useState(false);
+  const [stage, setStage] = useState<StageName>(chatRoom.stage);
 
   return (
     <>
@@ -50,11 +62,29 @@ export function MiddlePage() {
             clientTone={chatRoom.clientTone}
             preset={chatRoom.preset}
             assignee={chatRoom.assignee}
-            stage={chatRoom.stage}
-            filterCount={5}
+            stage={stage}
+            onStageChange={setStage}
+            stageOpen={stageOpen}
+            onStageClick={() => {
+              setStageOpen((open) => !open);
+              setFilterOpen(false);
+            }}
+            filters={defaultChatFilters}
+            shownFilters={shownFilters}
+            onFiltersChange={setShownFilters}
+            filterOpen={filterOpen}
+            onFilterClick={() => {
+              setFilterOpen((open) => !open);
+              setStageOpen(false);
+            }}
             addBusinessManager={{ managerName: chatRoom.managerName }}
           />
         </Thread>
+        <Caption>
+          Click the filter button to open the filter popover, and the stage pill to open the stage
+          menu — the current stage carries a tick. Only one is open at a time, and clicking outside
+          closes it.
+        </Caption>
         <CodeBlock
           code={`<ChatHeader
   title={room.title}
@@ -62,8 +92,20 @@ export function MiddlePage() {
   clientName={room.client}
   preset="V1 Jane - UI UX"
   assignee="Jane Cooper"
-  stage="new"
-  filterCount={5}
+
+  // The filter button opens FilterChat when given the kinds to offer.
+  filters={defaultChatFilters}
+  shownFilters={shown}
+  onFiltersChange={setShown}
+  filterOpen={filterOpen}
+  onFilterClick={() => setFilterOpen((open) => !open)}
+
+  // The stage pill opens LeadStageMenu when given a change handler.
+  stage={stage}
+  onStageChange={setStage}
+  stageOpen={stageOpen}
+  onStageClick={() => setStageOpen((open) => !open)}
+
   addBusinessManager={{ managerName: 'Maria Ovcharenko', onAdd: addManager }}
 />`}
         />

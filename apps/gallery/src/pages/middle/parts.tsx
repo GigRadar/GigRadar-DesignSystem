@@ -23,6 +23,10 @@ export function Caption({ children }: { children: ReactNode }) {
  * The header truncates its title and drops its tag labels, so previewing it
  * full-bleed would show a layout the product never draws. 788px is the desktop
  * column, 402px the mobile one — both from Figma.
+ *
+ * Carries its own bottom margin because `Section` does not space its children:
+ * on the pages where a caption follows, that caption supplies the gap, but a
+ * preview sitting directly above a code block would otherwise butt against it.
  */
 export function Thread({ children, width = 788 }: { children: ReactNode; width?: number }) {
   return (
@@ -30,9 +34,14 @@ export function Thread({ children, width = 788 }: { children: ReactNode; width?:
       style={{
         width,
         maxWidth: '100%',
+        marginBottom: spacing.m,
         border: `${borderWidth.thin}px solid ${color.navbar.hover}`,
         borderRadius: radius.xs,
-        overflow: 'hidden',
+        // Clipped across, open below: the rounded corners need the horizontal
+        // clip, but the header's filter and stage popovers hang past the bottom
+        // edge and `hidden` would cut them off mid-menu.
+        overflowX: 'clip',
+        overflowY: 'visible',
         backgroundColor: color.main.white,
       }}
     >

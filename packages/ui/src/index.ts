@@ -588,7 +588,13 @@ export type {
 export { MenuButton } from './components/Middle/MenuButton.js';
 export type { MenuButtonProps, MenuButtonStyleProps } from './components/Middle/MenuButton.js';
 
-export { LeadStageButton } from './components/Middle/LeadStageButton.js';
+export { LeadStageMenu, stageOrder } from './components/Middle/LeadStageMenu.js';
+export type {
+  LeadStageMenuProps,
+  LeadStageMenuStyleProps,
+} from './components/Middle/LeadStageMenu.js';
+
+export { LeadStageButton, stageLabels } from './components/Middle/LeadStageButton.js';
 export type {
   LeadStageButtonProps,
   LeadStageButtonStyleProps,

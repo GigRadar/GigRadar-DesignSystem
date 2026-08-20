@@ -1,5 +1,5 @@
 import { borderWidth, color, component, textStyle, type StageName } from '@gigradar/theme';
-import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, useEffect, useRef, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import { Avatar, type AvatarToneName } from '../Avatar/Avatar.js';
 import {
@@ -11,6 +11,8 @@ import {
   IconSearch,
 } from '../../icons/defs.js';
 import { AddBmInfo, type AddBmInfoProps } from './AddBmInfo.js';
+import { FilterChat, type ChatFilter } from './FilterChat.js';
+import { LeadStageMenu } from './LeadStageMenu.js';
 import { AutoCancelSwitch } from './AutoCancelSwitch.js';
 import { HeaderMetaTag } from './HeaderMetaTag.js';
 import { HeaderNavButton } from './HeaderNavButton.js';
@@ -69,6 +71,11 @@ export type ChatHeaderProps = {
   stageOpen?: boolean;
   onStageClick?: () => void;
   /**
+   * Called with the stage picked from the menu. Passing it makes the pill open
+   * the menu itself; without it the pill only reports its click.
+   */
+  onStageChange?: (stage: StageName) => void;
+  /**
    * @default 'desktop'
    */
   layout?: ChatHeaderLayout;
@@ -83,7 +90,19 @@ export type ChatHeaderProps = {
   /** The auto-cancel switch on the scheduled header. */
   autoCancel?: boolean;
   onAutoCancelChange?: (on: boolean) => void;
-  /** How many filters the filter-chat popover has applied. */
+  /**
+   * The message kinds the filter popover offers. Passing them makes the filter
+   * button open the popover itself; without them the button only reports its
+   * click, for a screen that wants to place the panel somewhere else.
+   */
+  filters?: ChatFilter[];
+  /** Which kinds are showing. Also what the button's count reports. */
+  shownFilters?: string[];
+  onFiltersChange?: (shown: string[]) => void;
+  /**
+   * Overrides the filter button's count. Defaults to how many kinds are
+   * showing, so the badge follows the popover without being wired up twice.
+   */
   filterCount?: number;
   /** Whether the filter-chat popover is showing. */
   filterOpen?: boolean;
@@ -135,10 +154,14 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
     stage,
     stageOpen = false,
     onStageClick,
+    onStageChange,
     layout = 'desktop',
     scheduled = false,
     autoCancel = false,
     onAutoCancelChange,
+    filters,
+    shownFilters,
+    onFiltersChange,
     filterCount,
     filterOpen = false,
     onFilterClick,
@@ -157,6 +180,22 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
   },
   ref,
 ) {
+  const controlsRef = useRef<HTMLDivElement>(null);
+  // Both popovers are anchored inside the controls row, so one outside-click
+  // listener closes whichever is open. Bound only while one is, so a header at
+  // rest costs nothing.
+  const anyOpen = filterOpen || stageOpen;
+  useEffect(() => {
+    if (!anyOpen) return;
+    const onDown = (event: MouseEvent) => {
+      if (controlsRef.current?.contains(event.target as Node)) return;
+      if (filterOpen) onFilterClick?.();
+      if (stageOpen) onStageClick?.();
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [anyOpen, filterOpen, stageOpen, onFilterClick, onStageClick]);
+
   const mobile = layout === 'mobile';
   const insetX = len(paddingX) ?? (mobile ? header.mobilePaddingX : header.desktopPaddingX);
   const rule = `${borderWidth.thin}px solid ${borderColor ?? color.navbar.hover}`;
@@ -170,7 +209,11 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
         alignItems: 'stretch',
         boxSizing: 'border-box',
         width: '100%',
-        overflow: 'hidden',
+        // Not `hidden`, despite Figma drawing the band clipped: the filter and
+        // stage popovers hang below it, and clipping would cut them at the rule.
+        // The title's own ellipsis is what actually needs the clip, and it has
+        // its own `overflow` for that.
+        overflow: 'visible',
         backgroundColor: background ?? color.main.white,
         borderBottom: rule,
       }}
@@ -325,6 +368,7 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
           <MenuButton icon={IconInfoStroke} label="Room information" muted onClick={onInfoClick} />
         ) : (
           <div
+            ref={controlsRef}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -332,13 +376,28 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
               gap: header.metaGap,
             }}
           >
-            <MenuButton
-              icon={IconFilterChatStroke}
-              label="Filter chat"
-              count={filterCount}
-              selected={filterOpen}
-              onClick={onFilterClick}
-            />
+            {/* Each control that opens a surface is wrapped in a positioned
+                span, so its popover hangs off the button itself rather than off
+                the header — the header clips its overflow, and an absolutely
+                positioned child of it would be cut at the band's edge. */}
+            <span style={{ position: 'relative', display: 'inline-flex' }}>
+              <MenuButton
+                icon={IconFilterChatStroke}
+                label="Filter chat"
+                count={filterCount ?? shownFilters?.length}
+                selected={filterOpen}
+                onClick={onFilterClick}
+              />
+              {filters && filterOpen && (
+                <span style={{ position: 'absolute', top: '100%', right: 0, marginTop: header.popoverOffset, zIndex: 1 }}>
+                  <FilterChat
+                    filters={filters}
+                    value={shownFilters}
+                    onChange={onFiltersChange}
+                  />
+                </span>
+              )}
+            </span>
             <MenuButton
               icon={IconBubbleMessageStroke}
               label="View messages"
@@ -350,7 +409,22 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
               label="View job posting"
               onClick={onJobPostingClick}
             />
-            {stage && <LeadStageButton stage={stage} open={stageOpen} onClick={onStageClick} />}
+            {stage && (
+              <span style={{ position: 'relative', display: 'inline-flex' }}>
+                <LeadStageButton stage={stage} open={stageOpen} onClick={onStageClick} />
+                {onStageChange && stageOpen && (
+                  <span style={{ position: 'absolute', top: '100%', right: 0, marginTop: header.popoverOffset, zIndex: 1 }}>
+                    <LeadStageMenu
+                      value={stage}
+                      onSelect={(next) => {
+                        onStageChange(next);
+                        onStageClick?.();
+                      }}
+                    />
+                  </span>
+                )}
+              </span>
+            )}
           </div>
         )}
       </div>

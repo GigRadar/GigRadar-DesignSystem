@@ -2272,6 +2272,8 @@ const middle = {
     backSize: 24,
     /** The scheduled header's own title line height, which Figma sets explicitly. */
     titleLineHeight: 22,
+    /** How far a popover hangs below the control that opens it. */
+    popoverOffset: spacing.xxs,
     /** A meta tag — the preset the room replies with, or the person assigned to it. */
     tag: {
       paddingX: spacing.xs + 2,
@@ -2341,6 +2343,29 @@ const middle = {
      * smallest step the pill reads at.
      */
     height: { l: 30, m: 24 },
+    /**
+     * The menu the pill opens — every stage, so one can be picked.
+     *
+     * Sized to the widest label ("Already Equipped") rather than to the trigger:
+     * a menu that matched the pill would have to truncate the very labels it
+     * exists to let you read.
+     */
+    menu: {
+      width: 196,
+      radius: radius.s,
+      padding: spacing.xs,
+      /** Space between the rows. */
+      gap: spacing.xs,
+      /**
+       * A row is the stage's own pill stretched to the menu's width, so the
+       * tints stack into one column rather than a ragged edge.
+       */
+      rowPaddingX: spacing.xs,
+      rowPaddingY: spacing.xxs,
+      rowRadius: radius.round,
+      /** How far the menu sits below its trigger. */
+      offset: spacing.xxs,
+    },
     paddingX: { l: spacing.s, m: spacing.xs + 2 },
     paddingY: 2,
     radius: 1000,

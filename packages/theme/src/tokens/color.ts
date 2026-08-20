@@ -315,6 +315,16 @@ export const stageFlat = {
 export type StageName = keyof typeof stageFlat;
 
 /**
+ * The outline on the stage currently set, in the stage picker.
+ *
+ * Every row in that menu already carries its own stage tint, so a selected-row
+ * fill would read as a twelfth colour rather than as "this is the one". Figma
+ * draws a border instead (CRM node 9897:1496682) — and as a raw hex rather than
+ * a variable, so it is named here rather than pulled from `stage`.
+ */
+export const stageSelectedBorder = '#B7DBFF';
+
+/**
  * Avatar tone palette.
  *
  * Extracted from the Avatar component in Figma (node 456:8607). Each tone is a
@@ -372,6 +382,7 @@ export const color = {
   proposal,
   stage,
   stageFlat,
+  stageSelectedBorder,
   integration,
   avatarTone,
   deprecated,

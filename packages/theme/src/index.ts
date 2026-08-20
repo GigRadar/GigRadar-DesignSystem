@@ -23,6 +23,7 @@ export {
   proposal,
   stage,
   stageFlat,
+  stageSelectedBorder,
   integration,
   avatarTone,
   deprecated,

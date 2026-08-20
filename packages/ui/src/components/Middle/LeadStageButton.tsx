@@ -16,8 +16,14 @@ const { leadStage } = component.middle;
  */
 export type LeadStageSize = 'l' | 'm';
 
-/** The label Figma writes for each stage. */
-const stageLabels: Record<StageName, string> = {
+/**
+ * The label Figma writes for each stage.
+ *
+ * Exported so the stage picker writes the same words: two copies would let the
+ * pill and the menu that sets it drift apart, which is the one place a mismatch
+ * would be most confusing.
+ */
+export const stageLabels: Record<StageName, string> = {
   new: 'New',
   contactLater: 'Contact Later',
   interested: 'Interested',
