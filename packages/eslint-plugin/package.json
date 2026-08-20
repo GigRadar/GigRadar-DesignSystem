@@ -1,6 +1,6 @@
 {
   "name": "@gigradar/eslint-plugin",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "ESLint rules enforcing the GigRadar design system.",
   "license": "UNLICENSED",
   "private": false,
