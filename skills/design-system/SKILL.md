@@ -6,7 +6,7 @@ description: GigRadar design system rules. Use when writing or reviewing UI in a
 # GigRadar Design System
 
 The design system lives in `@gigradar/theme` and `@gigradar/ui`. This skill is
-the contract for consuming it. Four apps share these packages — home, dashboard,
+the contract for using it. Four apps share these packages — home, dashboard,
 crm, and inbound — so a violation in one app is a divergence across the product.
 
 ## The three rules

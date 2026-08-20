@@ -8,7 +8,7 @@ Add the components CRM ▸ Inbox is built from.
 `InboxList` is the left column — the header, the account picker, the search
 band, and the connection pill pinned to the foot — and takes the rooms as
 children. The six states Figma draws for the column (default, load rooms, empty,
-first load, searching, onboarding) are what a consumer passes in rather than
+first load, searching, onboarding) are what the caller passes in rather than
 variants of the frame: they differ in what fills the list, not in how the frame
 is drawn.
 
@@ -123,7 +123,7 @@ temporary. Only error asks for action.
 
 `SelectionBar` is the row shown while the list is in selection mode. It reads off
 `selectedCount` rather than taking a state prop — Figma's three states are all
-derived from the count, and the count is what a consumer already has.
+derived from the count, and the count is what the caller already has.
 
 `DatePicker` is filed under the generic tier: a calendar knows nothing about
 conversations, even though the inbox's date filter is what prompted it. Figma's
