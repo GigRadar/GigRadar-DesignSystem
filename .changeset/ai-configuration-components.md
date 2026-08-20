@@ -17,10 +17,10 @@ a `<Scrollbar />` element would have nothing to attach to. It returns the three
 pieces a scrolling element needs: a scoped data attribute, the Firefox
 properties, and the WebKit pseudo-element rules.
 
-`Button` gains the `subtle` variant — quiet chrome that fills with the nav grey
+`Button` gains the `third` variant — quiet chrome that fills with the nav grey
 on hover instead of tinting its border — and every size now sets `min-height`
 from `controlHeight`, so a row mixing inputs, pills, and buttons lines up without
-hand-derived padding. `IconButton` gains `outlined`. `ConfirmTooltip` gains
+hand-derived padding. `ConfirmTooltip` gains
 `align`, which pins the card's leading edge to its anchor's: a card taller than
 its anchor centres half of itself outside a scroll container, which then clips
 it.
