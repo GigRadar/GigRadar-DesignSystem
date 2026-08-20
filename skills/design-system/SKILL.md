@@ -80,6 +80,10 @@ Everything is extracted from the Figma guidebook. Do not invent values.
 - `color.accent` — `laziza`, `decrease`, `schedule`, `meetings`
 - `color.proposal` — `sent`
 - `color.stageFlat` — the nine CRM pipeline stages, keyed by name
+- `color.stage` — the same nine, grouped by `unqualified` / `pipeline` / `lost`
+- `color.avatarTone` — the avatar initial palette: `cyan`, `magenta`, `purple`,
+  `orange`, `red`, `volcano`, and the rest. Picked from a name by `Avatar`, so
+  reach for it only when drawing an avatar-like mark by hand.
 - `color.integration` — `slack`, `telegram`; each has `.main`, `.hover`, `.background`, `.border`
 
 `color.integration` holds brand colors owned by Slack and Telegram. Use them
@@ -214,9 +218,78 @@ Before reaching for a render prop, check the existing props. A render prop that
 only reproduces the default is a copy that silently stops tracking the design
 system when the component changes.
 
+## This document is a summary, not the source of truth
+
+The lists above — token groups, CSS properties, deprecations — are a snapshot.
+The design system ships new versions, so anything enumerated here can be behind
+what the app actually has installed.
+
+**Before claiming a component, prop, or token does not exist, verify it.** The
+installed package is authoritative:
+
+```bash
+# Every export the installed version actually has
+grep "^export" node_modules/@gigradar/ui/dist/index.d.ts
+
+# Same for tokens
+grep "^export" node_modules/@gigradar/theme/dist/index.d.ts
+```
+
+Working inside the design system repo itself, read `packages/ui/src/index.ts` —
+that barrel is the single import surface, and a component missing from it does
+not exist as far as the apps are concerned.
+
+Saying "there is no DatePicker, ask for one to be added" when `DatePicker` ships
+in the installed version is worse than saying nothing: it is confident, wrong,
+and sends the developer to build a duplicate.
+
+## Check the installed version is current
+
+A component can exist in the design system and still be absent from the app,
+because the app is pinned to an older version. When something is genuinely
+missing from `node_modules`, check whether it is missing from the *system* or
+only from *this app*:
+
+```bash
+# What the app has
+node -p "require('@gigradar/ui/package.json').version"
+
+# What is published
+npm view @gigradar/ui version --registry=https://npm.pkg.github.com
+
+# Or both at once
+npm outdated @gigradar/ui
+```
+
+If the app is behind, say so and recommend the upgrade rather than reporting the
+component as missing:
+
+```bash
+npm update @gigradar/ui @gigradar/theme      # within the caret — patch + minor
+npm install @gigradar/ui@latest              # crossing a major, deliberate
+```
+
+`npm install` alone will not do it. The caret range allows the newer version but
+`package-lock.json` pins the exact one, so the lock has to be moved with
+`npm update`.
+
+Check the changelog for breaking changes before crossing a major — that bump
+means the app has code to change.
+
+> **`npm view` returning `404` is an auth failure, not a missing package.**
+> GitHub Packages returns `404` rather than `401` for private packages the
+> caller cannot see. If you get `404 ... does not exist under owner "gigradar"`,
+> the token is missing, expired, fine-grained instead of classic, or lacks
+> `read:packages`. Do not conclude the package was unpublished.
+
 ## When something is missing
 
 If a component, variant, or token you need does not exist, do not work around it
 with a hardcoded value or a one-off local component. Say what is missing and
 what you would add. The design system is meant to grow — additions are cheap,
 divergence is not.
+
+**Verify first.** Check the installed package's exports, then check whether the
+app is simply behind a published version — see the two sections above. "It does
+not exist" is a claim about the system; make sure it is not really a claim about
+this app's `node_modules`.
