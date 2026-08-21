@@ -151,14 +151,6 @@
 
 - 87ee16b: Give push notifications their own section, and cover the rest of the flow.
 
-  `NotificationToggle` gains `caption`, drawing Figma's "Turn On" pill (node
-  2426:154627). For the first run, before anyone has answered the permission
-  prompt: a bare switch says a setting exists, while the words say what turning it
-  on would do. Once permission is settled the caption is dropped, since by then
-  the control is a setting rather than an invitation. A captioned pill grows to
-  fit its words; a bare one holds the switch's own width so the handle has
-  somewhere to travel.
-
   `OsNotification` previews a browser notification as the operating system draws
   it — six renderings across Windows and macOS (Figma nodes 2452:9832 onward).
   Presentational only, and deliberately so: the browser owns that chrome, a page
@@ -330,9 +322,9 @@
   picking (`selecting` and `checked`), and whether the room is unavailable
   (`disabled`, `error`, `loading`). A union would make "selected and scheduled" or
   "ticked while erroring" unrepresentable when both really occur. In selection
-  mode the unread counter gives way to a round tick and the sender drops off the
-  preview, because the row stops being about who spoke last. `scheduled` marks a
-  room that already carries a queued message.
+  mode a round tick leads the row, before the avatar, and a ticked card fills
+  brand blue like the open one. `scheduled` marks a room that already carries a
+  queued message.
 
   Hover fills the card with the badge tint and drops its border — the border is
   matched to the fill rather than removed, so the card does not shift by a pixel
