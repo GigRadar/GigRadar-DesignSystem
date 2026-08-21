@@ -73,6 +73,26 @@ jobs:
           # Push the version bump and the tags Changesets created, so the repo
           # reflects what is on the registry.
           git push origin HEAD:main --follow-tags
+
+          # Turn each new tag into a GitHub Release, with that package's own
+          # changelog entry as the notes.
+          #
+          # `changeset publish` writes tags but not Releases — the official
+          # changesets/action did that, and this workflow replaced it. Without
+          # this step the Releases page silently stops at the last version that
+          # action published, so the repo advertises an old version while the
+          # registry has a newer one.
+          for tag in $(git tag --points-at HEAD); do
+            pkg=$(echo "$tag" | sed 's|^@gigradar/||; s|@.*$||')
+            version=$(echo "$tag" | sed 's|^.*@||')
+            notes=$(awk -v v="## $version" '
+              $0 == v { found = 1; next }
+              found && /^## / { exit }
+              found { print }
+            ' "packages/$pkg/CHANGELOG.md")
+            gh release create "$tag" --title "$tag" \
+              --notes "${notes:-See CHANGELOG.md}" || true
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
