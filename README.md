@@ -56,8 +56,12 @@ Anything here can be changed in one file. Nothing is load-bearing.
 
 ## Adoption
 
-See [docs/consuming-packages.md](docs/consuming-packages.md) for the GitHub
-Packages auth each developer needs, and how to enable the lint rules.
+Monorepo apps: [docs/consuming-monorepo.md](docs/consuming-monorepo.md) — a
+local clone plus `file:` dependencies, no auth needed.
+
+Standalone repos: [docs/consuming-packages.md](docs/consuming-packages.md) for
+the GitHub Packages auth each developer needs, and how to enable the lint
+rules.
 
 ## Releasing
 
