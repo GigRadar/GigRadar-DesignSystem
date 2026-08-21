@@ -1,5 +1,180 @@
 # @gigradar/ui
 
+## 2.1.0
+
+### Minor Changes
+
+- 87ee16b: Follow the Inbox filter and mark-as-read flows documented in the CRM file.
+
+  The filter panel follows node 9930:159252. A client query matching nothing hides
+  the dropdown rather than showing an empty one — an empty list reads as "loading"
+  where absence reads as "nothing by that name". Already-picked clients and stages
+  drop out of their dropdowns: they are chips in the band above, and offering them
+  again offers a no-op. The stage rows lose their checkbox, since the pill itself
+  is the control and Figma draws no box beside it.
+
+  The date row offers three named spans — Today, Last 7 days, Last 30 days — plus
+  `Custom` (exported as `CUSTOM_PRESET_ID`), which is the only thing that opens the
+  calendar. Most date filtering is "recently", which a preset answers in one click;
+  a calendar under every visit makes the common case scroll past the uncommon one.
+
+  The filter's meaning is now recorded on the panel and in the gallery, because
+  none of it is visible from the control: "last activity" is the room's **last
+  message** — stage changes, notes, and assignment move a room around the pipeline
+  without anyone having said anything in it — and a custom range **includes both
+  endpoint days in full**, so 1 May – 7 May runs 00:00 on the 1st to 23:59 on the
+  7th. An exclusive end would silently drop the last day, which reads as a bug to
+  anyone who picked it on a calendar.
+
+  Every span is read in the viewer's own timezone rather than the client's or UTC.
+  A room's last activity is a moment in time, but "today" is a question about the
+  reader's day. The row says so under its title — `dateDescription`, defaulting to
+  "Filter by last activity · your time" — because a filter that silently used a
+  different clock would quietly disagree with the timestamps on the cards.
+
+  "Clear all" gains a hover fill — it drops every filter at once, so it should feel
+  like a button being pressed rather than a link being read. An empty summary band
+  shows a "No filters active" pill so the band keeps its height and the panel does
+  not jump as the first filter goes on. `panel.widthMobile` (379px) carries the
+  phone width from Figma's mobile flow.
+
+  `MarkAsReadButton` gains `cancel`, swapping the double-check for the ✕ that
+  leaves selection mode. It is the same button in the same place because it is the
+  same control seen from the other side — the one that turned selection on is what
+  turns it off, and moving the exit elsewhere leaves the person hunting for the way
+  back. `InboxList` flips it automatically with `selectionMode`.
+
+  `InboxRoom`'s selection tick moves to the leading edge, before the avatar (node
+  8487:27438). In selection mode the question is "which of these", and a column of
+  ticks down the left scans in a way one tucked behind each preview does not. A
+  ticked card fills brand blue like the open one — both mean "this is the row you
+  are acting on" — with the tick inverting so it stays visible, and the unread
+  counter keeps its place so nothing shifts as the mode changes.
+
+  The unread counter and the schedule mark both survive being ticked. The counter
+  inverts on the filled card, since a brand-blue disc on a brand-blue card would
+  disappear; the schedule mark keeps its purple, because that purple identifies
+  the scheduling flow wherever it appears and recolouring it per card state would
+  make the mark say "scheduled, on a selected row" rather than "scheduled". They have separate lifetimes
+  and separate actions: selecting a room is not reading it — only "Mark as read"
+  drops `unread` to zero — and a queued message stays queued until it actually goes
+  out. Neither should vanish because the other happened, and the counter was
+  previously being hidden by the selection fill.
+
+- 87ee16b: Give the Inbox a phone layout, and the settings rail a footer.
+
+  `InboxScreen` owns which of the three panes is on screen. On a desktop all
+  three are; on a phone one is, and the room's back chevron returns to the list.
+  `layout` is a prop rather than a media query because this package ships no
+  stylesheet and the app already knows its own breakpoints — it also lets the
+  gallery draw both layouts side by side, which a media query cannot.
+
+  The panes not showing are not rendered, rather than hidden with CSS. Three
+  mounted panes would keep three scroll positions alive and let a hidden one's
+  focus trap the keyboard.
+
+  `InboxList` gains `fluid`, filling the width it is given instead of holding the
+  column's 328px: on a phone the list is the whole screen, and a fixed column
+  would leave a gap down one side. The panes are otherwise identical at either
+  size — a room card is the same card — which is why the shell owns the decision
+  rather than each pane checking its own width.
+
+  `SettingsPanel` gains `footer`, filling the rail's foot (Figma node 3804:2263).
+  The sync tracker goes there rather than on any one settings page, because an
+  import is a background job that outlives whichever page is open: starting it
+  from Upwork API and then walking to Notifications should not lose sight of it.
+  It hides while collapsed, where there is no room for anything but the icons.
+
+- 87ee16b: Cover the whole of the inbox selector's flow.
+
+  `InboxAccount`'s `problem` widens from two states to five — `suspended`,
+  `tokenExpired`, `error`, `removed`, and `notInRoom` (Figma node 3790:64903).
+  They share one treatment because they answer one question, "why can I not pick
+  this", and differ only in the words: the row greys out and the reason takes the
+  unread count's place, since a count is meaningless on an account that cannot
+  receive anything.
+
+  Only `tokenExpired` and `error` offer "Reconnect". A suspended or removed
+  account is not something reconnecting solves, and `notInRoom` is not a fault at
+  all — it is an account that simply is not a participant in the room being looked
+  at, which the Add-to-room picker lists so it can be added. `accountProblems`
+  exports that mapping so a screen can ask whether a problem is recoverable
+  without re-deriving it.
+
+  An unavailable row is now `disabled`. It is listed so the absence is explained,
+  not so it can be picked, and a click that quietly did nothing would be worse
+  than no click at all.
+
+- 87ee16b: Add the room list's sync-and-import state.
+
+  `SyncProgress` (Figma node 2966:18086) stacks two readings of the same thing: a
+  headline saying what is happening right now, and a three-step tracker saying
+  where that sits in the whole run. A long import needs both — the headline
+  answers "what is it doing", the tracker answers "how much is left" — and neither
+  alone is enough. It fills the room list as its children, the same slot the empty
+  and loading states use, because importing is a phase the whole column is in
+  rather than a control inside it.
+
+  Four phases, and the fourth is deliberately not called "error": `blocked` means
+  the import stopped and is waiting on the person — reauthorising an account,
+  usually — and it resumes once that is cleared. It takes the warning tone rather
+  than the error one for the same reason.
+
+  `SyncTrack` (node 2965:18056) draws the steps as one row alternating mark, rail,
+  mark. The rails belong to the track rather than to the steps either side of
+  them: a rail has to end exactly where the next mark begins, and a step laid out
+  on its own cannot know where that is. Each rail carries the colour of the step
+  it leaves, so the line changes hue at the mark it has reached. Labels sit in a
+  second row on the same flex rule, absolutely centred over each mark, so a label
+  wider than its mark overhangs evenly instead of pushing the marks apart. That
+  row carries an explicit height: an absolutely positioned label takes its parent
+  out of the flow, and without one the row measures zero and whatever follows the
+  track rides up against the words.
+
+  `SyncStep` is the mark and label alone, exported for a screen wanting one on its
+  own. Each step carries its own `icon` — an envelope for preparing, a download
+  arrow for the import — because the state colours the mark while the glyph says
+  which step it is; a `warning` overrides it, since a stopped step matters more
+  than what it was doing.
+
+  The panel draws no padding of its own: it sits inside the room list's already
+  padded column, and inset again it would be narrower than the search field above
+  it.
+
+  `SyncBanner` (node 3312:24083) takes its message as children rather than a
+  string. Every variant Figma draws carries an inline link — "contact our team",
+  "dismiss it now" — and a component that owned the copy would have to own those
+  handlers too.
+
+  `color.accent.notice` carries the banner's blue, which is neither the brand nor
+  `status.info`: a quieter wash for a note that explains rather than alerts.
+
+- 87ee16b: Give push notifications their own section, and cover the rest of the flow.
+
+  `NotificationToggle` gains `caption`, drawing Figma's "Turn On" pill (node
+  2426:154627). For the first run, before anyone has answered the permission
+  prompt: a bare switch says a setting exists, while the words say what turning it
+  on would do. Once permission is settled the caption is dropped, since by then
+  the control is a setting rather than an invitation. A captioned pill grows to
+  fit its words; a bare one holds the switch's own width so the handle has
+  somewhere to travel.
+
+  `OsNotification` previews a browser notification as the operating system draws
+  it — six renderings across Windows and macOS (Figma nodes 2452:9832 onward).
+  Presentational only, and deliberately so: the browser owns that chrome, a page
+  supplies a title, a body, and an icon and nothing else. It exists so copy can be
+  reviewed where it lands, because the words are the only part the product
+  controls and the space they get differs by platform — a title that fits Safari
+  can be cut by Chrome. Chrome and Edge name themselves above the site, Firefox
+  names only the site, and Safari attributes in its own chrome and shows neither.
+
+### Patch Changes
+
+- Updated dependencies [87ee16b]
+- Updated dependencies [87ee16b]
+- Updated dependencies [87ee16b]
+  - @gigradar/theme@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

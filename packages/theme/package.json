@@ -1,6 +1,6 @@
 {
   "name": "@gigradar/theme",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "GigRadar design tokens — colors, typography, spacing, radius, shadow. Extracted from Figma.",
   "license": "UNLICENSED",
   "private": false,
