@@ -204,6 +204,21 @@ export const accent = {
     background: '#FCE8E6',
     text: '#C66D65',
   },
+  /**
+   * The informational banner under the sync tracker.
+   *
+   * Figma draws it in a blue that is neither the brand nor `status.info` — a
+   * quieter wash for a note that explains rather than alerts. Filed as an
+   * accent because that is what it is: a surface tone, not a state.
+   */
+  notice: {
+    background: '#F0F5FF',
+    text: '#6B7280',
+    /** The "contact our team" link inside the note. */
+    link: '#3B82F6',
+    /** The glyph disc's fill. */
+    markBackground: '#DAECFF',
+  },
   /** Figma group: "Schedule Messages". */
   schedule: {
     main: '#9B51E0',

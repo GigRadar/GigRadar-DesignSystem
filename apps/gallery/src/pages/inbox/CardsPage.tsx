@@ -43,6 +43,7 @@ export function CardsPage() {
           { label: 'Components ▸ Main ▸ Avatar', pageId: 'avatar' },
           { label: 'Components ▸ Main ▸ Badge', pageId: 'badge' },
           { label: 'List of Room (Left)', pageId: 'crm-inbox-left' },
+          { label: 'Left ▸ Push notifications', pageId: 'crm-inbox-push' },
         ]}
       >
         A card is assembled from <strong>Avatar</strong>, <strong>CounterBadge</strong>, and{' '}
@@ -67,7 +68,6 @@ export function CardsPage() {
                 stage={room.stage}
                 name={room.name}
               avatarSrc={room.avatarSrc}
-                avatarSrc={room.avatarSrc}
                 unread={room.unread}
                 selected={selected === room.id}
                 onClick={() => setSelected(room.id)}
@@ -110,7 +110,6 @@ export function CardsPage() {
                 stage={room.stage}
                 name={room.name}
               avatarSrc={room.avatarSrc}
-                avatarSrc={room.avatarSrc}
                 unread={room.unread}
               />
             ))}
@@ -121,7 +120,7 @@ export function CardsPage() {
 
       <Section
         title="Picking rooms"
-        description="In selection mode the unread counter gives way to a round tick and the sender drops off the preview — the row is about which rooms are picked, not who spoke last. Marking read is the only flow that selects rooms today, so `selecting` is a boolean rather than a mode."
+        description="A tick leads the row rather than trailing it: in selection mode the question is “which of these”, and a column of ticks down the left edge scans in a way one tucked behind each preview does not. A ticked card fills brand blue, the same as the open one — both mean “this is the row you are acting on”."
       >
         <Frame height="auto" hug>
           <Column>
@@ -134,7 +133,6 @@ export function CardsPage() {
                 stage={room.stage}
                 name={room.name}
               avatarSrc={room.avatarSrc}
-                avatarSrc={room.avatarSrc}
                 selecting
                 checked={picked.includes(room.id)}
                 onClick={() =>
@@ -148,7 +146,11 @@ export function CardsPage() {
             ))}
           </Column>
         </Frame>
-        <Caption>Click to tick. The bar that drives this lives on the Mark as read page.</Caption>
+        <Caption>
+          Click to tick. The tick inverts on the filled card, and the unread counter keeps its place
+          on the right so nothing moves as the mode changes. The bar that drives this lives on the
+          Mark as read page.
+        </Caption>
         <CodeBlock code={`<InboxRoom selecting checked={picked} onClick={toggle} />`} />
       </Section>
 
@@ -259,40 +261,6 @@ export function CardsPage() {
         />
       </Section>
 
-      <Section
-        title="Push notifications"
-        description="`PushNotificationToggle` wraps the bare switch with the two behaviours that only make sense together: a hover explainer, and asking the browser for permission on the way on. The bare `NotificationToggle` is still right wherever permission is already settled and no explanation is owed."
-      >
-        <Frame height={280}>
-          <div style={{ display: 'flex', gap: spacing.l, padding: spacing.l, alignItems: 'center' }}>
-            <PushNotificationToggle
-              checked={push}
-              onCheckedChange={setPush}
-              onPermissionChange={setPermission}
-              // Left-aligned here because this demo puts the toggle at the
-              // frame's leading edge; in the real header it sits at the
-              // trailing one, which is what the `end` default is for.
-              tooltipAlign="start"
-            />
-            <span style={{ ...textStyle.sRegular, color: color.navbar.text }}>
-              {permission ? `Browser said: ${permission}` : 'Hover the toggle, then switch it on.'}
-            </span>
-          </div>
-        </Frame>
-        <Caption>
-          Hovering opens the explainer; "Later" retires it for the session. Switching on calls the
-          browser's permission prompt and fires a sample notification if it is granted — and if the
-          browser blocks it, the switch returns to off rather than lying about a channel that will
-          deliver nothing.
-        </Caption>
-        <CodeBlock
-          code={`<PushNotificationToggle
-  checked={enabled}
-  onCheckedChange={setEnabled}
-  onPermissionChange={(p) => console.log(p)} // 'granted' | 'denied' | 'default' | 'unsupported'
-/>`}
-        />
-      </Section>
     </>
   );
 }

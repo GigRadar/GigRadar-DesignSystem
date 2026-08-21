@@ -1,6 +1,7 @@
 import { spacing } from '@gigradar/theme';
 import {
   ConnectionIndicator,
+  InboxScreen,
   InboxEmpty,
   InboxList,
   InboxLoading,
@@ -101,6 +102,7 @@ export function RoomListPage() {
   const [account, setAccount] = useState('all');
   const [selectionMode, setSelectionMode] = useState(false);
   const [ticked, setTicked] = useState<string[]>([]);
+  const [pane, setPane] = useState<'list' | 'room'>('list');
 
   return (
     <>
@@ -115,7 +117,7 @@ export function RoomListPage() {
           { label: 'Cards', pageId: 'crm-inbox-cards' },
           { label: 'Inbox Selector', pageId: 'crm-inbox-selector' },
           { label: 'Mark as read', pageId: 'crm-inbox-markasread' },
-          { label: 'Searchbar', pageId: 'crm-inbox-searchbar' },
+          { label: 'Advanced Searchbar', pageId: 'crm-inbox-searchbar' },
           { label: 'Websocket indicators', pageId: 'crm-inbox-websocket' },
         ]}
       >
@@ -248,6 +250,59 @@ export function RoomListPage() {
     { label: 'Import', state: 'active' },
     { label: 'Done' },
   ]}
+/>`}
+        />
+      </Section>
+
+      <Section
+        title="On a phone"
+        description="One pane at a time. The list fills the screen until a room is opened, then the room replaces it and its header's back chevron returns. `InboxScreen` owns that decision rather than each pane checking its own width — the panes are identical at either size, and what differs is how many are on screen."
+      >
+        <Frame height={640} hug>
+          <div style={{ width: 379, height: 620, display: 'flex' }}>
+            <InboxScreen
+              layout="mobile"
+              pane={pane}
+              list={
+                <InboxList fluid accounts={accounts} connection="online">
+                  {rooms.map((room) => (
+                    <InboxRoom
+                      key={room.id}
+                      title={room.title}
+                      sender={room.sender}
+                      preview={room.preview}
+                      timestamp={room.timestamp}
+                      stage={room.stage}
+                      name={room.name}
+                      avatarSrc={room.avatarSrc}
+                      unread={room.unread}
+                      onClick={() => setPane('room')}
+                    />
+                  ))}
+                </InboxList>
+              }
+              room={
+                <div style={{ padding: spacing.m }}>
+                  <button type="button" onClick={() => setPane('list')} style={{ font: 'inherit' }}>
+                    ‹ Back to list
+                  </button>
+                  <p>The conversation goes here — see Chat Room (Mid).</p>
+                </div>
+              }
+            />
+          </div>
+        </Frame>
+        <Caption>
+          Tap a room to move to it, then back. Rendering all three panes and hiding two with CSS
+          would keep three scroll positions alive and let a hidden pane trap the keyboard, so the
+          ones not showing are simply not rendered.
+        </Caption>
+        <CodeBlock
+          code={`<InboxScreen
+  layout={isPhone ? 'mobile' : 'desktop'}
+  pane={pane}
+  list={<InboxList fluid={isPhone}>{rooms}</InboxList>}
+  room={<ChatRoom onBack={() => setPane('list')} />}
 />`}
         />
       </Section>

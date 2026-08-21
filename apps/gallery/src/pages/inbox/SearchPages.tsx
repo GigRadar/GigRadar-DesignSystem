@@ -20,9 +20,9 @@ import { Caption, Column } from './parts';
 const NO_FILTERS: InboxFilters = { clients: [], stages: [], datePreset: null };
 
 /** The presets Figma lists above the calendar. */
+/** The spans the panel offers. Custom is added by the component itself. */
 const PRESETS = [
   { id: 'today', label: 'Today' },
-  { id: 'yesterday', label: 'Yesterday' },
   { id: 'last7', label: 'Last 7 days' },
   { id: 'last30', label: 'Last 30 days' },
 ];
@@ -55,8 +55,8 @@ export function SearchbarPage() {
   return (
     <>
       <PageHeader
-        title="Searchbar"
-        description="Finding a room by name, and the filter panel typing opens. Figma nodes 46:1389 (field) and 4685:5014 (panel), with its filter rows."
+        title="Advanced Searchbar"
+        description="The filter panel the search field opens — client, stage, date, and the summary of what is applied. Figma node 4685:5014, with its flow documented at 9930:159252 in the CRM file."
       />
 
       <CrossLink
@@ -75,37 +75,14 @@ export function SearchbarPage() {
       </CrossLink>
 
       <Section
-        title="The field"
-        description="A real `<input>` rather than a button that swaps one in: the panel it opens is a filter surface, and typing has to keep working while it is open. The clear button only appears once there is something to clear, so the resting field stays as quiet as Figma draws it."
-      >
-        <Frame height="auto" hug>
-          <Column>
-            <InboxSearchField value={query} onValueChange={setQuery} />
-          </Column>
-        </Frame>
-        <Caption>Type to see the clear button appear at the trailing edge.</Caption>
-        <CodeBlock code={`<InboxSearchField value={query} onValueChange={setQuery} />`} />
-      </Section>
-
-      <Section
-        title="Collapsed"
-        description="Figma's Collapse variant drops the field to a circular button — the layout the column falls back to when the controls beside it need the room."
-      >
-        <Frame height="auto">
-          <div style={{ padding: spacing.l }}>
-            <InboxSearchField collapsed onExpand={() => undefined} />
-          </div>
-        </Frame>
-        <Caption>Click to expand back to the full field.</Caption>
-        <CodeBlock code={`<InboxSearchField collapsed onExpand={expand} />`} />
-      </Section>
-
-      <Section
         title="The panel"
-        description="Only one row is open at a time. Three expanded lists — four clients, nine stages, a calendar — would bury the panel's own footer and turn a filter surface into a scroll."
+        description="Opened by clicking or typing in the search field. Only one filter row is open at a time — three expanded lists (four clients, nine stages, a calendar) would bury the panel's own footer and turn a filter surface into a scroll."
       >
         <Frame height="auto" hug>
-          <div style={{ padding: spacing.l }}>
+          <div style={{ display: 'flex', gap: spacing.l, padding: spacing.l, alignItems: 'flex-start' }}>
+            <Column>
+              <InboxSearchField value={query} onValueChange={setQuery} />
+            </Column>
             <AdvancedSearch
               value={filters}
               onValueChange={setFilters}
@@ -114,48 +91,14 @@ export function SearchbarPage() {
             />
           </div>
         </Frame>
-        <Caption>Open a row to filter by it; the counters and chips update as you do.</Caption>
-        <CodeBlock
-          code={`<AdvancedSearch
-  value={filters}
-  onValueChange={setFilters}
-  clients={clients}
-  stages={stages}
-/>`}
-        />
-      </Section>
-
-      <Section
-        title="Nothing applied"
-        description="Figma's “Not Active” variant. Every counter is gray at zero — the counter is always drawn, because a row that hides its counter when empty makes “no filter” look like “no counter”."
-      >
-        <Frame height="auto" hug>
-          <div style={{ padding: spacing.l }}>
-            <AdvancedSearch defaultValue={NO_FILTERS} clients={clients} stages={stages} />
-          </div>
-        </Frame>
-        <Caption>The resting panel, before anything is filtered.</Caption>
-      </Section>
-
-      <Section
-        title="Filters applied"
-        description="Applied filters are summarised as chips along the top rather than only inside the rows that set them: once a row is collapsed its selections are out of sight, and a filter you cannot see is one you forget is on. The chips are also where a filter is removed, which is why each carries its own ✕."
-      >
-        <Frame height="auto" hug>
-          <div style={{ padding: spacing.l }}>
-            <AdvancedSearch
-              value={chips}
-              onValueChange={setChips}
-              clients={clients}
-              stages={stages}
-              recentSearches={null}
-            />
-          </div>
-        </Frame>
         <Caption>
-          Remove a chip and the row behind it updates — the chips read straight off the filter
-          state, so the summary cannot fall out of step with the rows.
+          The field that opens it, and the panel itself. Every counter is drawn even at zero — a row
+          that hides its counter when empty makes “no filter” look like “no counter”.
         </Caption>
+        <CodeBlock
+          code={`<InboxSearchField value={query} onValueChange={setQuery} />
+<AdvancedSearch value={filters} onValueChange={setFilters} clients={clients} stages={stages} />`}
+        />
       </Section>
 
       <Section
@@ -204,7 +147,7 @@ export function SearchbarPage() {
 
       <Section
         title="Filter by date"
-        description="Presets first, calendar below. Most date filtering is “recently”, and a preset answers that in one click where a calendar asks for two — but the calendar has to be there for the case a preset cannot express. Picking one clears the other, since holding both would leave the counter ambiguous."
+        description="Three named spans — Today, Last 7 days, Last 30 days — and Custom, which is the only thing that opens the calendar. Picking a preset clears any custom range and vice versa, since holding both would leave the counter ambiguous."
       >
         <Frame height="auto" hug>
           <div style={{ padding: spacing.l }}>
@@ -222,52 +165,91 @@ export function SearchbarPage() {
       </Section>
 
       <Section
-        title="Chips and presets"
-        description="A preset and an applied filter are the same pill at different moments — a preset is a filter you have not applied yet — which is why Figma draws one component for both."
+        title="What the dates mean"
+        description="The panel reports a filter but does not run it — the app does. These three are the contract it has to hold to for the counts to mean what the labels say, and none of them is visible from the UI alone."
       >
         <Frame height="auto">
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: spacing.m,
-              padding: spacing.l,
-            }}
-          >
-            <div style={{ display: 'flex', gap: spacing.xs, flexWrap: 'wrap' }}>
-              {PRESETS.map((option) => (
-                <FilterChip
-                  key={option.id}
-                  icon={IconCalendarFill}
-                  selected={preset === option.id}
-                  onClick={() => setPreset(option.id)}
-                >
-                  {option.label}
-                </FilterChip>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: spacing.xs, flexWrap: 'wrap' }}>
-              <FilterChip icon={IconStageTripleLine}>New</FilterChip>
-              <FilterChip icon={IconStageTripleLine} selected>
-                Interested
-              </FilterChip>
-              <FilterChip icon={IconCalendarFill} selected onRemove={() => undefined}>
-                Last 7 days
-              </FilterChip>
-              <FilterChip icon={IconClientIdPeopleStroke} disabled>
-                Floyd Miles
-              </FilterChip>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.s, padding: spacing.l, maxWidth: 620 }}>
+            <p style={{ margin: 0 }}>
+              <strong>“Last activity” is the last message.</strong> Stage changes, notes, and
+              assignment move a room around the pipeline without anyone having said anything in it,
+              so they do not count.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong>A custom range includes both endpoint days in full.</strong> 1 May – 7 May
+              covers 00:00 on the 1st through 23:59 on the 7th. Stopping at midnight on the 7th
+              would silently drop the last day, which reads as a bug to anyone who picked it on a
+              calendar.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong>Every span is the viewer’s own timezone</strong> — not the client’s, not UTC.
+              A room’s last activity is a moment in time, but “today” is a question about the
+              reader’s day.
+            </p>
           </div>
         </Frame>
         <Caption>
-          Presets on top — exactly one is on at a time, since two spans cannot both be "the" last
-          activity window. Below: default, selected, selected with a remove affordance, and disabled.
+          Stated here because none of it is visible from the control. The row says “· your time” for
+          the same reason.
         </Caption>
+      </Section>
+
+      <Section
+        title="Multiple filters at once + Clear all"
+        description="Filters combine, and every applied one is summarised as a chip along the top rather than only inside the row that set it: once a row is collapsed its selections are out of sight, and a filter you cannot see is one you forget is on. The chips are also where a filter is removed, which is why each carries its own ✕."
+      >
+        <Frame height="auto" hug>
+          <div style={{ padding: spacing.l }}>
+            <AdvancedSearch
+              value={chips}
+              onValueChange={setChips}
+              clients={clients}
+              stages={stages}
+              recentSearches={null}
+            />
+          </div>
+        </Frame>
+        <Caption>
+          Client, stage, and date applied together. Remove a chip and the row behind it updates —
+          the chips read straight off the filter state, so the summary cannot fall out of step with
+          the rows. “Clear all” drops every filter in one action, which is the only way back to an
+          unfiltered list once several are on.
+        </Caption>
+        <CodeBlock
+          code={`<AdvancedSearch
+  value={filters}
+  onValueChange={setFilters}
+  onClearAll={reset}
+  clients={clients}
+  stages={stages}
+/>`}
+        />
+      </Section>
+
+      <Section
+        title="The chip"
+        description="A preset and an applied filter are the same pill at different moments — a preset is a filter you have not applied yet — which is why Figma draws one component for both."
+      >
+        <Frame height="auto">
+          <div style={{ display: 'flex', gap: spacing.xs, padding: spacing.l, flexWrap: 'wrap' }}>
+            <FilterChip icon={IconStageTripleLine}>New</FilterChip>
+            <FilterChip icon={IconStageTripleLine} selected>
+              Interested
+            </FilterChip>
+            <FilterChip icon={IconCalendarFill} selected onRemove={() => undefined}>
+              Last 7 days
+            </FilterChip>
+            <FilterChip icon={IconClientIdPeopleStroke} disabled>
+              Floyd Miles
+            </FilterChip>
+          </div>
+        </Frame>
+        <Caption>Default, selected, selected with a remove affordance, and disabled.</Caption>
         <CodeBlock
           code={`<FilterChip icon={IconCalendarFill} selected onRemove={clear}>Last 7 days</FilterChip>`}
         />
       </Section>
+
     </>
   );
 }

@@ -205,6 +205,17 @@ export type MarkAsReadButtonProps = {
   label?: ReactNode;
   /** Whether the button can be used — false while nothing is selected. */
   disabled?: boolean;
+  /**
+   * Draws the ✕ that leaves selection mode instead of the double-check that
+   * enters it.
+   *
+   * The same button in the same place, because it is the same control seen
+   * from the other side: it turned selection on, and it is what turns it off.
+   * Moving the exit elsewhere would leave the person hunting for the way back.
+   *
+   * @default false
+   */
+  cancel?: boolean;
 } & MarkAsReadButtonStyleProps &
   Omit<HTMLAttributes<HTMLButtonElement>, 'className' | 'style'>;
 
@@ -220,6 +231,7 @@ export const MarkAsReadButton = forwardRef<HTMLButtonElement, MarkAsReadButtonPr
       active = false,
       label,
       disabled = false,
+      cancel = false,
       height,
       radius,
       paddingX,
@@ -243,7 +255,7 @@ export const MarkAsReadButton = forwardRef<HTMLButtonElement, MarkAsReadButtonPr
         type="button"
         aria-pressed={active}
         disabled={disabled}
-        aria-label={bare ? 'Mark as read' : undefined}
+        aria-label={bare ? (cancel ? 'Cancel selection' : 'Mark as read') : undefined}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -268,7 +280,7 @@ export const MarkAsReadButton = forwardRef<HTMLButtonElement, MarkAsReadButtonPr
             {label}
           </span>
         )}
-        <Icon icon={IconDoubleCheckRead} size={search.iconSize} color={tone} />
+        <Icon icon={cancel ? IconXClose : IconDoubleCheckRead} size={search.iconSize} color={tone} />
       </button>
     );
   },

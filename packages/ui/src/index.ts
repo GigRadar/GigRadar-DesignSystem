@@ -460,6 +460,9 @@ export type {
  * exported because the screen composes them directly and Figma files them as
  * their own components.
  */
+export { InboxScreen } from './components/Inbox/InboxScreen.js';
+export type { InboxScreenProps, InboxPane } from './components/Inbox/InboxScreen.js';
+
 export { InboxList } from './components/Inbox/InboxList.js';
 export type { InboxListProps, InboxListStyleProps } from './components/Inbox/InboxList.js';
 
@@ -468,6 +471,32 @@ export type { InboxListProps, InboxListStyleProps } from './components/Inbox/Inb
  * passes to `InboxList` as children — the column draws the frame, and what
  * fills it is the consumer's to decide.
  */
+/**
+ * Importing chat history into the room list — the tracker, its steps, and the
+ * note under them.
+ */
+export { SyncProgress } from './components/Inbox/SyncProgress.js';
+export type {
+  SyncProgressProps,
+  SyncPhase,
+  SyncBannerRenderProps,
+} from './components/Inbox/SyncProgress.js';
+
+export { SyncStep, SyncTrack } from './components/Inbox/SyncStep.js';
+export type {
+  SyncStepProps,
+  SyncStepState,
+  SyncStepItem,
+  SyncTrackProps,
+} from './components/Inbox/SyncStep.js';
+
+export { SyncBanner } from './components/Inbox/SyncBanner.js';
+export type {
+  SyncBannerProps,
+  SyncBannerStyleProps,
+  SyncBannerTone,
+} from './components/Inbox/SyncBanner.js';
+
 export { InboxEmpty, InboxLoading, InboxOnboarding } from './components/Inbox/InboxStates.js';
 export type {
   InboxEmptyProps,
@@ -477,14 +506,23 @@ export type {
 } from './components/Inbox/InboxStates.js';
 
 export { InboxRoom } from './components/Inbox/InboxRoom.js';
-export type { InboxRoomProps, InboxRoomStyleProps } from './components/Inbox/InboxRoom.js';
+export type {
+  InboxRoomProps,
+  InboxRoomStyleProps,
+  InboxRoomTrailingRenderProps,
+} from './components/Inbox/InboxRoom.js';
 
-export { InboxSelector, InboxAccountRow } from './components/Inbox/InboxSelector.js';
+export {
+  InboxSelector,
+  InboxAccountRow,
+  accountProblems,
+} from './components/Inbox/InboxSelector.js';
 export type {
   InboxSelectorProps,
   InboxSelectorStyleProps,
   InboxAccountRowProps,
   InboxAccount,
+  AccountProblem,
 } from './components/Inbox/InboxSelector.js';
 
 export {
@@ -501,7 +539,7 @@ export type {
   FilterChipStyleProps,
 } from './components/Inbox/InboxSearch.js';
 
-export { AdvancedSearch } from './components/Inbox/AdvancedSearch.js';
+export { AdvancedSearch, CUSTOM_PRESET_ID } from './components/Inbox/AdvancedSearch.js';
 export type {
   AdvancedSearchProps,
   AdvancedSearchStyleProps,
@@ -510,6 +548,7 @@ export type {
   StageFilterOption,
   DatePresetOption,
   FilterRowName,
+  AdvancedSearchFooterRenderProps,
 } from './components/Inbox/AdvancedSearch.js';
 
 /**
@@ -524,6 +563,12 @@ export type {
   NotificationToggleProps,
   NotificationToggleStyleProps,
 } from './components/Inbox/NotificationToggle.js';
+
+export { OsNotification } from './components/Inbox/OsNotification.js';
+export type {
+  OsNotificationProps,
+  OsNotificationPlatform,
+} from './components/Inbox/OsNotification.js';
 
 export { PushNotificationToggle } from './components/Inbox/PushNotificationToggle.js';
 export type {

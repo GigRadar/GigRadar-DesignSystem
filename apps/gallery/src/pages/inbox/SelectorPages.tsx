@@ -1,4 +1,9 @@
-import { InboxAccountRow, InboxSelector, VStack } from '@gigradar/ui';
+import {
+  InboxAccountRow,
+  InboxSelector,
+  VStack,
+  type AccountProblem,
+} from '@gigradar/ui';
 import { useState } from 'react';
 import { CodeBlock } from '../../components/CodeBlock';
 import { Frame } from '../../components/Frame';
@@ -87,7 +92,7 @@ export function InboxSelectorPage() {
 
       <Section
         title="Rows"
-        description="A dead account stays listed but grays out, and its unread count is replaced by a reconnect prompt: a count that cannot change is not worth showing, but hiding the account entirely would leave someone wondering where it went."
+        description="One row per account, plus the combined view at the top and the connect row at the foot. Hover and selected both take the nav tint; an unavailable account takes neither, because it cannot be picked."
       >
         <Frame height="auto" hug>
           <Surface>
@@ -95,17 +100,52 @@ export function InboxSelectorPage() {
               <InboxAccountRow accountCount={accounts.length} selected />
               <InboxAccountRow accountCount={accounts.length} />
               <InboxAccountRow account={accounts[0]} />
-              <InboxAccountRow account={accounts[1]} />
-              <InboxAccountRow account={accounts[2]} />
+              <InboxAccountRow account={accounts[0]} selected />
             </VStack>
           </Surface>
         </Frame>
         <Caption>
-          The combined row selected and unselected, a healthy account with its counter, an expired
-          token, and a suspended account.
+          The combined row selected and resting, then a healthy account resting and selected.
         </Caption>
         <CodeBlock
           code={`<InboxAccountRow account={account} selected={account.id === value} onSelect={pick} />`}
+        />
+      </Section>
+
+      <Section
+        title="When an account cannot be used"
+        description="Five reasons, one treatment: the row greys out and the reason takes the unread count's place, because a count is meaningless on an account that cannot receive anything. Only two offer “Reconnect” — a suspended or removed account is not something reconnecting fixes, and “Not in this room” is not a fault at all."
+      >
+        <Frame height="auto" hug>
+          <Surface>
+            <VStack gap={2}>
+              {(
+                [
+                  'tokenExpired',
+                  'error',
+                  'suspended',
+                  'removed',
+                  'notInRoom',
+                ] as AccountProblem[]
+              ).map((problem) => (
+                <InboxAccountRow
+                  key={problem}
+                  account={{ ...accounts[2], problem, connection: 'error' }}
+                />
+              ))}
+            </VStack>
+          </Surface>
+        </Frame>
+        <Caption>
+          Token expired and Error offer a way back; Suspended, Removed, and Not in this room state
+          the fact and stop. Every row is disabled — listing it explains the absence, and a click
+          that did nothing would be worse than none.
+        </Caption>
+        <CodeBlock
+          code={`<InboxAccountRow account={{ ...account, problem: 'tokenExpired' }} />
+
+// accountProblems maps each to its wording and whether reconnecting helps.
+accountProblems.tokenExpired // { label: 'Token Expired', reconnect: true }`}
         />
       </Section>
 

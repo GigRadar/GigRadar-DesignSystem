@@ -40,6 +40,15 @@ export type InboxListProps = {
   /** Reports what the browser's permission prompt decided. */
   onNotificationPermissionChange?: (permission: PushPermission) => void;
   /**
+   * Fills the width it is given instead of holding the column's 328px.
+   *
+   * On a phone the list is the whole screen rather than one of three panes,
+   * and a fixed-width column would leave a gap down one side.
+   *
+   * @default false
+   */
+  fluid?: boolean;
+  /**
    * Suppresses the toggle's hover explainer — for someone who has already
    * granted permission or dismissed it.
    * @default false
@@ -90,6 +99,7 @@ export const InboxList = forwardRef<HTMLDivElement, InboxListProps>(function Inb
     onConnectAccount,
     query,
     onQueryChange,
+    fluid = false,
     notificationsEnabled = false,
     onNotificationsChange,
     onNotificationPermissionChange,
@@ -118,7 +128,7 @@ export const InboxList = forwardRef<HTMLDivElement, InboxListProps>(function Inb
         flexDirection: 'column',
         position: 'relative',
         boxSizing: 'border-box',
-        width: len(width) ?? list.width,
+        width: len(width) ?? (fluid ? '100%' : list.width),
         height: '100%',
         backgroundColor: background ?? color.main.white,
         borderRight: `${borderWidth.thin}px solid ${borderColor ?? color.main.backgroundAlt}`,
@@ -173,8 +183,13 @@ export const InboxList = forwardRef<HTMLDivElement, InboxListProps>(function Inb
                 if (focused && searchPanel) setPanelOpen(true);
               }}
             />
+            {/* The same button in the same place, flipping between the
+                double-check that enters selection and the ✕ that leaves it —
+                putting the exit anywhere else leaves the person hunting for
+                the way back. */}
             <MarkAsReadButton
               active={selectionMode}
+              cancel={selectionMode}
               onClick={() => onSelectionModeChange?.(!selectionMode)}
             />
           </div>

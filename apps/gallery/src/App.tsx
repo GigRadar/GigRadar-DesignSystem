@@ -17,6 +17,7 @@ import { CheckboxPage } from './pages/CheckboxPage';
 import { DatePickerPage } from './pages/DatePickerPage';
 import { IconsPage } from './pages/IconsPage';
 import { InboxPage } from './pages/InboxPage';
+import { InboxPartsPage } from './pages/InboxPartsPage';
 import { MiddlePage } from './pages/MiddlePage';
 import { ChatHeaderPage } from './pages/middle/ChatHeaderPage';
 import { AddBmInfoPage } from './pages/middle/AddBmInfoPage';
@@ -25,6 +26,8 @@ import { MenuButtonPage } from './pages/middle/MenuButtonPage';
 import { LeadStageButtonPage } from './pages/middle/LeadStageButtonPage';
 import { CardsPage } from './pages/inbox/CardsPage';
 import { RoomListPage } from './pages/inbox/RoomListPage';
+import { PushNotificationPage } from './pages/inbox/PushNotificationPage';
+import { SyncPage } from './pages/inbox/SyncPage';
 import { InboxSelectorPage } from './pages/inbox/SelectorPages';
 import { MarkAsReadPage } from './pages/inbox/MarkAsReadPages';
 import { SearchbarPage } from './pages/inbox/SearchPages';
@@ -223,6 +226,7 @@ const NAV: NavGroup[] = [
         nodes: [
           { id: 'account-slot', label: 'Account slot', render: () => <AccountSlotPage /> },
           { id: 'api-key-parts', label: 'API key parts', render: () => <ApiKeyPartsPage /> },
+          { id: 'inbox-parts', label: 'Inbox parts', render: () => <InboxPartsPage /> },
           { id: 'info-details', label: 'Info details', render: () => <InfoDetailsPage /> },
           { id: 'mode-tab', label: 'Mode tab', render: () => <ModeTabPage /> },
           { id: 'option-button', label: 'Option button', render: () => <OptionButtonPage /> },
@@ -340,8 +344,18 @@ const NAV: NavGroup[] = [
               },
               {
                 id: 'crm-inbox-searchbar',
-                label: 'Searchbar',
+                label: 'Advanced Searchbar',
                 render: () => <SearchbarPage />,
+              },
+              {
+                id: 'crm-inbox-push',
+                label: 'Push notifications',
+                render: () => <PushNotificationPage />,
+              },
+              {
+                id: 'crm-inbox-sync',
+                label: 'Sync & import',
+                render: () => <SyncPage />,
               },
               {
                 id: 'crm-inbox-websocket',

@@ -2125,6 +2125,47 @@ const inbox = {
     disabledOpacity: 0.5,
   },
   /**
+   * Importing chat history into the room list.
+   *
+   * Figma: the step at 2965:18056, the progress panel at 2966:18086, the
+   * banner at 3312:24083.
+   */
+  sync: {
+    /**
+     * The panel draws no padding of its own — it sits in the room list's own
+     * padded column, and inset again it would be narrower than the search
+     * field above it.
+     */
+    gap: spacing.s,
+    /** The current-phase row above the step tracker. */
+    headGap: 10.619,
+    headMarkSize: 32,
+    headIconSize: 16,
+    /** One step in the three-step tracker. */
+    stepMarkSize: 32,
+    stepIconSize: 14,
+    stepGap: spacing.xs + 2,
+    stepStackGap: 2,
+    /**
+     * The label row's height.
+     *
+     * Set explicitly because each label is absolutely positioned over its
+     * mark: without it the row measures zero and the banner below rides up
+     * against the words. A touch taller than the 12px type it holds, so the
+     * descenders in "Prepare" are inside the box rather than hanging out of it.
+     */
+    stepLabelHeight: 18,
+    /** The rail joining one step to the next. */
+    railHeight: 2,
+    /** The explanatory banner under the tracker. */
+    bannerPadding: spacing.s,
+    bannerGap: 10,
+    bannerRadius: 10,
+    bannerMarkSize: 24,
+    bannerMarkRadius: spacing.s,
+    bannerIconSize: 14,
+  },
+  /**
    * The explainer that appears over the push-notification switch.
    *
    * Wider than the default tooltip: it carries a heading, a paragraph, a help
@@ -2135,6 +2176,24 @@ const inbox = {
     maxWidth: 280,
     /** Space between the body copy and the help link under it. */
     helpGap: 2,
+  },
+  /**
+   * A browser notification as the OS draws it — a preview, not the real thing.
+   *
+   * Figma draws six across Windows and macOS. The metrics are the average of
+   * them rather than six sets: the point is reviewing copy at roughly the
+   * space it gets, and chasing each platform's exact chrome would be modelling
+   * something no code here can control.
+   */
+  osNotification: {
+    width: 329,
+    padding: spacing.s,
+    gap: spacing.s,
+    radiusMac: 12,
+    radiusWindows: spacing.xs,
+    iconSize: 38,
+    /** The "via gigradar.io" line, a step below the body it sits under. */
+    attributionFontSize: 11,
   },
   /** The push-notification switch in the header. */
   bell: {
@@ -2161,6 +2220,14 @@ const inbox = {
    */
   panel: {
     width: 520,
+    /**
+     * The panel on a phone, where it spans the screen rather than overhanging
+     * a column. Figma's mobile flow draws 379px.
+     *
+     * A `width` prop rather than a media query: this package ships no
+     * stylesheet, and the app already knows which layout it is in.
+     */
+    widthMobile: 379,
     radius: radius.m,
     /** One filter row: Client, Stage, Date. */
     rowPaddingX: spacing.m,
@@ -2195,6 +2262,15 @@ const inbox = {
     tickSize: 14,
     tickRadius: spacing.xxs,
     tickIconSize: 10,
+    /**
+     * The "No filters active" pill in the summary band.
+     *
+     * Stands in for the chips when none are applied, so the band keeps its
+     * height and the panel does not jump as the first filter goes on.
+     */
+    emptyPillPaddingX: spacing.xs + 2,
+    emptyPillPaddingY: spacing.xxs,
+    emptyPillRadius: radius.round,
     /** The recent-search band and the footer hint. */
     sectionGap: spacing.xs + 2,
     sectionPaddingY: spacing.xs + 2,

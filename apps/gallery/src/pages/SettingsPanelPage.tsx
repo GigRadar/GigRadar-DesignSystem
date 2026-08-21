@@ -2,6 +2,7 @@ import { color, radius, textStyle } from '@gigradar/theme';
 import {
   SettingsCard,
   SettingsPanel,
+  SyncProgress,
   IconAgentToolsFill,
   IconAutoReplyBubbleFill,
   IconConnectedPeopleFill,
@@ -83,6 +84,28 @@ export function SettingsPanelPage() {
 ];
 
 <SettingsPanel items={ITEMS} value={active} onSelect={(item) => setActive(item.id)} />`}
+        />
+      </Section>
+
+      <Section
+        title="With an import running"
+        description="`footer` fills the rail's foot. The sync tracker goes there rather than on any one settings page, because an import is a background job that outlives whichever page is open — starting it from Upwork API and then walking to Notifications should not lose sight of it. It hides while collapsed, where there is no room for anything but the icons."
+      >
+        <Preview>
+          <Frame height={734} hug>
+            <SettingsPanel
+              items={ITEMS}
+              value="crm-upwork"
+              footer={<SyncProgress phase="importing" imported={98} total={110} />}
+            />
+          </Frame>
+        </Preview>
+        <CodeBlock
+          code={`<SettingsPanel
+  items={ITEMS}
+  value={active}
+  footer={<SyncProgress phase="importing" imported={98} total={110} />}
+/>`}
         />
       </Section>
 

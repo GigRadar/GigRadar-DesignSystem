@@ -93,6 +93,15 @@ export type SettingsPanelProps = {
   renderItem?: RenderProp<SettingsItemRenderProps>;
   /** Replaces the header band. Call `defaultRender()` to decorate it. */
   renderHeader?: RenderProp<SettingsHeaderRenderProps>;
+  /**
+   * Content below the entries, at the rail's foot.
+   *
+   * Where the sync tracker goes: an import is a background job that outlives
+   * whichever settings page is open, so it belongs to the rail rather than to
+   * any one screen inside it. Hidden while collapsed, where there is no room
+   * for anything but the icons.
+   */
+  footer?: ReactNode;
 } & SettingsPanelStyleProps;
 
 /**
@@ -122,6 +131,7 @@ export const SettingsPanel = forwardRef<HTMLElement, SettingsPanelProps>(functio
     onCollapsedChange,
     renderItem,
     renderHeader,
+    footer,
     width,
     collapsedWidth,
     radius,
@@ -289,6 +299,20 @@ export const SettingsPanel = forwardRef<HTMLElement, SettingsPanelProps>(functio
       >
         {items.map((item) => renderEntry(item, 0))}
       </div>
+
+      {/* Pushed to the foot by the list above it, which takes the slack. */}
+      {footer != null && !isCollapsed && (
+        <div
+          style={{
+            marginTop: 'auto',
+            boxSizing: 'border-box',
+            width: '100%',
+            padding: settingsPanel.listPadding,
+          }}
+        >
+          {footer}
+        </div>
+      )}
     </nav>
   );
 });

@@ -39,7 +39,7 @@ export function DatePickerPage() {
 
       <CrossLink
         eyebrow="Used by"
-        links={[{ label: 'Left ▸ Searchbar', pageId: 'crm-inbox-searchbar' }]}
+        links={[{ label: 'Left ▸ Advanced Searchbar', pageId: 'crm-inbox-searchbar' }]}
       >
         The inbox's date filter opens this calendar under its presets. A preset and a custom range
         are two ways of saying the same thing, so picking one clears the other.

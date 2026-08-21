@@ -1,6 +1,7 @@
 import { borderWidth, color, component, textStyle } from '@gigradar/theme';
 import { forwardRef, useState, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
 import { Avatar } from '../Avatar/Avatar.js';
 import { HighlightedText } from './HighlightedText.js';
 import { CounterBadge } from '../Badge/CounterBadge.js';
@@ -11,6 +12,17 @@ import { StagePill } from './StagePill.js';
 
 const { inbox } = component;
 const { room } = inbox;
+
+/** What a `renderTrailing` function receives — the card's trailing slot. */
+export type InboxRoomTrailingRenderProps = WithDefaultRender & {
+  /** Unread messages in this room. */
+  unread: number;
+  /** Whether the list is selecting, and whether this row is ticked. */
+  selecting: boolean;
+  checked: boolean;
+  /** Whether the room carries a queued message. */
+  scheduled: boolean;
+};
 
 /** Per-instance overrides for the room card's own metrics. */
 export type InboxRoomStyleProps = {
@@ -109,6 +121,16 @@ export type InboxRoomProps = {
    * @default false
    */
   loading?: boolean;
+  /**
+   * Replaces the card's trailing slot — the counter, the schedule mark, and
+   * anything else that sits after the preview.
+   *
+   * This is the part products genuinely differ on: a screen may want its own
+   * action there, or a different badge, while keeping the card's truncation,
+   * its selection behaviour, and its states. Call `defaultRender()` to
+   * decorate rather than replace.
+   */
+  renderTrailing?: RenderProp<InboxRoomTrailingRenderProps>;
 } & InboxRoomStyleProps &
   Omit<HTMLAttributes<HTMLButtonElement>, 'className' | 'style' | 'title'>;
 
@@ -145,6 +167,7 @@ export const InboxRoom = forwardRef<HTMLButtonElement, InboxRoomProps>(function 
     disabled = false,
     error = false,
     loading = false,
+    renderTrailing,
     height,
     radius,
     paddingX,
@@ -179,7 +202,10 @@ export const InboxRoom = forwardRef<HTMLButtonElement, InboxRoomProps>(function 
   // Selection mode moves the emphasis to the tick, so the card stops drawing
   // itself as "the one being read" — two different highlights at once would
   // leave neither meaning anything.
-  const highlighted = selected && !selecting;
+  // A ticked card fills brand blue, the same as the open one: both mean "this
+  // is the row you are acting on", and giving selection its own fill would put
+  // two competing highlights in one list.
+  const highlighted = selecting ? checked : selected;
 
   const edge = error
     ? color.status.error.main
@@ -232,6 +258,22 @@ export const InboxRoom = forwardRef<HTMLButtonElement, InboxRoomProps>(function 
       }}
       {...rest}
     >
+      {/* The tick leads the row rather than trailing it: in selection mode the
+          question is "which of these", and a column of ticks down the left edge
+          is scannable in a way one tucked behind each preview is not. It also
+          leaves the unread counter where it always sits, so nothing else in the
+          card moves as the mode changes. */}
+      {selecting && (
+        <SelectTick
+          checked={checked}
+          disabled={disabled}
+          // On the filled card the tick inverts: a brand-blue tick on a
+          // brand-blue card would vanish.
+          tone={highlighted ? color.main.white : undefined}
+          checkColor={highlighted ? color.badge.foreground : undefined}
+        />
+      )}
+
       <Avatar
         size="large"
         name={name}
@@ -324,7 +366,7 @@ export const InboxRoom = forwardRef<HTMLButtonElement, InboxRoomProps>(function 
           >
             {/* The sender is dropped in selection mode: the row is about which
                 rooms are picked, not who spoke last, and Figma drops it too. */}
-            {sender != null && !selecting && (
+            {sender != null && (
               <span style={{ ...textStyle.mMedium, flexShrink: 0, color: bodyColor }}>
                 {sender}:
               </span>
@@ -338,16 +380,43 @@ export const InboxRoom = forwardRef<HTMLButtonElement, InboxRoomProps>(function 
             </span>
           </span>
 
-          {scheduled && !disabled && <ScheduleMark />}
+          {/* The schedule mark outlives selection: it says a message is queued
+              to send, which stays true while the room is ticked and stops being
+              true only once that message has gone out. Nothing the selection
+              flow does should clear it. */}
+          {/* Keeps its purple on a selected card, unlike the counter beside
+              it. The purple is what identifies the scheduling flow wherever it
+              appears, and recolouring it per card state would make the mark
+              mean "scheduled, on a blue row" rather than simply "scheduled". */}
+          {(() => {
+            const defaultRender = () => (
+              <>
+                {/* Keeps its purple on a selected card, unlike the counter
+                    beside it. The purple is what identifies the scheduling
+                    flow wherever it appears. */}
+                {scheduled && !disabled && <ScheduleMark />}
 
-          {/* The tick takes the counter's place rather than sitting beside it:
-              they occupy the same corner, and in selection mode how many are
-              unread stops being the question. */}
-          {selecting ? (
-            <SelectTick checked={checked} disabled={disabled} />
-          ) : (
-            unread > 0 && !highlighted && <CounterBadge count={unread} label="unread messages" />
-          )}
+                {/* The counter survives being ticked: selecting a room is not
+                    reading it — only marking it read is, and that is what
+                    drops `unread` to zero. Hiding it on selection would say
+                    the messages had been dealt with before anyone confirmed. */}
+                {unread > 0 && (
+                  <CounterBadge
+                    count={unread}
+                    // On the filled card the badge inverts, or the brand-blue
+                    // disc disappears into the brand-blue card.
+                    background={highlighted ? color.main.white : undefined}
+                    textColor={highlighted ? color.badge.foreground : undefined}
+                    label="unread messages"
+                  />
+                )}
+              </>
+            );
+
+            return renderTrailing
+              ? renderTrailing({ unread, selecting, checked, scheduled, defaultRender })
+              : defaultRender();
+          })()}
         </span>
       </span>
     </button>

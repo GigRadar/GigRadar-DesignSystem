@@ -22,6 +22,29 @@ const { selector, panel } = inbox;
 const panelIconSize = panel.rowIconSize;
 
 /**
+ * Why an account is not usable right now.
+ *
+ * Figma's Add-to-room picker (node 3790:64903) draws five, and the inbox
+ * dropdown draws a subset. They share one treatment because they answer one
+ * question — "why can I not pick this" — and differ only in the words.
+ */
+export type AccountProblem =
+  | 'suspended'
+  | 'tokenExpired'
+  | 'error'
+  | 'removed'
+  | 'notInRoom';
+
+/** What each problem says, and whether reconnecting is the way out of it. */
+export const accountProblems: Record<AccountProblem, { label: string; reconnect: boolean }> = {
+  suspended: { label: 'Suspended', reconnect: false },
+  tokenExpired: { label: 'Token Expired', reconnect: true },
+  error: { label: 'Error', reconnect: true },
+  removed: { label: 'Removed', reconnect: false },
+  notInRoom: { label: 'Not in this room', reconnect: false },
+};
+
+/**
  * One connected Upwork account, as the picker lists it.
  *
  * `unread` and `connection` are separate because they answer different
@@ -42,11 +65,19 @@ export type InboxAccount = {
    */
   connection?: ConnectionState;
   /**
-   * Why the account cannot be used, if it cannot. Replaces the unread count
-   * with a "Reconnect" prompt, since a count is meaningless once the token is
-   * dead.
+   * Why the account cannot be used, if it cannot.
+   *
+   * All five grey the row the same way and put the reason where the unread
+   * count was — a count is meaningless on an account that cannot receive
+   * anything, and the reason is what says whether the person can fix it.
+   *
+   * Only `tokenExpired` and `error` offer "Reconnect": a suspended or removed
+   * account is not something reconnecting solves, and `notInRoom` is not a
+   * fault at all — it is an account that simply is not a participant in the
+   * room being looked at, which the Add-to-room picker shows so it can be
+   * added.
    */
-  problem?: 'suspended' | 'tokenExpired';
+  problem?: AccountProblem;
 };
 
 /** Per-instance overrides for the picker's own metrics. */
@@ -182,6 +213,10 @@ export const InboxAccountRow = forwardRef<HTMLButtonElement, InboxAccountRowProp
         type="button"
         role="option"
         aria-selected={selected}
+        // An unusable account is listed so the reason is visible, not so it can
+        // be picked — the row says why, and offering a click that does nothing
+        // would be worse than saying nothing.
+        disabled={broken}
         onClick={onSelect}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
@@ -195,9 +230,9 @@ export const InboxAccountRow = forwardRef<HTMLButtonElement, InboxAccountRowProp
           borderRadius: selector.itemRadius,
           border: 'none',
           textAlign: 'left',
-          cursor: 'pointer',
+          cursor: broken ? 'default' : 'pointer',
           font: 'inherit',
-          backgroundColor: selected || hover ? color.navbar.hover : color.main.white,
+          backgroundColor: !broken && (selected || hover) ? color.navbar.hover : color.main.white,
         }}
         {...rest}
       >
@@ -221,17 +256,15 @@ export const InboxAccountRow = forwardRef<HTMLButtonElement, InboxAccountRowProp
             title={account ? account.name : 'All accounts'}
             description={
               account
-                ? account.problem === 'suspended'
-                  ? 'Suspended'
-                  : account.problem === 'tokenExpired'
-                    ? 'Token Expired'
-                    : `${account.unread ?? 0} new messages`
+                ? account.problem
+                  ? accountProblems[account.problem].label
+                  : `${account.unread ?? 0} new messages`
                 : `${accountCount} accounts connected`
             }
           />
         </span>
 
-        {broken ? (
+        {broken && accountProblems[account!.problem!].reconnect ? (
           <span
             style={{
               ...textStyle.sRegular,

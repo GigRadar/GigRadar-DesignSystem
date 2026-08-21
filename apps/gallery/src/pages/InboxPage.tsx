@@ -41,7 +41,7 @@ export function InboxPage() {
         links={[
           { label: 'CRM ▸ Inbox ▸ List of Room (Left)', pageId: 'crm-inbox-left' },
           { label: 'Left ▸ Inbox Selector', pageId: 'crm-inbox-selector' },
-          { label: 'Left ▸ Searchbar', pageId: 'crm-inbox-searchbar' },
+          { label: 'Left ▸ Advanced Searchbar', pageId: 'crm-inbox-searchbar' },
           { label: 'Components ▸ Main ▸ Date picker', pageId: 'date-picker' },
         ]}
       >
