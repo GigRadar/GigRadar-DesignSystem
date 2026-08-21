@@ -1,15 +1,11 @@
 # Installing @gigradar packages in an app
 
-Two ways to consume the packages:
+All apps — gigradar-monorepo frontends included — install the published
+packages from GitHub Packages. A local clone with `file:` dependencies is only
+for working on the design system and an app simultaneously; see
+[co-developing.md](co-developing.md).
 
-1. **Local clone + `file:` dependencies** — no registry, no auth. This is how
-   the gigradar-monorepo frontend apps consume them (the same pattern as their
-   `gigradar-definitions` dependency). See
-   [consuming-monorepo.md](consuming-monorepo.md).
-2. **GitHub Packages registry** — for standalone app repos. The rest of this
-   document.
-
-The registry packages are hosted on GitHub Packages, which requires
+The packages are hosted on GitHub Packages, which requires
 authentication **even to read**. Each developer authenticates once; the app
 repos hold no secrets.
 
