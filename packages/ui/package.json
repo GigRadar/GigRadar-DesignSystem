@@ -1,6 +1,6 @@
 {
   "name": "@gigradar/ui",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "GigRadar UI components — the single import surface for all four apps.",
   "license": "UNLICENSED",
   "private": false,
