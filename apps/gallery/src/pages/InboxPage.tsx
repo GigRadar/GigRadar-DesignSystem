@@ -54,7 +54,7 @@ export function InboxPage() {
         title="The column"
         description="`InboxList` draws the frame — header, account picker, search band, and the connection pill pinned to the foot — and takes the rooms as children. The six states Figma draws (loading, empty, searching, onboarding) are what the consumer passes in, not variants of the frame."
       >
-        <Frame height={734} hug>
+        <Frame height={734}>
           <InboxList
             badge={<PlanBadge tone="pro" />}
             accounts={accounts}

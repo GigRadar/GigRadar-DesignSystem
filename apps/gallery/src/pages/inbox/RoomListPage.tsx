@@ -29,8 +29,12 @@ const COLUMN_HEIGHT = 734;
  * times with one line different each.
  */
 function ColumnPreview({ children, ...rest }: ComponentProps<typeof InboxList>) {
+  // Not hugged: the search panel is wider than the column and overhangs it to
+  // the right, which a frame shrunk to the column's own width would crop. A
+  // real screen has the conversation beside it, so the overhang lands on
+  // content rather than on nothing.
   return (
-    <Frame height={COLUMN_HEIGHT} hug>
+    <Frame height={COLUMN_HEIGHT}>
       <InboxList badge={<PlanBadge tone="pro" />} accounts={accounts} {...rest}>
         {children}
       </InboxList>

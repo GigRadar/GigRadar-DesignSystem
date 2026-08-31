@@ -205,7 +205,25 @@ export const InboxList = forwardRef<HTMLDivElement, InboxListProps>(function Inb
                 style={{ position: 'fixed', inset: 0, zIndex: 10 }}
                 onClick={() => setPanelOpen(false)}
               />
-              <div style={{ position: 'absolute', top: '100%', left: list.controlsPadding, zIndex: 11 }}>
+              {/* `width: max-content` so the panel keeps its own 520px rather
+                  than being shrink-wrapped to the 328px column it hangs from —
+                  an absolutely positioned box inside a flex column takes the
+                  container's width otherwise, and the panel arrives squeezed.
+
+                  Pinned to the column's left edge and allowed to overhang to
+                  the right, which is the only direction with room: the column
+                  is the leftmost thing on screen, so a panel centred or
+                  right-aligned on it would run off the window. */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: list.controlsPadding,
+                  width: 'max-content',
+                  maxWidth: `calc(100vw - ${list.controlsPadding * 2}px)`,
+                  zIndex: 11,
+                }}
+              >
                 <AdvancedSearch {...searchPanel} />
               </div>
             </>
