@@ -2511,12 +2511,12 @@ const datePicker = {
   cardPaddingY: spacing.s,
   radius: radius.s,
   /** Space between the two month panels. */
-  monthGap: spacing.xl,
+  monthGap: spacing.l,
   headerHeight: 24,
   headerGap: spacing.xs,
   cellSize: 24,
   /** The cell's hit area, which is wider than the cell so rows read as bands. */
-  cellWidth: 36,
+  cellWidth: 32,
   cellRadius: radius.xxs,
   navIconSize: 12,
 } as const;

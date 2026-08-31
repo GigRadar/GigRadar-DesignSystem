@@ -89,6 +89,26 @@ function addMonths(date: Date, delta: number) {
 }
 
 /**
+ * The half of an endpoint's cell that carries the range band.
+ *
+ * An endpoint sits at one end of the run, so only the side facing the rest of
+ * it should be filled: the start fills its right half, the end its left. Filling
+ * the whole cell would push the band a half-cell past the range; filling none
+ * of it leaves a notch between the chip and the first shaded day.
+ *
+ * A linear-gradient rather than a pseudo-element, because the cell is a
+ * `<button>` styled inline and this package ships no stylesheet to put a
+ * `::before` in.
+ */
+function bandSide(isStart: boolean, isEnd: boolean, fill: string) {
+  // A one-day range is both ends at once, and needs no band at all.
+  if (isStart && isEnd) return 'transparent';
+  if (isStart) return `linear-gradient(to right, transparent 50%, ${fill} 50%)`;
+  if (isEnd) return `linear-gradient(to right, ${fill} 50%, transparent 50%)`;
+  return 'transparent';
+}
+
+/**
  * The six-week grid for one month.
  *
  * Always 42 cells, including the days either side that fill the first and last
@@ -190,6 +210,11 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
   // between them is drawn as the person moves.
   const provisionalEnd = range.end ?? (range.start != null ? hovered : null);
 
+  // Two distinct days, so there is a span for the band to cover. A start on its
+  // own — or a start and end on the same day — has nothing to join up.
+  const hasRange =
+    range.start != null && provisionalEnd != null && !sameDay(range.start, provisionalEnd);
+
   const inRange = (day: Date) => {
     if (range.start == null || provisionalEnd == null) return false;
     const time = startOfDay(day).getTime();
@@ -207,6 +232,19 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
       aria-label="Date range"
       style={{
         display: 'inline-flex',
+        /**
+         * The calendar is as wide as the dates it draws, never as wide as
+         * whatever holds it.
+         *
+         * `inline-flex` alone does not guarantee that: dropped into a flex
+         * column — which is how every filter row stacks its contents — the
+         * default `align-items: stretch` pulls the card out to the container's
+         * full width, leaving the grid marooned in a field of white. Pinning
+         * both the flex and grid cross-axis keywords opts out of that stretch
+         * in either kind of parent.
+         */
+        alignSelf: 'start',
+        justifySelf: 'start',
         gap: len(monthGap) ?? datePicker.monthGap,
         boxSizing: 'border-box',
         padding: `${datePicker.cardPaddingY}px ${datePicker.cardPaddingX}px`,
@@ -266,7 +304,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(7, ${datePicker.cellWidth}px)` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(7, ${datePicker.cellWidth}px)`, justifyContent: 'center' }}>
               {weekdays.map((day) => (
                 <span
                   key={day}
@@ -309,9 +347,18 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
                       border: 'none',
                       font: 'inherit',
                       cursor: isDisabled ? 'default' : 'pointer',
-                      // The band runs edge to edge so consecutive days join up,
-                      // while the endpoints keep their own rounded chip.
-                      backgroundColor: between ? rangeFill : 'transparent',
+                      // The band runs edge to edge so consecutive days join up.
+                      // An endpoint carries it too, but only on the side the
+                      // range runs towards — without that the fill stops at the
+                      // endpoint's cell edge and leaves a notch beside the chip.
+                      background: between
+                        ? rangeFill
+                        : // Only once there is a second end to run towards: a
+                          // lone start would otherwise trail half a band into
+                          // empty space.
+                          hasRange
+                          ? bandSide(isStart, isEnd, rangeFill)
+                          : 'transparent',
                     }}
                   >
                     <span
