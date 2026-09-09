@@ -73,3 +73,91 @@ export function Row({ children, gap = spacing.s }: { children: ReactNode; gap?: 
     </div>
   );
 }
+
+/**
+ * A settings panel — the bordered card the CRM settings screens stack rows in.
+ *
+ * Fills its container. The pages that use it already sit in a column of a set
+ * width, and a second cap inside that only makes the panel float in its own
+ * lane.
+ */
+export function SettingsPanel({
+  children,
+  overflowing,
+}: {
+  children: ReactNode;
+  /**
+   * Lets a row's popover hang outside the panel.
+   *
+   * The clip is what keeps the rows inside the rounded corners, so it stays on
+   * by default; a panel whose rows open menus has to give it up, or the menu is
+   * cut off at the panel's edge.
+   */
+  overflowing?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
+        width: '100%',
+        borderRadius: radius.s,
+        border: `${borderWidth.thin}px solid ${color.navbar.border}`,
+        backgroundColor: color.main.white,
+        overflow: overflowing ? 'visible' : 'hidden',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * One row of a `SettingsPanel`, divided from the next.
+ *
+ * A bottom border rather than one on every side: stacked rows would otherwise
+ * draw a line each above and below, doubling every divider and tripling the
+ * panel's own edge. `last` drops it, since the panel supplies the closing edge.
+ */
+export function SettingsRow({
+  children,
+  last,
+  gap = spacing.s,
+  padding = spacing.m,
+  onClick,
+  selected,
+}: {
+  children: ReactNode;
+  last?: boolean;
+  gap?: number;
+  padding?: number;
+  /** Makes the whole row the control, rather than a button sitting inside it. */
+  onClick?: () => void;
+  /**
+   * Marks this row as the one a panel below it belongs to.
+   *
+   * Drawn as a tint plus a rail down the leading edge — the same treatment the
+   * inbox gives the room being read. Dimming the other rows instead reads as
+   * disabled rather than as unselected.
+   */
+  selected?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap,
+        padding,
+        borderBottom: last ? undefined : `${borderWidth.thin}px solid ${color.navbar.border}`,
+        cursor: onClick ? 'pointer' : undefined,
+        backgroundColor: selected ? color.badge.background : undefined,
+        boxShadow: selected ? `inset 3px 0 0 ${color.badge.foreground}` : undefined,
+      }}
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+}

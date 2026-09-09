@@ -1371,6 +1371,47 @@ export const modal = {
  * held as literals for the same reason `settingsPanel.item.radius` is — the
  * drawn value wins over the scale when the two disagree.
  */
+/**
+ * The per-account AI prompt surfaces — BF-4280.
+ *
+ * One row per connected Upwork account in AI Configuration, each saying whether
+ * it runs on the team prompt alone or carries instructions of its own.
+ */
+export const accountPrompt = {
+  radius: radius.s,
+  padding: spacing.m,
+  gap: spacing.s,
+  /** Space between a row's name and the status line under it. */
+  stackGap: 2,
+  /** The open/close chevron on a collapsed account row. */
+  chevronSize: 16,
+  /** The chevron inside a mode badge, marking the badge as a menu. */
+  badgeChevronSize: 10,
+  /** The gap between a badge and the menu hanging from it. */
+  menuOffset: spacing.xxs,
+  /** The menu floats over the rows below it. */
+  menuLayer: 10,
+  /** A row of the mode menu. */
+  menuItemPaddingX: spacing.xs,
+  menuItemPaddingY: spacing.xxs,
+  /** The disc in the empty state. */
+  emptyMarkSize: 40,
+  emptyIconSize: 22,
+  emptyPadding: spacing.xl,
+  emptyGap: spacing.s,
+  /** The description under the empty state's heading, at a readable measure. */
+  emptyMaxWidth: 360,
+  /**
+   * The prompt field, where several are stacked on one page.
+   *
+   * Shorter than the team prompt's own field: an account prompt is the couple
+   * of lines that make this profile different, not a whole brief, and three
+   * full-height fields would make the page misrepresent how much there is to
+   * write.
+   */
+  stackedFieldMinHeight: 96,
+} as const;
+
 export const upworkAccounts = {
   /** The left column. Figma draws a fixed 640px against a flexible right. */
   listColumn: {
@@ -3193,6 +3234,7 @@ export const component = {
   switchControl,
   toggle,
   tooltip,
+  accountPrompt,
   upworkAccounts,
   upworkApiKey,
   docs,
