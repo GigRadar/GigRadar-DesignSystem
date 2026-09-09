@@ -39,6 +39,16 @@ export type AddBmInfoProps = {
   /** Whether the manager can be added at all. */
   disabled?: boolean;
   onAdd?: () => void;
+  /**
+   * The narrow layout — what the mobile header draws.
+   *
+   * At 402px the prompt, the manager's name, and the button do not fit at their
+   * natural widths, and the row was letting the button shrink rather than the
+   * text. Compact truncates the prompt instead, and shortens the manager to
+   * their first name, so the one thing that must stay pressable does.
+   * @default false
+   */
+  compact?: boolean;
 } & AddBmInfoStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'children'>;
 
@@ -63,6 +73,7 @@ export const AddBmInfo = forwardRef<HTMLDivElement, AddBmInfoProps>(function Add
     adding = false,
     disabled = false,
     onAdd,
+    compact = false,
     paddingX,
     paddingY,
     gap,
@@ -91,7 +102,18 @@ export const AddBmInfo = forwardRef<HTMLDivElement, AddBmInfoProps>(function Add
       }}
       {...rest}
     >
-      <span style={{ ...textStyle.sRegular, color: textColor ?? color.badge.foreground }}>
+      {/* The prompt is what gives way when the row runs out of room: it explains
+          the offer, but the manager's name and the button are the offer itself. */}
+      <span
+        style={{
+          ...textStyle.sRegular,
+          color: textColor ?? color.badge.foreground,
+          minWidth: 0,
+          ...(compact
+            ? { flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+            : null),
+        }}
+      >
         {children}
       </span>
       {/* The manager's chip. Not a button — it names who is being added, and the
@@ -117,16 +139,22 @@ export const AddBmInfo = forwardRef<HTMLDivElement, AddBmInfoProps>(function Add
           src={managerAvatar}
           badge="upworkApi"
         />
+        {/* Compact keeps only the first name. The avatar beside it already
+            identifies the person, and a surname truncated to "Maria Ovcha…"
+            spends the room without adding anything the reader can use. The full
+            name stays as the title, so it is still reachable. */}
         <span
+          title={compact ? managerName : undefined}
           style={{
             ...textStyle.sMedium,
             color: color.navbar.text2,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            maxWidth: compact ? addBm.compactNameMaxWidth : undefined,
           }}
         >
-          {managerName}
+          {compact ? managerName.split(' ')[0] : managerName}
         </span>
       </span>
       <button

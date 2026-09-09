@@ -137,6 +137,22 @@ const { avatar } = component;
  * Size-stepped variables are written unsuffixed AND at the active step, since
  * the component reads `--gr-avatar-size-medium` rather than a generic name.
  */
+/**
+ * The type size a custom diameter implies.
+ *
+ * The size steps pair a diameter with a type size that fits two initials in it;
+ * this keeps that ratio when a caller sets its own diameter. Returns `undefined`
+ * for a non-numeric diameter — a `'2rem'` cannot be scaled against a px token,
+ * and guessing would be worse than leaving the step's own size in place.
+ */
+function scaledFontSize(
+  diameter: CssLength | undefined,
+  size: AvatarSize,
+): number | undefined {
+  if (typeof diameter !== 'number') return undefined;
+  return Math.round((avatar.fontSize[size] / avatar.size[size]) * diameter);
+}
+
 function styleVars(props: AvatarStyleProps, size: AvatarSize): Record<string, string> {
   const vars: Record<string, string> = {};
   const set = (name: string, value: CssLength | undefined) => {
@@ -149,7 +165,14 @@ function styleVars(props: AvatarStyleProps, size: AvatarSize): Record<string, st
   };
 
   set(`--gr-avatar-size-${size}`, props.diameter);
-  set(`--gr-avatar-font-size-${size}`, props.fontSize);
+  // Type follows the circle it sits in. The size steps pair a diameter with a
+  // type size, but `diameter` overrides only the first — so a 20px avatar on
+  // the `small` step kept 12px text, and two initials spilled out of it. An
+  // explicit `fontSize` still wins; this only fills in the one that was missing.
+  set(
+    `--gr-avatar-font-size-${size}`,
+    props.fontSize ?? scaledFontSize(props.diameter, size),
+  );
   set(`--gr-avatar-badge-size-${size}`, props.badgeSize);
   set('--gr-avatar-radius', props.radius);
   set('--gr-avatar-border-width', props.borderWidth);

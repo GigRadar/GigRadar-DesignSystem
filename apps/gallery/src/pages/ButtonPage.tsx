@@ -4,7 +4,7 @@ import {
   ComposerButton,
   HStack,
   Icon,
-  IconLazizaSparkleStroke,
+  IconLazizaSparkleFill,
   IconMeetingsStroke,
   IconPlus,
   IconScheduleClockStroke,
@@ -230,8 +230,8 @@ export function ButtonPage() {
         <FeatureStates
           tone="laziza"
           label="Ask Laziza AI"
-          icon={IconLazizaSparkleStroke}
-          usageMain={`<Button tone="laziza" startIcon={<Icon icon={IconLazizaSparkleStroke} size={16} />}>
+          icon={IconLazizaSparkleFill}
+          usageMain={`<Button tone="laziza" startIcon={<Icon icon={IconLazizaSparkleFill} size={16} />}>
   Ask Laziza AI
 </Button>`}
           usageSecondary={`<Button variant="secondary" tone="laziza">Improve reply</Button>

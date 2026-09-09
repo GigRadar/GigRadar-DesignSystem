@@ -4,6 +4,7 @@ import { len, type CssLength } from '../../internal/length.js';
 import { Icon } from '../../icons/Icon.js';
 import {
   IconCollapseDoubleArrowLeft,
+  IconDropdownArrowDown,
   IconDropdownArrowLeft,
   IconDropdownArrowRight,
   IconExpandDoubleArrowRight,
@@ -66,6 +67,25 @@ export type DatePickerProps = {
    * @default 0
    */
   weekStartsOn?: 0 | 1;
+  /**
+   * Fills the width it is given rather than hugging its dates.
+   *
+   * The calendar's default is to size to its grid, because a filter popover
+   * should not be padded out with white. Inside a modal it is the opposite: the
+   * calendar is a field like any other and should line up with the ones under
+   * it, so it stretches and its cells share the width.
+   * @default false
+   */
+  fullWidth?: boolean;
+  /**
+   * Makes the month name a button that opens a list of months.
+   *
+   * Off by default: the chevrons are enough for stepping a month or two, and a
+   * dropdown on every calendar would be a control most of them never need.
+   * Turned on where a date might be months out — scheduling a message, say.
+   * @default false
+   */
+  monthPicker?: boolean;
 } & DatePickerStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'onChange'>;
 
@@ -151,6 +171,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
     minDate,
     maxDate,
     weekStartsOn = 0,
+    fullWidth = false,
+    monthPicker = false,
     radius,
     monthGap,
     cellSize,
@@ -173,6 +195,12 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
    * person is choosing an end with nothing showing what they are ending.
    */
   const [hovered, setHovered] = useState<Date | null>(null);
+  // Which panel's month list is open, by index — two panels, one list at a time.
+  const [monthListFor, setMonthListFor] = useState<number | null>(null);
+  // Captured once per render rather than per cell: 42 cells times two panels is
+  // 84 `new Date()` calls, all answering the same question.
+  const today = startOfDay(new Date());
+  const [hoveredMonth, setHoveredMonth] = useState<number | null>(null);
 
   const range = value ?? uncontrolledRange;
   const viewMonth = month ?? uncontrolledMonth;
@@ -243,14 +271,20 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
          * both the flex and grid cross-axis keywords opts out of that stretch
          * in either kind of parent.
          */
-        alignSelf: 'start',
-        justifySelf: 'start',
+        // Full width opts out of the hug: inside a modal the calendar is a field
+        // among fields, and should line up with them.
+        alignSelf: fullWidth ? 'stretch' : 'start',
+        justifySelf: fullWidth ? 'stretch' : 'start',
+        width: fullWidth ? '100%' : undefined,
         gap: len(monthGap) ?? datePicker.monthGap,
         boxSizing: 'border-box',
         padding: `${datePicker.cardPaddingY}px ${datePicker.cardPaddingX}px`,
         borderRadius: len(radius) ?? datePicker.radius,
         backgroundColor: background ?? color.main.white,
-        boxShadow: shadowOverride ?? shadow.base,
+        // A calendar that fills a panel is part of that panel, so it takes a
+        // border instead of floating over it on an elevation.
+        border: fullWidth ? `${borderWidth.thin}px solid ${color.navbar.border}` : undefined,
+        boxShadow: shadowOverride ?? (fullWidth ? 'none' : shadow.base),
       }}
       onMouseLeave={() => setHovered(null)}
       {...rest}
@@ -261,7 +295,12 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
         const isLast = index === months - 1;
 
         return (
-          <div key={index} style={{ display: 'flex', flexDirection: 'column' }}>
+          <div
+            key={index}
+            // Full width runs through the panel too, so the header spreads its
+            // chevrons to the same edges the date grid reaches.
+            style={{ display: 'flex', flexDirection: 'column', flex: fullWidth ? 1 : undefined, minWidth: fullWidth ? 0 : undefined }}
+          >
             <div
               style={{
                 display: 'flex',
@@ -274,11 +313,16 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
               {/* Only the outer edges carry navigation: the two panels move
                   together, so a control between them would be ambiguous. */}
               <span style={{ display: 'flex', gap: datePicker.headerGap, visibility: isFirst ? 'visible' : 'hidden' }}>
-                <NavButton
-                  label="Previous year"
-                  icon={IconCollapseDoubleArrowLeft}
-                  onClick={() => goToMonth(addMonths(viewMonth, -12))}
-                />
+                {/* The month list makes a year jump redundant, and nothing is
+                    scheduled a year out — so with it on, the header keeps one
+                    chevron each way and nothing else. */}
+                {!monthPicker && (
+                  <NavButton
+                    label="Previous year"
+                    icon={IconCollapseDoubleArrowLeft}
+                    onClick={() => goToMonth(addMonths(viewMonth, -12))}
+                  />
+                )}
                 <NavButton
                   label="Previous month"
                   icon={IconDropdownArrowLeft}
@@ -286,9 +330,89 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
                 />
               </span>
 
-              <span style={{ ...textStyle.mRegular, color: color.main.black }}>
-                {MONTHS[panelMonth.getMonth()]} {panelMonth.getFullYear()}
-              </span>
+              {monthPicker ? (
+                <span style={{ position: 'relative', display: 'inline-flex' }}>
+                  <button
+                    type="button"
+                    onClick={() => setMonthListFor((open) => (open === index ? null : index))}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: datePicker.headerGap,
+                      padding: 0,
+                      border: 'none',
+                      background: 'transparent',
+                      ...textStyle.mRegular,
+                      color: color.main.black,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {MONTHS[panelMonth.getMonth()]} {panelMonth.getFullYear()}
+                    <Icon icon={IconDropdownArrowDown} size={14} color={color.navbar.text} />
+                  </button>
+                  {monthListFor === index && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        zIndex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        maxHeight: datePicker.monthListMaxHeight,
+                        overflowY: 'auto',
+                        marginTop: datePicker.monthListOffset,
+                        padding: datePicker.monthListPadding,
+                        borderRadius: radiusToken.xs,
+                        backgroundColor: color.main.white,
+                        boxShadow: shadow.base,
+                      }}
+                    >
+                      {MONTHS.map((name, monthIndex) => {
+                        const current = monthIndex === panelMonth.getMonth();
+                        return (
+                          <button
+                            key={name}
+                            type="button"
+                            onClick={() => {
+                              goToMonth(
+                                new Date(panelMonth.getFullYear(), monthIndex - index, 1),
+                              );
+                              setMonthListFor(null);
+                            }}
+                            onMouseEnter={() => setHoveredMonth(monthIndex)}
+                            onMouseLeave={() => setHoveredMonth(null)}
+                            style={{
+                              padding: `${datePicker.monthItemPaddingY}px ${datePicker.monthItemPaddingX}px`,
+                              border: 'none',
+                              borderRadius: radiusToken.s,
+                              ...textStyle.mRegular,
+                              // The same three states the day cells use: the
+                              // chosen month takes the accent, a hovered one the
+                              // nav wash, the rest none.
+                              color: current ? color.main.white : color.main.black,
+                              backgroundColor: current
+                                ? accentColor
+                                : hoveredMonth === monthIndex
+                                  ? color.navbar.hover
+                                  : 'transparent',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              textAlign: 'left',
+                            }}
+                          >
+                            {name}
+                          </button>
+                        );
+                      })}
+                    </span>
+                  )}
+                </span>
+              ) : (
+                <span style={{ ...textStyle.mRegular, color: color.main.black }}>
+                  {MONTHS[panelMonth.getMonth()]} {panelMonth.getFullYear()}
+                </span>
+              )}
 
               <span style={{ display: 'flex', gap: datePicker.headerGap, visibility: isLast ? 'visible' : 'hidden' }}>
                 <NavButton
@@ -296,15 +420,28 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
                   icon={IconDropdownArrowRight}
                   onClick={() => goToMonth(addMonths(viewMonth, 1))}
                 />
-                <NavButton
-                  label="Next year"
-                  icon={IconExpandDoubleArrowRight}
-                  onClick={() => goToMonth(addMonths(viewMonth, 12))}
-                />
+                {!monthPicker && (
+                  <NavButton
+                    label="Next year"
+                    icon={IconExpandDoubleArrowRight}
+                    onClick={() => goToMonth(addMonths(viewMonth, 12))}
+                  />
+                )}
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(7, ${datePicker.cellWidth}px)`, justifyContent: 'center' }}>
+            <div
+              style={{
+                display: 'grid',
+                // Full width shares the row between seven equal cells; otherwise
+                // each keeps its own width and the grid centres in whatever it
+                // is given.
+                gridTemplateColumns: fullWidth
+                  ? 'repeat(7, 1fr)'
+                  : `repeat(7, ${datePicker.cellWidth}px)`,
+                justifyContent: 'center',
+              }}
+            >
               {weekdays.map((day) => (
                 <span
                   key={day}
@@ -327,6 +464,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
                 const isEndpoint = isStart || isEnd;
                 const between = inRange(date);
                 const isDisabled = disabled(date);
+                const isToday = sameDay(date, today);
+                const isHovered = !isDisabled && !isEndpoint && sameDay(date, hovered);
 
                 return (
                   <button
@@ -341,7 +480,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: datePicker.cellWidth,
+                      width: fullWidth ? '100%' : datePicker.cellWidth,
                       height: datePicker.cellWidth,
                       padding: 0,
                       border: 'none',
@@ -367,15 +506,30 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(function D
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: cell,
-                        height: cell,
-                        borderRadius: datePicker.cellRadius,
-                        backgroundColor: isEndpoint ? accentColor : 'transparent',
+                        // Full width lets the chip fill its cell, so a row of
+                        // days divides the panel evenly instead of leaving
+                        // gutters between fixed-width chips.
+                        width: fullWidth ? '100%' : cell,
+                        height: fullWidth ? '100%' : cell,
+                        borderRadius: isEndpoint || isHovered ? radiusToken.s : datePicker.cellRadius,
+                        // Three fills across Figma's states (node 2030:12197):
+                        // a selected day takes the accent, a hovered one the
+                        // nav wash, and every other day none.
+                        backgroundColor: isEndpoint
+                          ? accentColor
+                          : isHovered
+                            ? color.navbar.hover
+                            : 'transparent',
+                        // Today is named by its colour rather than a fill, so it
+                        // still reads as today once something else is selected.
                         color: isEndpoint
                           ? color.main.white
                           : isDisabled || outside
                             ? color.disable.text
-                            : color.main.black,
+                            : isToday
+                              ? accentColor
+                              : color.main.black,
+                        opacity: outside ? datePicker.outsideOpacity : 1,
                       }}
                     >
                       {date.getDate()}

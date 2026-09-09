@@ -127,9 +127,16 @@ export const HeaderMetaTag = forwardRef<HTMLElement, HeaderMetaTagProps>(functio
         ref={ref as Ref<HTMLButtonElement>}
         type="button"
         aria-label={children == null ? label : undefined}
-        onClick={onClick}
         style={style}
         {...rest}
+        // After the spread, not before: a wrapper like `Tooltip` clones its own
+        // `onClick` onto this element through `rest`, and applying the tag's
+        // first would let that overwrite it — the tag would stop opening its
+        // picker as soon as it was given a tooltip.
+        onClick={(event) => {
+          (rest as { onClick?: (e: unknown) => void }).onClick?.(event);
+          onClick();
+        }}
       >
         {content}
       </button>

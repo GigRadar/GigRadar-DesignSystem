@@ -633,6 +633,150 @@ export type {
 export { MenuButton } from './components/Middle/MenuButton.js';
 export type { MenuButtonProps, MenuButtonStyleProps } from './components/Middle/MenuButton.js';
 
+/**
+ * The thread's messages. `BubbleChat` is one message and `AttachmentBubble` one
+ * file; `Sender` is the row that names who sent either. The rest are the parts
+ * they compose, exported because a screen assembling its own thread needs the
+ * same pieces.
+ */
+/**
+ * The composer — the box a message is written in, and its controls.
+ *
+ * `ComposerButton` (the Message / Note tabs) is filed with the buttons rather
+ * than here, because it predates this set.
+ */
+/**
+ * The chat room — the three bands assembled, and the parts only a thread needs.
+ */
+export { ChatRoom, RoomDivider, RoomMessage, RoomNotice } from './components/Room/ChatRoom.js';
+export type {
+  ChatRoomProps,
+  ChatRoomStyleProps,
+  ChatRoomLayout,
+  RoomDividerProps,
+  RoomDividerStyleProps,
+  RoomNoticeProps,
+  RoomNoticeStyleProps,
+  RoomMessageProps,
+  RoomMessageStyleProps,
+} from './components/Room/ChatRoom.js';
+
+export { RoomEvent } from './components/Room/RoomEvent.js';
+export type {
+  RoomEventProps,
+  RoomEventStyleProps,
+  RoomEventKind,
+  ScheduleEventState,
+} from './components/Room/RoomEvent.js';
+
+export { RoomBackdrop } from './components/Room/RoomBackdrop.js';
+export type { RoomBackdropProps } from './components/Room/RoomBackdrop.js';
+
+export { Composer } from './components/Composer/Composer.js';
+export type { ComposerProps, ComposerStyleProps } from './components/Composer/Composer.js';
+
+export { ComposerField } from './components/Composer/ComposerField.js';
+export type {
+  ComposerFieldProps,
+  ComposerFieldStyleProps,
+  ComposerLayout,
+  TextMark,
+} from './components/Composer/ComposerField.js';
+
+/**
+ * The body of a rich-text mark's tooltip. `ComposerField` already draws these
+ * on its own toolbar; exported for a screen that mounts its own editor and
+ * wants the same card over its own controls.
+ */
+export { MarkShortcut } from './components/Composer/MarkShortcut.js';
+export type {
+  MarkShortcutName,
+  MarkShortcutProps,
+} from './components/Composer/MarkShortcut.js';
+
+export { ComposerStatus } from './components/Composer/ComposerStatus.js';
+export type {
+  ComposerStatusProps,
+  ComposerStatusStyleProps,
+  ComposerMode,
+} from './components/Composer/ComposerStatus.js';
+
+export { CharacterCount } from './components/Composer/CharacterCount.js';
+export type {
+  CharacterCountProps,
+  CharacterCountStyleProps,
+} from './components/Composer/CharacterCount.js';
+
+export { ComposerAttachment } from './components/Composer/ComposerAttachment.js';
+export type {
+  ComposerAttachmentProps,
+  ComposerAttachmentStyleProps,
+} from './components/Composer/ComposerAttachment.js';
+
+export { SendButton } from './components/Composer/SendButton.js';
+export type {
+  SendButtonProps,
+  SendButtonStyleProps,
+  SendAction,
+} from './components/Composer/SendButton.js';
+
+export { ComposerIconButton } from './components/Composer/ComposerIconButton.js';
+export type {
+  ComposerIconButtonProps,
+  ComposerIconButtonStyleProps,
+} from './components/Composer/ComposerIconButton.js';
+
+export { ChooseBmButton } from './components/Composer/ChooseBmButton.js';
+export type {
+  ChooseBmButtonProps,
+  ChooseBmButtonStyleProps,
+} from './components/Composer/ChooseBmButton.js';
+
+export { BubbleChat } from './components/Middle/BubbleChat.js';
+export type {
+  BubbleChatProps,
+  BubbleChatStyleProps,
+  BubbleTone,
+} from './components/Middle/BubbleChat.js';
+
+export { AttachmentBubble } from './components/Middle/AttachmentBubble.js';
+
+/**
+ * The meeting card in the thread — proposed, booked, moved, cancelled or over.
+ */
+export { MeetingBubble } from './components/Middle/MeetingBubble.js';
+export type {
+  MeetingBubbleProps,
+  MeetingBubbleStyleProps,
+  MeetingDetail,
+  MeetingState,
+} from './components/Middle/MeetingBubble.js';
+export type {
+  AttachmentBubbleProps,
+  AttachmentBubbleStyleProps,
+  AttachmentKind,
+} from './components/Middle/AttachmentBubble.js';
+
+export { Sender } from './components/Middle/Sender.js';
+export type { SenderProps, SenderStyleProps } from './components/Middle/Sender.js';
+
+export { AuthorBadge } from './components/Middle/AuthorBadge.js';
+export type {
+  AuthorBadgeProps,
+  AuthorBadgeStyleProps,
+  AuthorBadgeKind,
+} from './components/Middle/AuthorBadge.js';
+
+export { SendIndicator } from './components/Middle/SendIndicator.js';
+export type {
+  SendIndicatorProps,
+  SendIndicatorStyleProps,
+  SendState,
+} from './components/Middle/SendIndicator.js';
+
+export { ChatAction } from './components/Middle/ChatAction.js';
+export type { ChatActionProps, ChatActionStyleProps } from './components/Middle/ChatAction.js';
+
 export { LeadStageMenu, stageOrder } from './components/Middle/LeadStageMenu.js';
 export type {
   LeadStageMenuProps,
@@ -661,6 +805,24 @@ export type {
 } from './components/Middle/HeaderNavButton.js';
 
 export { AutoCancelSwitch } from './components/Middle/AutoCancelSwitch.js';
+
+/**
+ * The bar linking a chat room to its outbox, and the modal that queues a
+ * message. Both belong to scheduling rather than to either room, which is why
+ * they carry the schedule purple wherever they appear.
+ */
+export { ScheduledBadge } from './components/Middle/ScheduledBadge.js';
+export type {
+  ScheduledBadgeProps,
+  ScheduledBadgePlace,
+  ScheduledBadgeStyleProps,
+} from './components/Middle/ScheduledBadge.js';
+
+export { ScheduleMessageModal } from './components/Middle/ScheduleMessageModal.js';
+export type {
+  ScheduleMessageModalProps,
+  ScheduleTimezone,
+} from './components/Middle/ScheduleMessageModal.js';
 export type {
   AutoCancelSwitchProps,
   AutoCancelSwitchStyleProps,

@@ -1,4 +1,4 @@
-import { radius, spacing } from './space.js';
+import { borderWidth, radius, spacing } from './space.js';
 import { fontSize } from './typography.js';
 
 /**
@@ -2372,12 +2372,75 @@ const middle = {
    * control is drawn wherever a scheduled queue is, and the header is only the
    * first of those places.
    */
+  /**
+   * The banner pointing between a room and its outbox.
+   *
+   * Figma: node 2077:17394 — two states of one bar. In the room it offers the
+   * way out to the queue; in the queue it offers the way back. Purple-ringed
+   * because it belongs to scheduling rather than to either room.
+   */
+  scheduledBadge: {
+    radius: radius.m,
+    paddingX: 14,
+    paddingY: 10,
+    gap: spacing.s,
+    /** Space between the glyphs when more than one is drawn. */
+    iconGap: spacing.xs,
+    iconSize: 18,
+  },
+  /**
+   * Choosing when a message goes out.
+   *
+   * Figma: node 2077:8807 — a calendar, a time, a timezone, and the auto-cancel
+   * choice, in a modal the composer's schedule button opens.
+   */
+  scheduleModal: {
+    width: 350,
+    radius: spacing.m,
+    bodyPaddingX: spacing.l,
+    bodyPaddingY: spacing.m,
+    /** Space between the calendar, the time row, and the checkbox. */
+    gap: spacing.m,
+    /** Space between a field's label and the control under it. */
+    labelGap: spacing.s - 4,
+    footerPadding: spacing.m,
+    footerGap: spacing.s - 4,
+    /** The time button and the timezone picker beside it. */
+    fieldGap: spacing.m,
+    timeWidth: 89,
+    timezoneWidth: 214,
+    controlRadius: radius.xs,
+    controlPaddingX: spacing.s - 4,
+    controlPaddingY: spacing.xs,
+    /** How far a disabled control fades before a date is chosen. */
+    disabledOpacity: 0.3,
+    /** The timezone rows: an avatar, a name, and the offset. */
+    timezoneAvatarSize: 20,
+    timezoneGap: spacing.s - 4,
+    /** The dropdown the time button opens. */
+    menuMaxHeight: 220,
+    menuRadius: radius.xs,
+    menuPaddingY: spacing.xxs,
+    menuItemPaddingX: spacing.s,
+    menuItemPaddingY: spacing.xs,
+  },
   autoCancel: {
     radius: radius.s,
     paddingX: spacing.s,
     paddingY: spacing.xs + 2,
     gap: spacing.xs + 2,
     iconSize: 14,
+    /**
+     * The label-less form the mobile scheduled header draws.
+     *
+     * Without its label the control is a shield and a switch, which came out
+     * small enough to read as an afterthought beside a 24px chevron — and small
+     * enough to be an awkward tap target. It takes more inset and a larger
+     * glyph, so dropping the word does not also shrink the control.
+     */
+    compactPaddingX: spacing.s,
+    compactPaddingY: spacing.s,
+    compactIconSize: 20,
     /** Dimming applied while the switch cannot be used. */
     disabledOpacity: 0.5,
   },
@@ -2427,20 +2490,35 @@ const middle = {
      * exists to let you read.
      */
     menu: {
-      width: 196,
+      /**
+       * No `width`: the menu hugs its widest label — "Already Equipped".
+       *
+       * Figma draws the frame at 320, but that is the width of the surface it
+       * was placed on rather than a measurement of the list. Every row is the
+       * same text at the same size, so the content already knows how wide the
+       * menu needs to be, and a fixed number leaves a band of empty tint to the
+       * right of every shorter label.
+       */
       radius: radius.s,
       padding: spacing.xs,
       /** Space between the rows. */
       gap: spacing.xs,
       /**
-       * A row is the stage's own pill stretched to the menu's width, so the
-       * tints stack into one column rather than a ragged edge.
+       * A row is the stage's tint stretched to the menu's width, so the colours
+       * stack into one column rather than a ragged edge.
+       *
+       * Rounded rectangles rather than pills: the pill shape belongs to the
+       * badge, which sits inline among text and has to read as one object. In a
+       * stacked list the full round reads as a column of lozenges, and Figma
+       * squares the corners off to `xs`.
        */
       rowPaddingX: spacing.xs,
       rowPaddingY: spacing.xxs,
-      rowRadius: radius.round,
+      rowRadius: radius.xs,
       /** How far the menu sits below its trigger. */
       offset: spacing.xxs,
+      /** The remove control on a row that carries one. */
+      removeSize: 14,
     },
     paddingX: { l: spacing.s, m: spacing.xs + 2 },
     paddingY: 2,
@@ -2464,6 +2542,13 @@ const middle = {
     chipPaddingY: 3,
     chipGap: spacing.xs,
     avatarSize: 20,
+    /**
+     * Cap on the manager's name in the compact row.
+     *
+     * Compact already shortens the name to its first word; this is the backstop
+     * for a first name long enough to crowd the button anyway.
+     */
+    compactNameMaxWidth: 72,
     /** The Add button. */
     actionRadius: radius.xs,
     actionPaddingLeft: spacing.xs,
@@ -2498,6 +2583,552 @@ const middle = {
     tickBorderWidth: 0.75,
     tickIconSize: 9,
   },
+  /**
+   * One message in the thread — the bubble, and everything drawn inside it.
+   *
+   * Figma: node 3523:40393 (the bubble), 3523:40843 (send indicator),
+   * 3523:40410 / 3523:40358 (picture and attachment), 3518:21085 (chat action).
+   */
+  /**
+   * The meeting card in the thread.
+   *
+   * Figma: node 2023:13923. Ringed in the meetings green rather than filled,
+   * the same way a scheduled message is ringed in purple: it is still a message
+   * in the conversation, and a filled card would read as a panel dropped into
+   * the thread.
+   */
+  meetingBubble: {
+    radius: radius.m,
+    padding: spacing.s,
+    borderWidth: borderWidth.medium,
+    /** Space between the heading, the detail rows, and the buttons. */
+    gap: spacing.s,
+    /** Space between one detail row and the next. */
+    rowGap: spacing.xxs,
+    /** Space between a row's glyph, its label, and its value. */
+    detailGap: spacing.xxs,
+    iconSize: 16,
+    /** The label column — "Date:", "Time:", "Link:" — kept to one width so the
+     *  values line up rather than stepping in and out. */
+    labelWidth: 32,
+    /** The wider label a recording row needs: "Available Until:". */
+    wideLabelWidth: 92,
+    width: 288,
+    /** The proposal card, which is wider because it carries a 40px mark. */
+    proposeWidth: 349,
+    proposeMarkSize: 40,
+    proposeMarkRadius: radius.s,
+    proposeGap: spacing.s,
+    /** Space between a proposal's title and the line under it. */
+    proposeStackGap: spacing.xxs,
+    /** The row of Cancel / Reschedule / Join under a booked meeting. */
+    buttonGap: spacing.xs,
+    buttonHeight: 30,
+  },
+  bubble: {
+    /**
+     * How long a sent message stays editable, in milliseconds.
+     *
+     * Upwork's own limit: an hour after sending, a message can no longer be
+     * changed or withdrawn, so the hover bar stops offering controls that would
+     * be refused. Kept as a token rather than a literal because it is a rule the
+     * product enforces, not a measurement of the drawing.
+     */
+    editWindowMs: 60 * 60 * 1000,
+    radius: radius.m,
+    /**
+     * One inset for every bubble — Figma draws 12, raised to the `m` step.
+     *
+     * A message is the thing the room exists to show, and the padding is what
+     * separates it from the next one; at 12 the text sits closer to its own
+     * edge than the bubbles do to each other.
+     */
+    padding: spacing.m,
+    /** Space between the message and the send indicator under it. */
+    gap: spacing.xs,
+    /** Space between the text and a code chip that follows it. */
+    inlineGap: spacing.xs,
+    /** The widest a bubble grows before its text wraps. */
+    maxWidth: 480,
+    /** The code chip drawn inline in a message. */
+    codeRadius: spacing.xxs,
+    codePadding: spacing.xxs,
+    codeFontSize: 11,
+    /** Dimming on a deleted message's italic placeholder. */
+    deletedOpacity: 0.5,
+    /** The send indicator: the time, and what happened to the message. */
+    indicator: {
+      height: 15,
+      gap: 2,
+      /**
+       * The delivery mark.
+       *
+       * Larger than the 12px type it sits beside: the ticks are the one part of
+       * the line that is read as a glyph rather than as text, and at the text's
+       * own size a single tick and a double tick are hard to tell apart at a
+       * glance — which is the entire distinction they carry.
+       */
+      iconSize: 16,
+    },
+    /**
+     * The attachment and picture bubbles, which are one layout with two glyphs.
+     *
+     * Figma draws them at a fixed 258 rather than letting the filename set the
+     * width: a row of attachments with ragged edges reads as noise, and the name
+     * truncates instead.
+     */
+    attachment: {
+      width: 258,
+      gap: spacing.m,
+      /** Space between the file glyph and its name. */
+      markGap: spacing.xs,
+      markSize: 24,
+      /**
+       * The affordance at the trailing edge — the disc the arrow sits in, and
+       * the box the spinner and the error mark are centred in. One size for all
+       * three, so the row does not resize as an upload progresses.
+       */
+      actionSize: 24,
+      /**
+       * The arrow inside that disc, and the spinner beside it.
+       *
+       * Smaller than the disc: the arrow is a mark on a filled circle rather
+       * than the circle itself, and the spinner has to read as the same weight
+       * as the arrow it replaces rather than as a ring around the whole slot.
+       */
+      actionIconSize: 14,
+      /** The file type under the name — "PDF". */
+      typeFontSize: 10,
+      /** The wash behind a failed upload. */
+      failedTint: 'rgba(250, 55, 55, 0.15)',
+    },
+    /**
+     * The floating action bar that appears on hover.
+     *
+     * Overhangs the bubble's bottom edge rather than sitting inside it: the
+     * bubble is sized by its message, and reserving a strip for controls that
+     * are usually absent would leave every resting bubble with a gap in it.
+     */
+    action: {
+      radius: radius.round,
+      padding: spacing.xxs,
+      gap: 2,
+      /**
+       * Figma draws a 24px button carrying a 12px glyph. Both go up a step: the
+       * bar floats over the message it acts on, so it has to be reachable
+       * without the pointer straying back onto the bubble, and a 12px mark in a
+       * 24px disc reads as a speck at the size the thread is scanned at.
+       */
+      buttonSize: 30,
+      iconSize: 16,
+      /** How far the bar hangs below the bubble. */
+      offsetBottom: -8,
+      offsetLeft: spacing.s,
+    },
+  },
+  /**
+   * The line above a message naming who sent it.
+   *
+   * Figma: node 3523:40493. `[USER]` messages mirror the whole row — the avatar
+   * moves to the trailing edge and the name reads right-to-left — so the layout
+   * is one row reversed rather than two separate arrangements.
+   */
+  sender: {
+    gap: spacing.s,
+    avatarSize: 32,
+    /** Space between the name and the badges that follow it. */
+    badgeGap: spacing.xs,
+    /** The skeleton drawn while the first page loads. */
+    loadingWidth: 111,
+    loadingHeight: 19,
+    loadingRadius: radius.s,
+    /** The "New Message" rule that separates read from unread. */
+    divider: {
+      gap: spacing.xs,
+      height: 14,
+      fontSize: 12,
+    },
+  },
+  /**
+   * A badge beside the sender's name — who acted, and on whose behalf.
+   *
+   * Figma: node 3523:40585. The plain "by …" forms carry no fill; the AI, the
+   * meeting, and the schedule forms each take their own tint, because they name
+   * a system rather than a person.
+   */
+  authorBadge: {
+    paddingY: 2,
+    gap: spacing.xxs,
+    fontSize: 12,
+    /** The tinted forms — Laziza AI. */
+    tintPaddingLeft: spacing.xxs,
+    tintPaddingRight: spacing.xs,
+    tintRadius: radius.round,
+    tintGap: 2,
+    /** The disc carrying the mark on a meeting or schedule badge. */
+    markSize: 16,
+    /**
+     * The glyph inside that disc.
+     *
+     * Figma draws 7.5px, which is what a text layer measures rather than what a
+     * clock face needs — at that size the hands are sub-pixel and the mark reads
+     * as a dot. 11 fills the disc without touching its edge.
+     */
+    markFontSize: 11,
+    iconSize: 12,
+  },
+  /**
+   * The composer — the box a message is written in.
+   *
+   * Figma: node 1081:12890 ("Chat or Text Field"), eight states, with the
+   * controls filed separately beneath it.
+   */
+  /**
+   * A line in the thread reporting something that happened to the room — a
+   * stage change, an auto-reply switch, a scheduled message firing.
+   *
+   * Figma: nodes 4224:41684, 4494:30072, 4512:26977.
+   */
+  roomEvent: {
+    padding: spacing.m,
+    /** Space between the sentence and its trailing timestamp. */
+    gap: spacing.xs,
+    /** Space between the words and the badges inside the sentence. */
+    innerGap: spacing.xxs,
+    iconSize: 14,
+  },
+  /**
+   * The room itself — the thread, and the rails around it.
+   *
+   * Figma: node 4210:33888. Desktop and mobile differ in width and in how much
+   * inset the thread gets, not in what it contains.
+   */
+  room: {
+    /** The thread's own column, which the messages are centred in. */
+    desktopWidth: 724,
+    mobileWidth: 402,
+    /**
+     * Desktop has no side rails: the thread is a centred column with margins
+     * either side already, and every bubble carries its own M padding, so a
+     * second inset reads as double-padded against a header that runs the full
+     * width.
+     *
+     * Mobile keeps its rails. There are no margins to fall back on at 402px —
+     * without the inset the bubbles and the composer would touch both screen
+     * edges.
+     */
+    desktopPaddingX: 0,
+    mobilePaddingX: spacing.m,
+    /**
+     * The vertical inset stays: it is the space above the first message and
+     * below the last, which is what keeps the thread from butting against the
+     * header and the composer. Nothing else supplies it — a bubble's own
+     * padding is inside the bubble.
+     */
+    paddingY: spacing.m,
+    /**
+     * How the room's bands stack.
+     *
+     * Every layer used to sit at 1, which left DOM order to decide — and the
+     * thread comes after the header, so a header popover opened over the
+     * messages was drawn behind them. The header and composer are chrome and
+     * belong above the thread they frame; the date pill floats over the
+     * messages but stays under both.
+     */
+    layer: {
+      thread: 1,
+      divider: 2,
+      chrome: 3,
+    },
+    /**
+     * What fills the thread when there is nothing in it.
+     *
+     * Figma: node 426:20575, the "Empty or Not Found" state — a badge-blue disc
+     * carrying a struck-through bubble, a title, and a line explaining why the
+     * column is bare.
+     */
+    empty: {
+      /** The bare band above an empty room. Figma draws 85px. */
+      headerHeight: 85,
+      markSize: 40,
+      iconSize: 22,
+      /** Space between the mark, the title, and the line under it. */
+      gap: 10,
+      paddingX: spacing.xl,
+      titleFontSize: fontSize.l,
+      descriptionFontSize: fontSize.m,
+      /** The description wraps at a readable measure rather than the column. */
+      maxWidth: 360,
+    },
+    /**
+     * The room's own narration — "Chat started on…", "added to the room".
+     * Wrapped at a readable measure rather than the column's full width, so a
+     * long line breaks near the middle instead of running edge to edge.
+     */
+    notice: {
+      paddingY: spacing.xxs,
+      maxWidth: 320,
+    },
+    /** Space between one message and the next. */
+    messageGap: spacing.s,
+    /** Space between a sender's line and the bubble under it. */
+    senderGap: spacing.xs,
+    /** How far a bubble is indented past the avatar it hangs from. */
+    bubbleInset: 44,
+    /**
+     * The date separator that breaks the thread into days.
+     *
+     * Figma: node 39:4464 — a white pill in the brand blue, not a line of grey
+     * text. It sticks to the top of the thread while a day is being read and is
+     * pushed out by the next day's, so the column always says which day is on
+     * screen. That is why it is a filled pill: it floats over the messages, and
+     * bare text over a bubble would be unreadable.
+     */
+    divider: {
+      paddingX: spacing.xl,
+      paddingY: spacing.xs,
+      radius: radius.round,
+      fontSize: fontSize.m,
+      /** Space above the pill, separating it from the day that just ended. */
+      offsetTop: spacing.s,
+    },
+  },
+  composer: {
+    /**
+     * The bar itself — the white surface everything sits on.
+     *
+     * Figma's 14/10 inset rather than a spacing step: the composer is a floating
+     * bar over the thread, and the nearest steps (12 and 16) either crowd the
+     * field or push the bar taller than the room it is given.
+     */
+    frame: {
+      radius: radius.m,
+      paddingX: 14,
+      paddingY: 10,
+      gap: spacing.s,
+    },
+    /**
+     * The send and schedule buttons.
+     *
+     * One control in two colours: send is the brand blue, schedule the purple
+     * that names queued messages everywhere else. Both empty out to the page
+     * background when there is nothing to send.
+     */
+    sendButton: {
+      /**
+       * Sized so the pair fills the field's height.
+       *
+       * The two stack beside a 72px field with a 4px gap between them, so each
+       * takes 34 and the column comes out level with the box it sends. Figma
+       * draws 36, which leaves the pair standing 4px proud of the field — fine
+       * in a static frame, visibly misaligned once the field can grow.
+       */
+      size: 34,
+      radius: radius.round,
+      padding: spacing.xs,
+      /**
+       * The plane and the clock.
+       *
+       * Larger than the toolbar's glyphs: these are the two controls that
+       * actually send, they sit alone at the end of the row, and the button
+       * around them grows to the field's height — a small glyph in a large
+       * circle reads as a target that missed.
+       */
+      iconSize: 22,
+    },
+    /**
+     * The Message / Note tabs above the field.
+     *
+     * Figma: nodes 100:4694 and 100:4695 — the circled "i" after each label.
+     */
+    tab: {
+      infoSize: 14,
+      infoBorderWidth: 0.5,
+      infoGlyphSize: 10,
+    },
+    /**
+     * The small round controls on the composer's toolbar — attachment, meeting,
+     * and the rich-text marks.
+     *
+     * Transparent at rest and tinted on hover, rather than carrying a resting
+     * fill: a row of eight filled discs under a text box would read as a second
+     * toolbar competing with the message itself.
+     */
+    iconButton: {
+      /**
+       * Figma draws a 24px button carrying a 12px glyph. Both go up a step.
+       *
+       * These sit under a text field the writer is looking at, not in a dense
+       * toolbar — the marks have to be legible at a glance and comfortable to
+       * hit, and at 12px a B and an I are hard to tell apart without looking
+       * directly at them.
+       */
+      size: 32,
+      radius: radius.round,
+      iconSize: 20,
+      /**
+       * The rich-text marks run larger than the rest of the row.
+       *
+       * A clip and a calendar are distinct shapes at any size; a B, an I and a
+       * U are the same letterform under three treatments, and telling them
+       * apart is what the extra pixels buy. They keep the same 32px hit target
+       * so the toolbar stays one row of evenly spaced controls.
+       */
+      markIconSize: 24,
+    },
+    /**
+     * The tooltip a rich-text mark opens — its name, then the shortcut on each
+     * platform.
+     *
+     * Figma: nodes 7843:662917 (bold), 662945 (italic), 663001 (strikethrough),
+     * 663040 (code). Both rows are always drawn rather than the tooltip picking
+     * the viewer's platform: this is a design system's gallery as much as a
+     * product surface, and a card that changed shape depending on who opened it
+     * could not be reviewed.
+     */
+    markTooltip: {
+      /** Space between the title and the rows, and between the rows. */
+      gap: spacing.xs + 2,
+      /** Space between a platform glyph and the shortcut beside it. */
+      rowGap: spacing.xs,
+      /** Space between the keys, the pluses, and the trailing phrase. */
+      keyGap: 2,
+      /** The Apple and Windows marks that head each row. Figma draws 10px. */
+      platformSize: 10,
+      platformOpacity: 0.7,
+      /** The boxed keys. A 0.5px ring, as Figma draws it. */
+      keyBorderWidth: 0.5,
+      keyRadius: radius.xxs,
+      keyPaddingX: 3,
+      keyPaddingY: 1,
+      keyFontSize: 9,
+      /** The `+` between two keys, a step above the keycap text. */
+      plusFontSize: 10,
+      /**
+       * The ⌘ key, which is a glyph rather than a word and so is boxed square
+       * instead of hugging its text.
+       */
+      commandKeyWidth: 14,
+      commandGlyphSize: 8,
+      commandKeyPadding: 2,
+      /** The mode tooltips carry a paragraph, so their card runs wider. */
+      hintWidth: 300,
+    },
+    /**
+     * The field itself — where the message is typed.
+     *
+     * Figma: node 100:4641. Six states, of which four are the ordinary
+     * lifecycle of a text box (empty, filled, hovered, disabled) and two are
+     * conditions the composer puts it in (error, editing).
+     */
+    field: {
+      /** Figma layers a 15%% red over the fill rather than replacing it. */
+      errorTint: 'rgba(250, 55, 55, 0.15)',
+      radius: radius.m,
+      padding: spacing.xs,
+      /** Space between the text, the attachments, and the toolbar under them. */
+      gap: spacing.xs,
+      /** The resting height, before the message grows it. */
+      minHeight: 72,
+      /**
+       * The typed text.
+       *
+       * Figma sets 12px, smaller than the thread's own 14. Raised to match the
+       * thread: what is being written here becomes a message over there, and
+       * composing at a smaller size than the result reads at makes the draft
+       * harder to check than the thing it turns into.
+       */
+      fontSize: 14,
+      lineHeight: 20,
+      /** Dimming on the placeholder, and on a disabled field's text. */
+      placeholderOpacity: 0.7,
+      /** The rule between the rich-text marks and the character count. */
+      dividerWidth: 0.5,
+      dividerHeight: 15,
+      dividerOpacity: 0.3,
+      /** Space between the toolbar's two halves. */
+      toolbarGap: spacing.xs,
+      /** Space between the marks themselves. */
+      markGap: 2,
+    },
+    /**
+     * The badge naming what the composer is about to do.
+     *
+     * Figma: node 4189:22033. Four modes, each in the colour that names it
+     * elsewhere — the brand for a message everyone sees, Laziza for a private
+     * note, the schedule purple for a queued send, and grey while editing.
+     */
+    status: {
+      /**
+       * The message wash — Figma draws the brand at 25%% rather than a flat
+       * tint, so the badge sits lighter than a filled one would.
+       */
+      messageBackground: 'rgba(55, 138, 250, 0.25)',
+      radius: radius.xs,
+      paddingX: spacing.xs,
+      paddingY: spacing.xs,
+      gap: spacing.xxs,
+      fontSize: 12,
+      iconSize: 12,
+    },
+    /**
+     * The character counter.
+     *
+     * Drawn as a pill rather than bare text so it holds its shape as the number
+     * grows — a count that shifted the toolbar every thousand characters would
+     * be worse than no count at all.
+     */
+    counter: {
+      radius: radius.round,
+      paddingX: 3,
+      paddingY: 2,
+      fontSize: 9,
+      opacity: 0.7,
+      /** The wash behind it — the disabled grey at a tenth. */
+      background: 'rgba(165, 166, 168, 0.1)',
+    },
+    /**
+     * An attachment waiting to be sent, drawn inside the field.
+     *
+     * A picture shows itself; a file shows its name and type. Both stand the
+     * same height so a row mixing them reads as one strip.
+     */
+    attachment: {
+      height: 72,
+      radius: radius.s,
+      borderWidth: 0.7,
+      gap: spacing.xs,
+      /** The picture, which is narrower than the file card beside it. */
+      imageWidth: 64,
+      /** The file card, sized to hold a truncated name and its type. */
+      fileWidth: 132,
+      filePaddingX: spacing.s,
+      filePaddingY: 10,
+      fileGap: spacing.xs,
+      fileIconSize: 24,
+      fileNameSize: 11,
+      fileTypeSize: 9,
+      /** The remove control that appears on hover. */
+      removeSize: 16,
+      removeOffset: spacing.xxs,
+      /**
+       * The wash over a chip whose file is still uploading. White at 70%% so the
+       * spinner reads against a picture as clearly as against a file card.
+       */
+      uploadingScrim: 'rgba(255, 255, 255, 0.7)',
+    },
+    /** The Business Manager picker — an avatar and a chevron in a pill. */
+    chooseBm: {
+      height: 36,
+      radius: radius.round,
+      paddingLeft: spacing.xxs,
+      paddingRight: spacing.xs,
+      paddingY: spacing.xxs,
+      gap: spacing.xxs,
+      avatarSize: 32,
+      chevronSize: 16,
+    },
+  },
 } as const;
 
 /**
@@ -2518,7 +3149,20 @@ const datePicker = {
   /** The cell's hit area, which is wider than the cell so rows read as bands. */
   cellWidth: 32,
   cellRadius: radius.xxs,
+  /** How far a day outside the drawn month fades. Figma draws 35%%. */
+  outsideOpacity: 0.35,
   navIconSize: 12,
+  /**
+   * The month list the header's name opens when `monthPicker` is on.
+   *
+   * Figma: node 2031:2863 — a small floating list, not a full-height select.
+   * Twelve months is short enough to scan and long enough to want a cap.
+   */
+  monthListMaxHeight: 220,
+  monthListOffset: spacing.xxs,
+  monthListPadding: spacing.xxs,
+  monthItemPaddingX: spacing.xs,
+  monthItemPaddingY: spacing.xxs,
 } as const;
 
 export const component = {

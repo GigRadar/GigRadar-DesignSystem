@@ -152,6 +152,15 @@ export const status = {
      * predictably over any surface.
      */
     background: '#FEE1E1',
+    /**
+     * The wash behind a destructive control being hovered — Figma's chat menu
+     * "Delete - Hover" (node 3523:40612).
+     *
+     * Lighter than `background`, which is the fill of a whole errored surface. A
+     * hover is a moment, not a state, so it sits a step back from the colour
+     * that means "this went wrong".
+     */
+    hover: '#FFEBEE',
     text: '#CF0000',
   },
   /** Canonical warning. Figma group: "Warning". */
@@ -193,6 +202,14 @@ export const accent = {
      * taken from the component, which is the only place it is drawn.
      */
     backgroundSoft: '#FFF9DA',
+    /**
+     * The deeper wash behind the composer's "Private to members of your team"
+     * badge (node 4189:22033).
+     *
+     * A step stronger than `background`, because that badge sits on white and
+     * has to hold its own as a status rather than reading as a highlight.
+     */
+    backgroundStrong: '#FFF3D2',
   },
   /**
    * Figma group: "Decrease". Reads as a metric-delta color (a falling number),

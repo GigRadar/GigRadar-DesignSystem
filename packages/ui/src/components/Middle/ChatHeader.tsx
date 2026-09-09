@@ -6,10 +6,11 @@ import {
   IconAssignedPeopleStroke,
   IconBubbleMessageStroke,
   IconFilterChatStroke,
-  IconInfoStroke,
+  IconInfoLetter,
   IconJobPostingArrowUpRight,
   IconSearch,
 } from '../../icons/defs.js';
+import { Tooltip } from '../Tooltip/Tooltip.js';
 import { AddBmInfo, type AddBmInfoProps } from './AddBmInfo.js';
 import { FilterChat, type ChatFilter } from './FilterChat.js';
 import { LeadStageMenu } from './LeadStageMenu.js';
@@ -80,7 +81,7 @@ export type ChatHeaderProps = {
    */
   layout?: ChatHeaderLayout;
   /**
-   * Draws the scheduled-messages header instead: a sidebar toggle, the
+   * Draws the scheduled-messages header instead: a back chevron, the
    * "Scheduled Messages" title over the room's own, and the auto-cancel switch.
    * The room's controls have no role there — the surface is a queue, not a
    * conversation.
@@ -111,7 +112,7 @@ export type ChatHeaderProps = {
   messageCount?: number;
   onMessagesClick?: () => void;
   onJobPostingClick?: () => void;
-  /** The back chevron on mobile, and the sidebar toggle when scheduled. */
+  /** The back chevron — drawn on mobile, and on the scheduled queue. */
   onBack?: () => void;
   /** Mobile's single info control. */
   onInfoClick?: () => void;
@@ -231,12 +232,12 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
           paddingBottom: len(paddingY) ?? header.paddingY,
         }}
       >
-        {/* The leading chevron. Scheduled it collapses the sidebar; on mobile it
-            goes back to the room list. Both are "leave this surface", which is
-            why one control serves both. */}
-        {(scheduled || mobile) && (
-          <HeaderNavButton action={scheduled ? 'collapse' : 'back'} onClick={onBack} />
-        )}
+        {/* The leading chevron — one glyph wherever it appears. Figma draws the
+            desktop queue with a double-chevron, as though it closed a sidebar,
+            but the control does the same thing on every surface it is on: leave
+            here and go back. Two marks for one action is a distinction the
+            person using it has to learn for nothing. */}
+        {(scheduled || mobile) && <HeaderNavButton action="back" onClick={onBack} />}
 
         {scheduled ? (
           // The queue's own heading, with the room it belongs to underneath.
@@ -256,7 +257,7 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
                 color: color.main.black,
               }}
             >
-              Scheduled Messages
+              Schedule Message Room
             </span>
             <span
               style={{
@@ -331,24 +332,32 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
                 )}
                 {/* On mobile the tags keep their glyph and drop their label —
                     there is room for the mark but not for the name. */}
+                {/* Both tags carry a tooltip naming what the value is. On mobile
+                    the label is dropped and only the glyph remains, so without
+                    one there is nothing to say whether a mark means the scanner
+                    or the person assigned. */}
                 {preset != null && (
-                  <HeaderMetaTag
-                    icon={IconSearch}
-                    variant="brand"
-                    label="Reply preset"
-                    onClick={onPresetClick}
-                  >
-                    {mobile ? undefined : preset}
-                  </HeaderMetaTag>
+                  <Tooltip content="Scanner Name">
+                    <HeaderMetaTag
+                      icon={IconSearch}
+                      variant="brand"
+                      label="Scanner Name"
+                      onClick={onPresetClick}
+                    >
+                      {mobile ? undefined : preset}
+                    </HeaderMetaTag>
+                  </Tooltip>
                 )}
                 {assignee != null && (
-                  <HeaderMetaTag
-                    icon={IconAssignedPeopleStroke}
-                    label="Assigned to"
-                    onClick={onAssigneeClick}
-                  >
-                    {mobile ? undefined : assignee}
-                  </HeaderMetaTag>
+                  <Tooltip content="Freelancer Profile">
+                    <HeaderMetaTag
+                      icon={IconAssignedPeopleStroke}
+                      label="Freelancer Profile"
+                      onClick={onAssigneeClick}
+                    >
+                      {mobile ? undefined : assignee}
+                    </HeaderMetaTag>
+                  </Tooltip>
                 )}
               </div>
             </div>
@@ -363,9 +372,12 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
             checked={autoCancel}
             onCheckedChange={onAutoCancelChange}
             label={mobile ? null : undefined}
+            compact={mobile}
           />
         ) : mobile ? (
-          <MenuButton icon={IconInfoStroke} label="Room information" muted onClick={onInfoClick} />
+          // The bare letterform rather than the circled glyph: the button draws
+          // its own ring, and a circled "i" inside it reads as two rings.
+          <MenuButton icon={IconInfoLetter} label="Room information" muted onClick={onInfoClick} />
         ) : (
           <div
             ref={controlsRef}
@@ -380,14 +392,20 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
                 span, so its popover hangs off the button itself rather than off
                 the header — the header clips its overflow, and an absolutely
                 positioned child of it would be cut at the band's edge. */}
+            {/* Every control here is a glyph in a circle, so each carries a
+                tooltip naming what it does. The `label` matches it word for
+                word: a screen reader and a hover should not describe the same
+                button differently. */}
             <span style={{ position: 'relative', display: 'inline-flex' }}>
-              <MenuButton
-                icon={IconFilterChatStroke}
-                label="Filter chat"
-                count={filterCount ?? shownFilters?.length}
-                selected={filterOpen}
-                onClick={onFilterClick}
-              />
+              <Tooltip content="Show/Hide Room event">
+                <MenuButton
+                  icon={IconFilterChatStroke}
+                  label="Show/Hide Room event"
+                  count={filterCount ?? shownFilters?.length}
+                  selected={filterOpen}
+                  onClick={onFilterClick}
+                />
+              </Tooltip>
               {filters && filterOpen && (
                 <span style={{ position: 'absolute', top: '100%', right: 0, marginTop: header.popoverOffset, zIndex: 1 }}>
                   <FilterChat
@@ -398,22 +416,40 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
                 </span>
               )}
             </span>
-            <MenuButton
-              icon={IconBubbleMessageStroke}
-              label="View messages"
-              count={messageCount}
-              onClick={onMessagesClick}
-            />
-            <MenuButton
-              icon={IconJobPostingArrowUpRight}
-              label="View job posting"
-              onClick={onJobPostingClick}
-            />
+            <Tooltip content="View Chat on Upwork">
+              <MenuButton
+                icon={IconBubbleMessageStroke}
+                label="View Chat on Upwork"
+                count={messageCount}
+                onClick={onMessagesClick}
+              />
+            </Tooltip>
+            <Tooltip content="View Job Post on Upwork">
+              <MenuButton
+                icon={IconJobPostingArrowUpRight}
+                label="View Job Post on Upwork"
+                onClick={onJobPostingClick}
+              />
+            </Tooltip>
             {stage && (
               <span style={{ position: 'relative', display: 'inline-flex' }}>
-                <LeadStageButton stage={stage} open={stageOpen} onClick={onStageClick} />
+                <Tooltip content="Change Leads Stage">
+                  <LeadStageButton stage={stage} open={stageOpen} onClick={onStageClick} />
+                </Tooltip>
+                {/* Centred on the pill rather than pinned to an edge: the menu
+                    hugs its own content, so it is narrower than the header and
+                    reads as belonging to the control it hangs from. */}
                 {onStageChange && stageOpen && (
-                  <span style={{ position: 'absolute', top: '100%', right: 0, marginTop: header.popoverOffset, zIndex: 1 }}>
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      marginTop: header.popoverOffset,
+                      zIndex: 1,
+                    }}
+                  >
                     <LeadStageMenu
                       value={stage}
                       onSelect={(next) => {
@@ -434,7 +470,7 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
           header frame, sharing its inset and picking up its own top rule. */}
       {addBusinessManager && (
         <div style={{ borderTop: rule }}>
-          <AddBmInfo {...addBusinessManager} paddingX={insetX} />
+          <AddBmInfo compact={mobile} {...addBusinessManager} paddingX={insetX} />
         </div>
       )}
     </header>

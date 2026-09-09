@@ -1,5 +1,5 @@
 import { borderWidth, color, component, textStyle } from '@gigradar/theme';
-import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, useState, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import { Toggle } from '../Toggle/Toggle.js';
 import { Icon } from '../../icons/Icon.js';
@@ -29,6 +29,16 @@ export type AutoCancelSwitchProps = {
    */
   label?: ReactNode;
   disabled?: boolean;
+  /**
+   * The larger, label-less form the mobile scheduled header draws.
+   *
+   * Dropping the word would otherwise shrink the whole control to a shield and a
+   * switch, which reads as an afterthought beside a 24px chevron and makes an
+   * awkward tap target. Compact takes more inset and a bigger glyph instead, so
+   * losing the label does not also lose the presence.
+   * @default false
+   */
+  compact?: boolean;
 } & AutoCancelSwitchStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'onChange' | 'defaultChecked'>;
 
@@ -51,6 +61,7 @@ export const AutoCancelSwitch = forwardRef<HTMLDivElement, AutoCancelSwitchProps
       onCheckedChange,
       label = 'Auto-cancel',
       disabled = false,
+      compact = false,
       radius,
       paddingX,
       paddingY,
@@ -61,21 +72,31 @@ export const AutoCancelSwitch = forwardRef<HTMLDivElement, AutoCancelSwitchProps
     },
     ref,
   ) {
+    const [hovered, setHovered] = useState(false);
     const accent = accentColor ?? color.accent.schedule.main;
+    // Figma tints the label purple on hover and while on — the two states where
+    // the control is the thing you are looking at rather than a setting sitting
+    // in a header.
+    const labelTone =
+      !disabled && (hovered || (checked ?? defaultChecked)) ? accent : color.main.black;
 
     return (
       <div
         ref={ref}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
           flexShrink: 0,
           boxSizing: 'border-box',
           gap: len(gap) ?? autoCancel.gap,
-          paddingLeft: len(paddingX) ?? autoCancel.paddingX,
-          paddingRight: len(paddingX) ?? autoCancel.paddingX,
-          paddingTop: len(paddingY) ?? autoCancel.paddingY,
-          paddingBottom: len(paddingY) ?? autoCancel.paddingY,
+          paddingLeft: len(paddingX) ?? (compact ? autoCancel.compactPaddingX : autoCancel.paddingX),
+          paddingRight:
+            len(paddingX) ?? (compact ? autoCancel.compactPaddingX : autoCancel.paddingX),
+          paddingTop: len(paddingY) ?? (compact ? autoCancel.compactPaddingY : autoCancel.paddingY),
+          paddingBottom:
+            len(paddingY) ?? (compact ? autoCancel.compactPaddingY : autoCancel.paddingY),
           borderRadius: len(radius) ?? autoCancel.radius,
           border: `${borderWidth.thin}px solid ${accent}`,
           backgroundColor: background ?? color.main.white,
@@ -83,14 +104,18 @@ export const AutoCancelSwitch = forwardRef<HTMLDivElement, AutoCancelSwitchProps
         }}
         {...rest}
       >
-        <Icon icon={IconAutoCancelShieldStroke} size={autoCancel.iconSize} color={accent} />
+        <Icon
+          icon={IconAutoCancelShieldStroke}
+          size={compact ? autoCancel.compactIconSize : autoCancel.iconSize}
+          color={accent}
+        />
         {label != null && (
-          <span style={{ ...textStyle.mMedium, color: color.main.black, whiteSpace: 'nowrap' }}>
+          <span style={{ ...textStyle.mMedium, color: labelTone, whiteSpace: 'nowrap' }}>
             {label}
           </span>
         )}
         <Toggle
-          size="small"
+          size={compact ? 'medium' : 'small'}
           label="Auto-cancel scheduled messages"
           checked={checked}
           defaultChecked={defaultChecked}

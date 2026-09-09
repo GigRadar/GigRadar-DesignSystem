@@ -24,6 +24,15 @@ import { AddBmInfoPage } from './pages/middle/AddBmInfoPage';
 import { FilterChatPage } from './pages/middle/FilterChatPage';
 import { MenuButtonPage } from './pages/middle/MenuButtonPage';
 import { LeadStageButtonPage } from './pages/middle/LeadStageButtonPage';
+import { BubbleChatPage } from './pages/middle/BubbleChatPage';
+import { AttachmentBubblePage } from './pages/middle/AttachmentBubblePage';
+import { SenderPage } from './pages/middle/SenderPage';
+import { ChatActionPage } from './pages/middle/ChatActionPage';
+import { LazizaAiPage } from './pages/middle/LazizaAiPage';
+import { ComposerPage } from './pages/middle/ComposerPage';
+import { ScheduledRoomPage } from './pages/middle/ScheduledRoomPage';
+import { SchedulePartsPage } from './pages/middle/SchedulePartsPage';
+import { MeetingsPage } from './pages/middle/MeetingsPage';
 import { CardsPage } from './pages/inbox/CardsPage';
 import { RoomListPage } from './pages/inbox/RoomListPage';
 import { PushNotificationPage } from './pages/inbox/PushNotificationPage';
@@ -253,7 +262,6 @@ const NAV: NavGroup[] = [
               { id: 'crm-ai-auto-reply', label: 'Auto Reply', render: () => <AutoReplyPage /> },
               { id: 'crm-ai-presets', label: 'Mention Preset', render: () => <MentionPresetPage /> },
               { id: 'crm-ai-tools', label: 'AI Tools', render: () => <AiToolsPage /> },
-            ],
           },
           {
             id: 'crm-settings-api-key',
@@ -405,7 +413,93 @@ const NAV: NavGroup[] = [
                 label: 'Lead Stage Button',
                 render: () => <LeadStageButtonPage />,
               },
+              {
+                id: 'crm-mid-bubble',
+                label: 'Bubble Chat',
+                render: () => <BubbleChatPage />,
+              },
+              {
+                id: 'crm-mid-attachment',
+                label: 'Attachment Bubble',
+                render: () => <AttachmentBubblePage />,
+              },
+              {
+                id: 'crm-mid-sender',
+                label: 'Sender',
+                render: () => <SenderPage />,
+              },
+              {
+                id: 'crm-mid-chataction',
+                label: 'Chat Action',
+                render: () => <ChatActionPage />,
+              },
+              {
+                /**
+                 * Not a component — a set of marks the ordinary chat components
+                 * take on when the AI is what acted. Filed here because the rule
+                 * for when the amber appears is one decision, and splitting it
+                 * across the bubble, sender, and badge pages would leave it
+                 * written down nowhere.
+                 */
+                id: 'crm-mid-laziza',
+                label: 'Laziza AI',
+                render: () => <LazizaAiPage />,
+              },
+              {
+                /**
+                 * The box a message is written in. A child of the chat room
+                 * rather than a page of its own: it only exists at the foot of
+                 * a thread, and reading it apart from the messages it produces
+                 * would lose what its two modes are for.
+                 */
+                id: 'crm-mid-composer',
+                label: 'Composer',
+                render: () => <ComposerPage />,
+              },
             ],
+          },
+          {
+            /**
+             * The outbox — a sibling of the chat room rather than one of its
+             * parts.
+             *
+             * The pages under `crm-mid` are the pieces a room is assembled
+             * from; this is a whole surface in its own right, reached from the
+             * room but answering a different question. A room shows what was
+             * said, this shows what has not been sent yet, and everything in it
+             * is still editable.
+             */
+            id: 'crm-mid-scheduled',
+            label: 'Schedule Message (Mid)',
+            render: () => <ScheduledRoomPage />,
+            children: [
+              {
+                /**
+                 * The bar linking a room to its outbox, and the modal that
+                 * queues a message. Filed under the queue rather than the room
+                 * because both belong to scheduling: they carry the schedule
+                 * purple wherever they appear, and neither means anything
+                 * without something waiting to go out.
+                 */
+                id: 'crm-mid-schedule-parts',
+                label: 'Badge & Modal',
+                render: () => <SchedulePartsPage />,
+              },
+            ],
+          },
+          {
+            /**
+             * Meetings — a sibling of the room and its outbox rather than a
+             * part of either.
+             *
+             * A meeting outlives the message that proposed it: it is booked,
+             * moved, joined and recorded long after that bubble has scrolled
+             * away. Filing it under the room would make it look like a kind of
+             * message rather than a thing the room can arrange.
+             */
+            id: 'crm-mid-meetings',
+            label: 'Meetings (Mid)',
+            render: () => <MeetingsPage />,
           },
         ],
       },

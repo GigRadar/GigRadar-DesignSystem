@@ -1,6 +1,8 @@
-import { borderWidth, color, component, shadow, textStyle, type StageName } from '@gigradar/theme';
+import { color, component, shadow, textStyle, type StageName } from '@gigradar/theme';
 import { forwardRef, type HTMLAttributes } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
+import { Icon } from '../../icons/Icon.js';
+import { IconXClose } from '../../icons/defs.js';
 import { stageLabels } from './LeadStageButton.js';
 
 const { menu } = component.middle.leadStage;
@@ -46,6 +48,12 @@ export type LeadStageMenuProps = {
    * that does not use every one.
    */
   stages?: StageName[];
+  /**
+   * Draws a remove control on the stage currently set, and calls this when it is
+   * used — Figma's `removeButton` (node 357:8228). For a screen where a lead can
+   * be taken out of the pipeline rather than only moved along it.
+   */
+  onRemove?: () => void;
 } & LeadStageMenuStyleProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'onSelect'>;
 
@@ -54,14 +62,16 @@ export type LeadStageMenuProps = {
  *
  * Figma: CRM file, node 9897:1496682 ("Stage Variant").
  *
- * Each row is the stage's own pill stretched to the menu's full width, rather
- * than a pill hugging its label: stacked, the tints read as one column of
- * colour, and a ragged right edge would make the list harder to scan than the
+ * The menu hugs its widest label — "Already Equipped" — and every row then fills
+ * that width rather than hugging its own text: stacked, the colours read as one
+ * column, where a ragged right edge would make the list harder to scan than the
  * thing it is listing.
  *
- * The current stage takes a border rather than a selected-row fill. Every row
- * already carries a fill of its own, so a highlight would read as a twelfth
- * colour instead of as "this is the one".
+ * Nothing marks the current stage. Figma draws no selected state here, and the
+ * pill that opened the menu is still on screen carrying that stage's own tint —
+ * so the answer is already in view, and a tick would restate it. `value` is
+ * still taken, because the remove control belongs to the row for the stage the
+ * lead is actually in.
  */
 export const LeadStageMenu = forwardRef<HTMLDivElement, LeadStageMenuProps>(
   function LeadStageMenu(
@@ -69,6 +79,7 @@ export const LeadStageMenu = forwardRef<HTMLDivElement, LeadStageMenuProps>(
       value,
       onSelect,
       stages = stageOrder,
+      onRemove,
       width,
       radius,
       padding,
@@ -85,12 +96,15 @@ export const LeadStageMenu = forwardRef<HTMLDivElement, LeadStageMenuProps>(
         role="listbox"
         aria-label="Lead stage"
         style={{
-          display: 'flex',
+          display: 'inline-flex',
           flexDirection: 'column',
+          // `stretch` is what makes every row take the width of the longest one:
+          // the menu sizes itself to "Already Equipped", and the shorter tints
+          // then fill that same box rather than each hugging its own label.
           alignItems: 'stretch',
           gap: len(gap) ?? menu.gap,
           boxSizing: 'border-box',
-          width: len(width) ?? menu.width,
+          width: len(width),
           padding: len(padding) ?? menu.padding,
           borderRadius: len(radius) ?? menu.radius,
           backgroundColor: background ?? color.main.white,
@@ -111,19 +125,14 @@ export const LeadStageMenu = forwardRef<HTMLDivElement, LeadStageMenuProps>(
                 ...textStyle.mRegular,
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: menu.rowPaddingX,
                 boxSizing: 'border-box',
-                width: '100%',
                 paddingLeft: menu.rowPaddingX,
                 paddingRight: menu.rowPaddingX,
                 paddingTop: menu.rowPaddingY,
                 paddingBottom: menu.rowPaddingY,
                 borderRadius: menu.rowRadius,
-                // Transparent rather than absent on the unselected rows: a border
-                // that appears on selection would shift every other row by a
-                // pixel as the choice moved down the list.
-                border: `${borderWidth.thin}px solid ${
-                  current ? color.stageSelectedBorder : 'transparent'
-                }`,
                 backgroundColor: color.stageFlat[stage],
                 color: color.main.black,
                 cursor: 'pointer',
@@ -131,6 +140,29 @@ export const LeadStageMenu = forwardRef<HTMLDivElement, LeadStageMenuProps>(
               }}
             >
               {stageLabels[stage]}
+              {/* Only the current stage can be removed — the control means "take
+                  the lead out of this", which has no meaning on a stage it is
+                  not in. Rendered as a span, since the row is already clickable
+                  and a nested button would swallow its own click. */}
+              {onRemove && current && (
+                <span
+                  role="button"
+                  tabIndex={-1}
+                  aria-label={`Remove from ${stageLabels[stage]}`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onRemove();
+                  }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Icon icon={IconXClose} size={menu.removeSize} color={color.status.error.main} />
+                </span>
+              )}
             </div>
           );
         })}
