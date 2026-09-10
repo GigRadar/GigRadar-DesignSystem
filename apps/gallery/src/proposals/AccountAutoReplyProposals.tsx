@@ -13,7 +13,7 @@ import {
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
 import { AutoReplyDemo } from '../demos/aiConfiguration';
-import { SettingsPanel, SettingsRow } from '../pages/middle/parts';
+import { ListPanel, ListRow } from '../pages/middle/parts';
 
 /**
  * Three proposals for auto-reply, scoped to one connected Upwork account.
@@ -273,7 +273,7 @@ export function ProposalExpandingRow() {
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <SettingsPanel>
+    <ListPanel>
       {ACCOUNTS.map((account, index) => {
         const open = openId === account.id;
         const last = index === ACCOUNTS.length - 1;
@@ -281,7 +281,7 @@ export function ProposalExpandingRow() {
           <div key={account.id}>
             {/* Open, the row's divider moves below the card, so the line closes
                 the whole account rather than cutting it from its own settings. */}
-            <SettingsRow
+            <ListRow
               last={open || last}
               gap={accountPrompt.gap}
               padding={accountPrompt.padding}
@@ -294,7 +294,7 @@ export function ProposalExpandingRow() {
                 size={accountPrompt.chevronSize}
                 color={color.main.description}
               />
-            </SettingsRow>
+            </ListRow>
             {open && (
               <div
                 style={{
@@ -312,7 +312,7 @@ export function ProposalExpandingRow() {
           </div>
         );
       })}
-    </SettingsPanel>
+    </ListPanel>
   );
 }
 
@@ -339,9 +339,9 @@ export function ProposalSearch() {
         onValueChange={setQuery}
         placeholder="Search accounts"
       />
-      <SettingsPanel>
+      <ListPanel>
         {shown.map((account, index) => (
-          <SettingsRow
+          <ListRow
             key={account.id}
             last={index === shown.length - 1}
             gap={accountPrompt.gap}
@@ -351,9 +351,9 @@ export function ProposalSearch() {
           >
             <Identity account={account} />
             <ModePair account={account} />
-          </SettingsRow>
+          </ListRow>
         ))}
-      </SettingsPanel>
+      </ListPanel>
       <SettingsSectionHeading name={selected.name} />
       <AutoReplyDemo key={selectedId} />
     </VStack>
@@ -403,14 +403,14 @@ export function ProposalBadgeMenu() {
 
   return (
     <VStack gap="m" width="100%">
-      <SettingsPanel overflowing>
+      <ListPanel overflowing>
         {ACCOUNTS.map((account, index) => {
           const mode = modes[account.id]!;
           const openClass = openKey?.startsWith(`${account.id}:`)
             ? (openKey.split(':')[1] as 'first' | 'other')
             : null;
           return (
-            <SettingsRow
+            <ListRow
               key={account.id}
               last={index === ACCOUNTS.length - 1}
               gap={accountPrompt.gap}
@@ -431,10 +431,10 @@ export function ProposalBadgeMenu() {
                 onToggle={() => setOpenKey(openClass === 'other' ? null : `${account.id}:other`)}
                 onSelect={(next) => set(account.id, 'other', next)}
               />
-            </SettingsRow>
+            </ListRow>
           );
         })}
-      </SettingsPanel>
+      </ListPanel>
       {/* Drawn at three accounts, so the bar shows one page. It is here for the
           fifty-account case: the list stays one screen tall however many there
           are, which is the whole argument for this shape. */}

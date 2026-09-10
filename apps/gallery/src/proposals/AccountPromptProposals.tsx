@@ -11,7 +11,7 @@ import {
   VStack,
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
-import { SettingsPanel, SettingsRow } from '../pages/middle/parts';
+import { ListPanel, ListRow } from '../pages/middle/parts';
 
 /**
  * Three proposals for scoping the AI prompt to one connected Upwork account.
@@ -142,7 +142,7 @@ export function ProposalInline() {
   const [draft, setDraft] = useState('');
 
   return (
-    <SettingsPanel>
+    <ListPanel>
       {ACCOUNTS.map((account, index) => {
         const open = openId === account.id;
         const last = index === ACCOUNTS.length - 1;
@@ -151,7 +151,7 @@ export function ProposalInline() {
             {/* While the row is open its divider moves to the bottom of the
                 field, so the line closes the whole account rather than cutting
                 between a row and its own prompt. */}
-            <SettingsRow last={open || last} onClick={() => setOpenId(open ? null : account.id)}>
+            <ListRow last={open || last} onClick={() => setOpenId(open ? null : account.id)}>
               <Identity account={account} />
               {/* A chevron rather than an Edit button: the row is already the
                   control, and a button beside it implies a second thing to hit.
@@ -162,7 +162,7 @@ export function ProposalInline() {
                 size={accountPrompt.chevronSize}
                 color={color.main.description}
               />
-            </SettingsRow>
+            </ListRow>
             {open && (
               <div
                 style={{
@@ -178,7 +178,7 @@ export function ProposalInline() {
           </div>
         );
       })}
-    </SettingsPanel>
+    </ListPanel>
   );
 }
 
@@ -200,9 +200,9 @@ export function ProposalSidePanel() {
   return (
     <HStack gap="m" alignItems="flex-start" width="100%">
       <VStack flex={1} minWidth={0}>
-        <SettingsPanel>
+        <ListPanel>
           {ACCOUNTS.map((account, index) => (
-            <SettingsRow
+            <ListRow
               key={account.id}
               last={index === ACCOUNTS.length - 1}
               onClick={() => setSelectedId(account.id)}
@@ -222,18 +222,18 @@ export function ProposalSidePanel() {
               >
                 <Identity account={account} />
               </div>
-            </SettingsRow>
+            </ListRow>
           ))}
-        </SettingsPanel>
+        </ListPanel>
       </VStack>
 
       <VStack flex={1} minWidth={0}>
-        <SettingsPanel>
+        <ListPanel>
           <VStack p={accountPrompt.padding} gap={accountPrompt.gap}>
             <span style={{ ...textStyle.mMedium, color: color.main.black }}>{selected.name}</span>
             <PromptEditor value={draft} onChange={setDraft} onCancel={() => setDraft('')} />
           </VStack>
-        </SettingsPanel>
+        </ListPanel>
       </VStack>
     </HStack>
   );
@@ -258,15 +258,15 @@ export function ProposalAllAtOnce() {
 
   return (
     <VStack gap="m" width="100%">
-      <SettingsPanel>
+      <ListPanel>
         {ACCOUNTS.map((account, index) => (
           <div key={account.id}>
             {/* No divider under the row: the field belongs to the account above
                 it, and a line between them would split one account in two. The
                 divider goes under the field instead. */}
-            <SettingsRow last>
+            <ListRow last>
               <Identity account={account} />
-            </SettingsRow>
+            </ListRow>
             {/* The divider goes under the field, not around it: a border on
                 every side drew a box around the last account's prompt that read
                 as a selection it never had. */}
@@ -288,7 +288,7 @@ export function ProposalAllAtOnce() {
             </div>
           </div>
         ))}
-      </SettingsPanel>
+      </ListPanel>
       <HStack gap="xs" justifyContent="flex-end" width="100%">
         <span
           style={{

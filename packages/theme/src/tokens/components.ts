@@ -3206,6 +3206,54 @@ const datePicker = {
   monthItemPaddingY: spacing.xxs,
 } as const;
 
+/**
+ * The app's left navigation rail — Figma node 2712:30773 ("Left Panel").
+ *
+ * One entry per product area: Onboarding, Unified Inbox, Dashboard, Sequence,
+ * Meetings, Settings. Each is a round icon plate above a label, and the plate
+ * is the only part that changes between states — it fills on hover, and fills
+ * white when selected.
+ *
+ * The rail runs vertically on desktop and horizontally on mobile. Both are the
+ * same entries at the same size, so the difference is a flex direction rather
+ * than a second component.
+ */
+export const navPanel = {
+  /**
+   * Width of one entry. Fixed rather than shrink-wrapped, so a long label
+   * ("Unified Inbox") and a short one ("Inbox") occupy the same column and the
+   * icons above them stay on a common axis.
+   */
+  itemWidth: 68,
+  /** The round plate behind the glyph. */
+  plateSize: 32,
+  /** The glyph inside that plate. */
+  iconSize: 24,
+  /** Space between the plate and the label under it. */
+  gap: spacing.xxs,
+  /** Space between entries, and the rail's own padding. */
+  itemGap: spacing.s,
+  padding: spacing.s,
+  /** Label type size. Figma draws Paragraph/S at Semibold. */
+  fontSize: fontSize.s,
+  /**
+   * How far the unread counter is lifted above the plate.
+   *
+   * The badge overhangs the plate rather than sitting inside it — a counter
+   * contained by the plate would crowd the glyph it is counting for.
+   */
+  counterOffsetY: -8,
+  counterOffsetX: 38,
+  /**
+   * Opacity of the entries an onboarding step is not pointing at.
+   *
+   * Ten percent rather than hidden: the rail keeps its full height, so the
+   * highlighted entry does not move as the walkthrough advances, and the user
+   * can still see how much of the product is waiting.
+   */
+  onboardingDimOpacity: 0.1,
+} as const;
+
 export const component = {
   aiTool,
   autoReply,
@@ -3223,6 +3271,7 @@ export const component = {
   notification,
   pagination,
   mentionPreset,
+  navPanel,
   prompt,
   radioControl,
   scrollbar,

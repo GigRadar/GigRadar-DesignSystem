@@ -81,7 +81,7 @@ export function Row({ children, gap = spacing.s }: { children: ReactNode; gap?: 
  * width, and a second cap inside that only makes the panel float in its own
  * lane.
  */
-export function SettingsPanel({
+export function ListPanel({
   children,
   overflowing,
 }: {
@@ -120,7 +120,7 @@ export function SettingsPanel({
  * draw a line each above and below, doubling every divider and tripling the
  * panel's own edge. `last` drops it, since the panel supplies the closing edge.
  */
-export function SettingsRow({
+export function ListRow({
   children,
   last,
   gap = spacing.s,
