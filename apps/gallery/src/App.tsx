@@ -56,6 +56,7 @@ import { PaginationPage } from './pages/PaginationPage';
 import { PresetPage } from './pages/PresetPage';
 import { PromptPage } from './pages/PromptPage';
 import { ScrollbarPage } from './pages/ScrollbarPage';
+import { NavPanelPage } from './pages/NavPanelPage';
 import { SettingsPanelPage } from './pages/SettingsPanelPage';
 import { SpinnerPage } from './pages/SpinnerPage';
 import { SwitchPage } from './pages/SwitchPage';
@@ -248,6 +249,14 @@ const NAV: NavGroup[] = [
   {
     title: 'CRM',
     nodes: [
+      /*
+        The rail down the far left of every CRM screen, listing the product
+        areas. Filed above Settings rather than inside it: the two sit side by
+        side in the product — the rail switches between areas, and the settings
+        panel navigates within one — so nesting it under Settings would say
+        they belong to each other when they do not.
+      */
+      { id: 'crm-nav-panel', label: 'Left panel', render: () => <NavPanelPage /> },
       {
         id: 'crm-settings',
         label: 'Settings',
