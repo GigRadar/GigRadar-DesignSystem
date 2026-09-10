@@ -73,6 +73,7 @@ export function SettingsScreen({ after }: SettingsScreenProps) {
 
   return (
     <div
+      data-settings-screen=""
       style={{
         display: 'flex',
         alignItems: 'stretch',
