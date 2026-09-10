@@ -7,6 +7,7 @@ import { NavigateProvider } from './navigation';
 import { AccountSlotPage } from './pages/AccountSlotPage';
 import { AiConfigurationPage } from './pages/AiConfigurationPage';
 import { AiToolsPage } from './pages/ai/AiToolsPage';
+import { PerAccountPromptPage } from './pages/ai/PerAccountPromptPage';
 import { AutoReplyPage } from './pages/ai/AutoReplyPage';
 import { CustomPromptPage } from './pages/ai/CustomPromptPage';
 import { MentionPresetPage } from './pages/ai/MentionPresetPage';
@@ -55,6 +56,7 @@ import { PaginationPage } from './pages/PaginationPage';
 import { PresetPage } from './pages/PresetPage';
 import { PromptPage } from './pages/PromptPage';
 import { ScrollbarPage } from './pages/ScrollbarPage';
+import { NavPanelPage } from './pages/NavPanelPage';
 import { SettingsPanelPage } from './pages/SettingsPanelPage';
 import { SpinnerPage } from './pages/SpinnerPage';
 import { SwitchPage } from './pages/SwitchPage';
@@ -247,6 +249,14 @@ const NAV: NavGroup[] = [
   {
     title: 'CRM',
     nodes: [
+      /*
+        The rail down the far left of every CRM screen, listing the product
+        areas. Filed above Settings rather than inside it: the two sit side by
+        side in the product — the rail switches between areas, and the settings
+        panel navigates within one — so nesting it under Settings would say
+        they belong to each other when they do not.
+      */
+      { id: 'crm-nav-panel', label: 'Left panel', render: () => <NavPanelPage /> },
       {
         id: 'crm-settings',
         label: 'Settings',
@@ -256,12 +266,24 @@ const NAV: NavGroup[] = [
             id: 'crm-settings-ai',
             label: 'AI Configuration',
             render: () => <AiConfigurationPage />,
-            // The screen's four sections, in the order it stacks them.
+            // The screen's sections, in the order it stacks them.
             children: [
               { id: 'crm-ai-prompt', label: 'Custom Prompt', render: () => <CustomPromptPage /> },
               { id: 'crm-ai-auto-reply', label: 'Auto Reply', render: () => <AutoReplyPage /> },
               { id: 'crm-ai-presets', label: 'Mention Preset', render: () => <MentionPresetPage /> },
               { id: 'crm-ai-tools', label: 'AI Tools', render: () => <AiToolsPage /> },
+              {
+                /**
+                 * BF-4280 — scoping the prompt to one connected account.
+                 *
+                 * Three competing options rather than one design, and none of
+                 * them built as components yet: the page exists to pick one.
+                 */
+                id: 'crm-ai-per-account',
+                label: 'Per-Account Prompt',
+                render: () => <PerAccountPromptPage />,
+              },
+            ],
           },
           {
             id: 'crm-settings-api-key',

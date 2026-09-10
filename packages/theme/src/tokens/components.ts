@@ -1371,6 +1371,47 @@ export const modal = {
  * held as literals for the same reason `settingsPanel.item.radius` is — the
  * drawn value wins over the scale when the two disagree.
  */
+/**
+ * The per-account AI prompt surfaces — BF-4280.
+ *
+ * One row per connected Upwork account in AI Configuration, each saying whether
+ * it runs on the team prompt alone or carries instructions of its own.
+ */
+export const accountPrompt = {
+  radius: radius.s,
+  padding: spacing.m,
+  gap: spacing.s,
+  /** Space between a row's name and the status line under it. */
+  stackGap: 2,
+  /** The open/close chevron on a collapsed account row. */
+  chevronSize: 16,
+  /** The chevron inside a mode badge, marking the badge as a menu. */
+  badgeChevronSize: 10,
+  /** The gap between a badge and the menu hanging from it. */
+  menuOffset: spacing.xxs,
+  /** The menu floats over the rows below it. */
+  menuLayer: 10,
+  /** A row of the mode menu. */
+  menuItemPaddingX: spacing.xs,
+  menuItemPaddingY: spacing.xxs,
+  /** The disc in the empty state. */
+  emptyMarkSize: 40,
+  emptyIconSize: 22,
+  emptyPadding: spacing.xl,
+  emptyGap: spacing.s,
+  /** The description under the empty state's heading, at a readable measure. */
+  emptyMaxWidth: 360,
+  /**
+   * The prompt field, where several are stacked on one page.
+   *
+   * Shorter than the team prompt's own field: an account prompt is the couple
+   * of lines that make this profile different, not a whole brief, and three
+   * full-height fields would make the page misrepresent how much there is to
+   * write.
+   */
+  stackedFieldMinHeight: 96,
+} as const;
+
 export const upworkAccounts = {
   /** The left column. Figma draws a fixed 640px against a flexible right. */
   listColumn: {
@@ -3165,6 +3206,54 @@ const datePicker = {
   monthItemPaddingY: spacing.xxs,
 } as const;
 
+/**
+ * The app's left navigation rail — Figma node 2712:30773 ("Left Panel").
+ *
+ * One entry per product area: Onboarding, Unified Inbox, Dashboard, Sequence,
+ * Meetings, Settings. Each is a round icon plate above a label, and the plate
+ * is the only part that changes between states — it fills on hover, and fills
+ * white when selected.
+ *
+ * The rail runs vertically on desktop and horizontally on mobile. Both are the
+ * same entries at the same size, so the difference is a flex direction rather
+ * than a second component.
+ */
+export const navPanel = {
+  /**
+   * Width of one entry. Fixed rather than shrink-wrapped, so a long label
+   * ("Unified Inbox") and a short one ("Inbox") occupy the same column and the
+   * icons above them stay on a common axis.
+   */
+  itemWidth: 68,
+  /** The round plate behind the glyph. */
+  plateSize: 32,
+  /** The glyph inside that plate. */
+  iconSize: 24,
+  /** Space between the plate and the label under it. */
+  gap: spacing.xxs,
+  /** Space between entries, and the rail's own padding. */
+  itemGap: spacing.s,
+  padding: spacing.s,
+  /** Label type size. Figma draws Paragraph/S at Semibold. */
+  fontSize: fontSize.s,
+  /**
+   * How far the unread counter is lifted above the plate.
+   *
+   * The badge overhangs the plate rather than sitting inside it — a counter
+   * contained by the plate would crowd the glyph it is counting for.
+   */
+  counterOffsetY: -8,
+  counterOffsetX: 38,
+  /**
+   * Opacity of the entries an onboarding step is not pointing at.
+   *
+   * Ten percent rather than hidden: the rail keeps its full height, so the
+   * highlighted entry does not move as the walkthrough advances, and the user
+   * can still see how much of the product is waiting.
+   */
+  onboardingDimOpacity: 0.1,
+} as const;
+
 export const component = {
   aiTool,
   autoReply,
@@ -3182,6 +3271,7 @@ export const component = {
   notification,
   pagination,
   mentionPreset,
+  navPanel,
   prompt,
   radioControl,
   scrollbar,
@@ -3193,6 +3283,7 @@ export const component = {
   switchControl,
   toggle,
   tooltip,
+  accountPrompt,
   upworkAccounts,
   upworkApiKey,
   docs,

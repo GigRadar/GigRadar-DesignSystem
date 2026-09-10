@@ -167,6 +167,23 @@ export type {
   MentionCounterRenderProps,
 } from './components/MentionPreset/MentionPreset.js';
 
+export { NavPanel } from './components/NavPanel/NavPanel.js';
+export type {
+  NavPanelProps,
+  NavPanelStyleProps,
+  NavPanelArea,
+  NavPanelOrientation,
+  NavAreaRenderProps,
+} from './components/NavPanel/NavPanel.js';
+
+export { NavPanelItem } from './components/NavPanel/NavPanelItem.js';
+export type {
+  NavPanelItemProps,
+  NavPanelItemStyleProps,
+  NavPlateRenderProps,
+  NavCounterRenderProps,
+} from './components/NavPanel/NavPanelItem.js';
+
 export { MentionPresetList } from './components/MentionPreset/MentionPresetList.js';
 export type {
   MentionPresetListProps,
