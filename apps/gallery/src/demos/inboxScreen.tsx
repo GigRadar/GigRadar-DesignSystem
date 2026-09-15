@@ -13,11 +13,11 @@ import {
   RoomEvent,
   RoomMessage,
   RoomNotice,
-  ScheduledBadge,
   ScheduleMessageModal,
   Sender,
   type InboxPane,
   type StageName,
+  type TextMark,
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
 import { accounts, chatRoom, clientDetails, rooms, upcomingMeeting } from '../fixtures/inbox';
@@ -82,6 +82,7 @@ export function AssembledInbox({
   const [scheduleTime, setScheduleTime] = useState('09:00');
   const [scheduleZone, setScheduleZone] = useState('you');
   const [autoCancel, setAutoCancel] = useState(true);
+  const [marks, setMarks] = useState<TextMark[]>([]);
 
   const actions = { onEdit: noop, onDelete: noop, onDownload: noop };
 
@@ -158,7 +159,25 @@ export function AssembledInbox({
           // Chat Room in its third column, so it gets the whole composer —
           // both modes and both send actions — not a reduced one.
           onSchedule={() => setScheduleOpen(true)}
-          field={{ value: draft, onValueChange: setDraft, maxLength: 5000 }}
+          // Every control the field can draw is drawn, because each one appears
+          // only if its handler is passed: no `marks` is a composer with no
+          // rich text, no `onAttach` is one with no clip. The Inbox writes the
+          // same message the Chat Room does.
+          field={{
+            value: draft,
+            onValueChange: setDraft,
+            maxLength: 5000,
+            marks,
+            onMarkToggle: (mark) =>
+              setMarks((current) =>
+                current.includes(mark)
+                  ? current.filter((item) => item !== mark)
+                  : [...current, mark],
+              ),
+            onAttach: noop,
+            onMeeting: noop,
+            onDraftAi: noop,
+          }}
         />
       }
     >
@@ -202,10 +221,6 @@ export function AssembledInbox({
           ]}
         />
       </RoomMessage>
-      {/* The room says it has messages waiting to go out. Drawn at the foot of
-          the thread rather than in the header: it is about this conversation's
-          queue, and the header already carries what the room *is*. */}
-      <ScheduledBadge place="room" autoCancel={autoCancel} onNavigate={noop} />
     </ChatRoom>
   );
 
