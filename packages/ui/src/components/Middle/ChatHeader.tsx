@@ -311,12 +311,22 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
               >
                 {title}
               </span>
+              {/*
+               * The tags clip rather than push.
+               *
+               * Each tag sizes to its own label, and a long scanner name beside
+               * a long freelancer name comes to more than the identity block
+               * has once the details pane takes its 328px — without a hidden
+               * overflow here the row grows past its parent and runs under the
+               * controls instead of stopping at them.
+               */}
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: header.metaGap,
                   minWidth: 0,
+                  overflow: 'hidden',
                 }}
               >
                 {topic != null && (

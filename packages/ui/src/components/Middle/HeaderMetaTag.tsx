@@ -87,7 +87,17 @@ export const HeaderMetaTag = forwardRef<HTMLElement, HeaderMetaTagProps>(functio
   const style = {
     display: 'inline-flex',
     alignItems: 'center',
-    flexShrink: 0,
+    /*
+     * Shrinks, down to its glyph. The label already ellipsises, but that only
+     * happens if the tag itself is allowed to narrow — held rigid, two long
+     * tags push the identity block past the controls beside it once the header
+     * is sharing a screen with the details pane.
+     *
+     * `minWidth: 0` lets it narrow at all; the glyph inside carries its own
+     * `flexShrink: 0`, so the tag bottoms out at a mark plus its padding rather
+     * than collapsing to nothing.
+     */
+    minWidth: 0,
     boxSizing: 'border-box' as const,
     gap: len(gap) ?? header.tag.gap,
     paddingLeft: len(paddingX) ?? header.tag.paddingX,
@@ -104,7 +114,11 @@ export const HeaderMetaTag = forwardRef<HTMLElement, HeaderMetaTagProps>(functio
 
   const content = (
     <>
-      <Icon icon={icon} size={header.tag.iconSize} color={tone} />
+      {/* Held at its size while the label beside it gives way — the glyph is
+          what the tag still means once its name has been truncated off. */}
+      <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+        <Icon icon={icon} size={header.tag.iconSize} color={tone} />
+      </span>
       {children != null && (
         <span
           style={{

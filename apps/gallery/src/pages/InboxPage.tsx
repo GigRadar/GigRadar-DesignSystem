@@ -61,18 +61,15 @@ export function InboxPage() {
           fold a section on the right to see what the pane is mostly for.
         </Caption>
         {/*
-         * Scrolled sideways rather than squeezed. The three columns come to
-         * about 1360px, which is wider than the gallery's content well — and a
-         * screen shown narrower than it ships is a screen whose header wraps
-         * in ways the real one never does.
+         * Out of the reading well and across the window, with no sideways
+         * scroll. The two fixed columns come to 656px; inside the 1100px well
+         * that leaves the thread barely 300px, which is narrow enough that its
+         * header starts dropping the title and tags — a width the product
+         * never puts it at.
          */}
-        <div style={{ overflowX: 'auto' }}>
-          <div style={{ minWidth: 1360 }}>
-            <Frame height={734}>
-              <AssembledInbox />
-            </Frame>
-          </div>
-        </div>
+        <Frame height={734} wide>
+          <AssembledInbox />
+        </Frame>
         <CodeBlock
           code={`<InboxScreen
   list={<InboxList …>{rooms.map((room) => <InboxRoom … />)}</InboxList>}

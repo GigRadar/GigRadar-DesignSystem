@@ -2849,16 +2849,20 @@ const middle = {
     desktopWidth: 724,
     mobileWidth: 402,
     /**
-     * Desktop has no side rails: the thread is a centred column with margins
-     * either side already, and every bubble carries its own M padding, so a
-     * second inset reads as double-padded against a header that runs the full
-     * width.
+     * Both layouts keep their side rails.
      *
-     * Mobile keeps its rails. There are no margins to fall back on at 402px —
-     * without the inset the bubbles and the composer would touch both screen
-     * edges.
+     * Desktop was 0 on the reasoning that the thread is a centred column with
+     * margins either side already. That holds only while the room has the
+     * window to itself — once the details pane takes its 328px the column has
+     * no slack left to centre in, and the bubbles run straight into the two
+     * columns beside them. M is the same step the mobile rail uses and the
+     * same one the list and the pane pad themselves by, so the seam reads as
+     * one gutter rather than three different ones.
+     *
+     * Mobile never had margins to fall back on at 402px — without the inset
+     * the bubbles and the composer would touch both screen edges.
      */
-    desktopPaddingX: 0,
+    desktopPaddingX: spacing.m,
     mobilePaddingX: spacing.m,
     /**
      * The vertical inset stays: it is the space above the first message and
