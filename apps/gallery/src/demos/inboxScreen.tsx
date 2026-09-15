@@ -17,7 +17,7 @@ import {
   type StageName,
 } from '@gigradar/ui';
 import { useState } from 'react';
-import { accounts, chatRoom, rooms } from '../fixtures/inbox';
+import { accounts, chatRoom, clientDetails, rooms } from '../fixtures/inbox';
 import { DetailsColumn } from '../pages/inbox/DetailsPage';
 
 const noop = () => undefined;
@@ -126,15 +126,21 @@ export function AssembledInbox({ layout = 'desktop' }: { layout?: 'desktop' | 'm
         Chat started on April 25, 2025, at 18:20. Marina Ovcharenko has accepted the job offer.
       </RoomNotice>
       <RoomDivider>Today</RoomDivider>
-      <RoomMessage sender={<Sender name="Floyd Miles" avatar={{ tone: 'purple' }} />}>
+      <RoomMessage
+        sender={<Sender name="Floyd Miles" avatar={{ src: clientDetails.avatarSrc }} />}
+      >
         <BubbleChat time="08:30" actions={actions}>
           We were really impressed with your portfolio and how your expertise in Product UI/UX will
           be a great fit for our project.
         </BubbleChat>
       </RoomMessage>
       <RoomEvent kind="stage" from="new" to="interested" by="Jane Cooper" time="08:47" />
-      <RoomMessage side="outgoing" sender={<Sender name="Jane Cooper" />}>
-        <BubbleChat side="outgoing" time="08:52" actions={actions}>
+      {/* Jane carries initials rather than a photo, in the thread and in the
+          details pane alike — the six sample faces are already spoken for, and
+          giving her one of them would put the same face on two people in one
+          screen. It is also the fallback worth seeing in a demo. */}
+      <RoomMessage side="own" sender={<Sender side="own" name="Jane Cooper" avatar={{}} />}>
+        <BubbleChat side="own" time="08:52" actions={actions}>
           Thank you! I&rsquo;d be glad to walk you through the flows I have in mind — is Wednesday
           still good for a call?
         </BubbleChat>
