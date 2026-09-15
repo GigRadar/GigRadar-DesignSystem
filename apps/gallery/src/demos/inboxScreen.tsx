@@ -40,10 +40,21 @@ const noop = () => undefined;
  */
 export function AssembledInbox({
   layout = 'desktop',
+  initialPane = 'list',
   events,
   previewOverrides,
 }: {
   layout?: 'desktop' | 'mobile';
+  /**
+   * Which pane a mobile screen opens on. Ignored on desktop, where all three
+   * are on screen at once.
+   *
+   * Needed because a phone shows one pane at a time: a frame meant to show what
+   * the thread does has to start in the thread, not on the list it is reached
+   * from.
+   * @default 'list'
+   */
+  initialPane?: InboxPane;
   /**
    * Replaces the stage event in the middle of the thread.
    *
@@ -63,7 +74,7 @@ export function AssembledInbox({
 }) {
   const [selected, setSelected] = useState('r1');
   const [query, setQuery] = useState('');
-  const [pane, setPane] = useState<InboxPane>('list');
+  const [pane, setPane] = useState<InboxPane>(initialPane);
   const [stage, setStage] = useState<StageName>('interested');
   const [stageOpen, setStageOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);

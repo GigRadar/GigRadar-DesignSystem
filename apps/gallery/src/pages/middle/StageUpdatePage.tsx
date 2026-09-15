@@ -31,6 +31,9 @@ import { PROPOSALS } from '../../proposals/StageEventNameProposals';
 /** The width the Inbox wants before its thread starts losing its layout. */
 const SCREEN_WIDTH = 1421;
 
+/** The phone the Figma node draws, and the width InboxScreen stacks at. */
+const MOBILE_WIDTH = 402;
+
 /**
  * One state — the screen, its name, and when it triggers.
  *
@@ -45,6 +48,7 @@ function State({
   trigger,
   ships,
   children,
+  mobile,
 }: {
   /** The state's name, as the Figma frame labels it. */
   name: string;
@@ -61,6 +65,15 @@ function State({
    */
   ships: boolean;
   children: ReactNode;
+  /**
+   * The same state at 402px.
+   *
+   * Every state is drawn at both widths, because a rule that only holds on a
+   * desktop is half a rule — truncation, wrapping and a one-pane screen are
+   * exactly where a phone disagrees. The mobile frame carries the room pane:
+   * that is where the event lives, and a phone shows one pane at a time.
+   */
+  mobile?: ReactNode;
 }) {
   return (
     <VStack gap="s" style={{ marginBottom: spacing.xl }}>
@@ -101,6 +114,19 @@ function State({
           {children}
         </Frame>
       </div>
+
+      {mobile && (
+        <VStack gap="xs" style={{ marginTop: spacing.m }}>
+          <span style={{ ...textStyle.sMedium, color: color.main.description }}>
+            On a phone — 402px, the room pane
+          </span>
+          <div data-state-screen={`${slug}-mobile`}>
+            <Frame hug height="auto">
+              <div style={{ width: MOBILE_WIDTH }}>{mobile}</div>
+            </Frame>
+          </div>
+        </VStack>
+      )}
     </VStack>
   );
 }
@@ -125,6 +151,7 @@ export function StageUpdatePage() {
           slug="default"
           ships
           trigger="A person moves the lead to another stage from the room's stage menu. The line lands in the thread at the moment of the change, using the same entrance as a chat bubble."
+          mobile={<AssembledInbox layout="mobile" initialPane="room" />}
         >
           <AssembledInbox />
         </State>
@@ -139,6 +166,19 @@ export function StageUpdatePage() {
           slug="multiple"
           ships
           trigger="Several stage changes land in a row. All consecutive changes are shown, with no collapsing and no limit — three changes are three lines, because hiding one would hide who made it."
+          mobile={
+            <AssembledInbox
+              layout="mobile"
+              initialPane="room"
+              events={
+                <>
+                  <RoomEvent kind="stage" from="new" to="interested" by={BY} time="09:47" />
+                  <RoomEvent kind="stage" from="interested" to="contactLater" by={BY} time="10:47" />
+                  <RoomEvent kind="stage" from="contactLater" to="interested" by={BY} time="11:47" />
+                </>
+              }
+            />
+          }
         >
           <AssembledInbox
             events={
@@ -156,6 +196,21 @@ export function StageUpdatePage() {
           slug="auto"
           ships
           trigger="GigRadar moves the stage itself rather than a person doing it. The attribution reads “GigRadar Automation” as plain text, with no icon and no avatar — the same sentence, only the name differs."
+          mobile={
+            <AssembledInbox
+              layout="mobile"
+              initialPane="room"
+              events={
+                <RoomEvent
+                  kind="stage"
+                  from="new"
+                  to="interested"
+                  by="GigRadar Automation"
+                  time="8:47"
+                />
+              }
+            />
+          }
         >
           <AssembledInbox
             events={
@@ -175,6 +230,21 @@ export function StageUpdatePage() {
           slug="maxwidth"
           ships={false}
           trigger="The name is longer than the row can hold. Figma truncates it with an ellipsis; the shipped component wraps instead, so a long name turns the event into two rows. What the name does when it no longer fits is the open question — three proposals below."
+          mobile={
+            <AssembledInbox
+              layout="mobile"
+              initialPane="room"
+              events={
+                <RoomEvent
+                  kind="stage"
+                  from="new"
+                  to="interested"
+                  by="Christian Samuel Racing Tan Wijaya Winangun"
+                  time="8:47"
+                />
+              }
+            />
+          }
         >
           <AssembledInbox
             events={
@@ -227,6 +297,16 @@ export function StageUpdatePage() {
           slug="lastmessage"
           ships={false}
           trigger="The stage change is the newest thing in the room, so it becomes the room's preview in the left column. The row reads “Stage changed to …” under the sender's name, truncated to the column like any other preview."
+          // The one state that is about the list rather than the thread, so its
+          // phone frame is the list pane — that is where the preview it changes
+          // is actually read.
+          mobile={
+            <AssembledInbox
+              layout="mobile"
+              initialPane="list"
+              previewOverrides={{ r1: 'Stage changed to interested' }}
+            />
+          }
         >
           <AssembledInbox
             events={

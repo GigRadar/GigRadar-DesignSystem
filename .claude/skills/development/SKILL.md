@@ -66,6 +66,21 @@ differ only in decoration are not a choice.
 answers "what if we scale later" against a ticket that says "this is wrong now"
 costs the reviewer real attention for nothing.
 
+**Every design carries mobile.** Not a follow-up and not a section at the end —
+each state drawn at both widths, in the gallery page and in the review
+Artifact, with the phone beside the desktop rather than below it so the two are
+compared rather than remembered. A rule that only holds at 1421px is half a
+rule: truncation, wrapping, and a screen that shows one pane instead of three
+are exactly where a phone disagrees, and they are usually the thing under
+review. On the stage-update review the long name clipped on a desktop and wrapped
+to two lines on a phone — the same proposal, two different answers, and only the phone frame
+showed it.
+
+The Inbox draws one pane at a time on a phone, so a mobile frame has to say
+which pane it is showing: the room for a state about the thread, the list for a
+state about the list. A frame that opens on the wrong pane shows nothing the
+state is about.
+
 **Draw each against the sizes it will really meet.** Three accounts and fifty.
 What works at three and collapses at fifty is a layout, not a design — a tab
 strip and a stack of cards both died this way on BF-4280.
@@ -172,6 +187,11 @@ looking at one continuous screen that happens to have holes cut in it:
 The rail image keeps `opacity: 1` — it is chrome the reader navigates by, and
 dimming it makes the screen look disabled rather than photographed.
 
+Each state is a two-column pair rather than one screenshot: the wide screen,
+and the phone beside it under its own `Desktop · 1421px` / `Phone · 402px`
+label, stacking to one column below ~860px so the Artifact itself survives
+being read on a phone.
+
 A `.screen-note` under the shell names which components drew the grey sections
 and says plainly that the outlined blocks are live and clickable.
 
@@ -231,6 +251,12 @@ the screen's own height instead — `frame.style.height = 'auto'` and the screen
 to ~900px — and the header, the messages and the composer all survive while only
 the blank middle goes.
 
+Capture both widths in the same pass: give every frame a `data-state-screen`
+hook, the phone ones suffixed `-mobile`, and the script picks up ten frames
+instead of five without knowing what any of them are. Phone shots downscale to
+about 808px — they are displayed near 232px, so 2x is plenty and a full-size
+one only costs budget.
+
 JPEG at quality 84 rather than PNG — none of these are line art. At 2x a
 five-screen page lands around 4 MB, comfortably under the 16 MB cap.
 
@@ -264,6 +290,8 @@ file and remove the `DevelopmentPlaceholder`.
   `@gigradar/no-hardcoded-values` rule covers `packages/` only, so gallery code
   is on you.
 - Every proposal rendered and looked at, not just compiled.
+- Every state drawn at both widths, and the phone frames opening on the pane
+  the state is actually about.
 - No changeset on the design PR.
 
 ## Worked example
