@@ -21,6 +21,7 @@ const RAIL_COLLAPSED = 56;
 export function Shell({
   nav,
   search,
+  aside,
   collapsed = false,
   onCollapsedChange,
   children,
@@ -28,6 +29,14 @@ export function Shell({
   nav: ReactNode;
   /** The filter field, drawn under the title. */
   search?: ReactNode;
+  /**
+   * What sits between the search and the nav — the reviews still open.
+   *
+   * A slot rather than a fixed block so the rail has one rule about what goes
+   * where: the nav lists what ships, and anything above it is chrome for
+   * finding things, which is what an open review is until it is decided.
+   */
+  aside?: ReactNode;
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
   children: ReactNode;
@@ -81,6 +90,8 @@ export function Shell({
             own inset for the same reason, so title, search, and cards all
             share one left edge. */}
         {!collapsed && search && <div style={{ paddingBottom: spacing.m }}>{search}</div>}
+
+        {!collapsed && aside}
 
         {/* The rail keeps its scroll position and its open/shut state while
             collapsed — the rows are hidden, not unmounted, so expanding
