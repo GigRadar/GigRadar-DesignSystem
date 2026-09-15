@@ -62,6 +62,23 @@ export const main = {
   /** Default border/divider color. */
   border: '#C3CBD3',
   /**
+   * The near-black the paywall's top plan is drawn in — Figma's Unlimited card
+   * and its badge (nodes 4062:1199, 4016:22054).
+   *
+   * Not `black`: it is a surface rather than ink, and pure black beside the
+   * blue and orange cards reads as a hole in the row rather than as the
+   * premium end of a scale.
+   */
+  ink: '#1C1C1E',
+  /**
+   * The body text inside a plan card's feature list (node 4062:1088).
+   *
+   * A navy rather than `navbar.text2` — Figma draws the paywall's lists one
+   * step darker than the rest of the product's secondary text, because the
+   * card is a sales surface and the features are the thing being read.
+   */
+  inkSoft: '#1A2030',
+  /**
    * The scrollbar thumb. Figma: node 43:4122 ("Thumb").
    *
    * Browser chrome rather than product color — it names the bar you drag, and

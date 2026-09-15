@@ -852,6 +852,34 @@ export type {
  * the app's question: an external job post carries no client stats, and a room
  * with no meeting should draw no meeting header.
  */
+export { Paywall } from './components/Paywall/Paywall.js';
+export type {
+  PaywallProps,
+  PaywallStyleProps,
+  PaywallPeriod,
+  PaywallPlan,
+  BillingCycle,
+  PlanRowRenderProps,
+  PaywallPlanRenderProps,
+} from './components/Paywall/Paywall.js';
+
+export { PlanCard } from './components/Paywall/PlanCard.js';
+export type {
+  PlanCardProps,
+  PlanCardStyleProps,
+  PlanCardTone,
+  PlanCardState,
+  PlanFeature,
+} from './components/Paywall/PlanCard.js';
+
+export { SubscriptionSwitch, PaywallSwitchButton } from './components/Paywall/SubscriptionSwitch.js';
+export type {
+  SubscriptionSwitchProps,
+  SubscriptionSwitchStyleProps,
+  PaywallSwitchButtonProps,
+  SwitchButtonStyleProps as PaywallSwitchButtonStyleProps,
+} from './components/Paywall/SubscriptionSwitch.js';
+
 export { InboxDetails } from './components/Details/InboxDetails.js';
 export type {
   InboxDetailsProps,

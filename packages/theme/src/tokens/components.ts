@@ -1982,6 +1982,111 @@ export const notification = {
 } as const;
 
 /**
+ * The CRM paywall — the locked modal that sells the plans.
+ *
+ * Figma: the modal at 1360:9925 in its three periods, the plan card at
+ * 4062:1088, the subscription switch at 977:11153, and the switch button
+ * inside it at 3913:24775.
+ *
+ * One block because the pieces only make sense against each other: three cards
+ * of one width sit in a row under one switch, and the modal's padding is what
+ * decides how wide that row can be.
+ */
+export const paywall = {
+  /** The modal itself. */
+  width: 764,
+  padding: spacing.xl,
+  radius: radius.l,
+  /** Space between the top bar, the headline, the cards, and the banner. */
+  sectionGap: spacing.xl,
+  /** The bar across the top — the period badge, the switch, the plan pill. */
+  headerHeight: 33,
+  /** The headline and the paragraph under it. */
+  titleGap: spacing.s,
+  titleFontSize: 32,
+  /**
+   * The headline's tracking.
+   *
+   * Tighter than the type scale's own steps: at 32px the display face opens
+   * up, and the scale is calibrated for body sizes.
+   */
+  titleTracking: -0.8,
+  /** Held narrower than the modal so the paragraph breaks into three lines. */
+  descriptionWidth: 700,
+
+  /** One plan card. */
+  card: {
+    width: 228,
+    padding: 18,
+    radius: radius.m + 4,
+    /** Space between the card's three blocks — price, buttons, features. */
+    gap: spacing.m,
+    /**
+     * Two, not the hairline. The card's edge is what says which plan is
+     * current or most popular, and a 1px ring does not carry a colour far
+     * enough across a 228px card to be seen from across the row.
+     */
+    borderWidth: 2,
+    /** Space between the plan name, the price row, and the cycle note. */
+    headGap: 8,
+    priceGap: spacing.xxs,
+    priceFontSize: 24,
+    nameFontSize: 13,
+    noteFontSize: fontSize.s,
+    /** The two buttons under the price. */
+    buttonGap: 8,
+    /**
+     * Their padding. Fully round and full width rather than the design
+     * system's `Button`, which is why they carry their own metrics.
+     */
+    buttonPaddingX: spacing.m,
+    buttonPaddingY: 8,
+    /** The feature list. */
+    featureGap: 8,
+    featureFontSize: fontSize.s,
+    /** The square bullet before each feature. */
+    bulletSize: 8,
+    bulletRadius: radius.xxs + 2,
+    /**
+     * The pill that straddles the card's top edge — "Most popular", "Current
+     * Plan". Lifted by half its own height so it reads as pinned to the edge
+     * rather than floating above it.
+     */
+    flagOffsetY: -13.25,
+    flagPaddingX: 8,
+    flagPaddingY: spacing.xxs,
+    flagRadius: 999,
+    flagFontSize: fontSize.s,
+  },
+
+  /** The monthly / annual switch. */
+  switch: {
+    padding: spacing.xxs,
+    radius: 31.5,
+    /** One segment inside it. */
+    itemHeight: 26,
+    itemPaddingX: 8,
+    itemPaddingY: spacing.xxs,
+    itemGap: spacing.xxs,
+    itemFontSize: fontSize.m,
+    /** The "Save 20%" pill on the annual segment. */
+    savingPaddingX: spacing.xs,
+    savingPaddingY: 2,
+    savingFontSize: fontSize.s,
+  },
+
+  /** The period badge on the left of the top bar — "Locked", "23 Days remaining". */
+  periodBadge: {
+    paddingX: spacing.m,
+    paddingY: 8,
+    radius: 8,
+    gap: spacing.xs,
+    fontSize: fontSize.s,
+    iconSize: 14,
+  },
+} as const;
+
+/**
  * Documentation chrome.
  *
  * The gallery's own surfaces — preview panels, prop tables, code blocks. These
@@ -3431,6 +3536,7 @@ export const component = {
   checkbox,
   confirm,
   datePicker,
+  paywall,
   details,
   iconButton,
   inbox,

@@ -10,7 +10,7 @@ const { badge } = component;
  * `trial` and `pro` are separate tones rather than one "paid" tone: a trial is
  * the state that ends, and the badge is where someone checks how long is left.
  */
-export type PlanTone = 'free' | 'trial' | 'pro' | 'unlimited';
+export type PlanTone = 'free' | 'trial' | 'basic' | 'pro' | 'unlimited';
 
 export type PlanBadgeStyleProps = {
   paddingX?: CssLength;
@@ -41,12 +41,21 @@ export type PlanBadgeProps = {
 } & PlanBadgeStyleProps &
   Omit<HTMLAttributes<HTMLSpanElement>, 'className' | 'style'>;
 
-/** Fill and label per plan, as Figma draws them. */
-const tones: Record<PlanTone, { background: string; label: string }> = {
-  free: { background: color.navbar.text, label: 'Free' },
-  trial: { background: color.navbar.text, label: 'Trial' },
+/**
+ * Fill, ink, and label per plan, as Figma draws them (node 4016:22047).
+ *
+ * Only the unpaid tones are quiet. `trial` and `free` sit on the nav wash with
+ * grey text — they name a state the workspace is passing through, and a solid
+ * badge for "not paying yet" would read as a plan of its own. The three paid
+ * tones carry white on their plan's colour, which is the same colour that
+ * plan's card is outlined in, so a badge and a card can be matched by eye.
+ */
+const tones: Record<PlanTone, { background: string; label: string; ink?: string }> = {
+  free: { background: color.navbar.hover, ink: color.navbar.text, label: 'Free' },
+  trial: { background: color.navbar.hover, ink: color.navbar.text, label: 'Trial' },
+  basic: { background: color.badge.foreground, label: 'Basic' },
   pro: { background: color.accent.laziza.main, label: 'Pro' },
-  unlimited: { background: color.badge.foreground, label: 'Unlimited' },
+  unlimited: { background: color.main.ink, label: 'Unlimited' },
 };
 
 /**
@@ -74,7 +83,7 @@ export const PlanBadge = forwardRef<HTMLSpanElement, PlanBadgeProps>(function Pl
   },
   ref,
 ) {
-  const { background: fill, label } = tones[tone];
+  const { background: fill, label, ink } = tones[tone];
 
   return (
     <span
@@ -91,7 +100,7 @@ export const PlanBadge = forwardRef<HTMLSpanElement, PlanBadgeProps>(function Pl
         paddingBottom: len(paddingY) ?? badge.plan.paddingY,
         borderRadius: len(radius) ?? badge.plan.radius,
         backgroundColor: background ?? fill,
-        color: textColor ?? color.main.white,
+        color: textColor ?? ink ?? color.main.white,
       }}
       {...rest}
     >

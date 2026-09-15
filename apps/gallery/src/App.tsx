@@ -59,6 +59,7 @@ import {
 } from './pages/notifications/ChannelPages';
 import { OptionButtonPage } from './pages/OptionButtonPage';
 import { PaginationPage } from './pages/PaginationPage';
+import { PaywallPage } from './pages/PaywallPage';
 import { PresetPage } from './pages/PresetPage';
 import { PromptPage } from './pages/PromptPage';
 import { ScrollbarPage } from './pages/ScrollbarPage';
@@ -589,6 +590,19 @@ const NAV: NavGroup[] = [
             ],
           },
         ],
+      },
+      {
+        /**
+         * The paywall — the modal that sells the plans.
+         *
+         * A section of the CRM rather than a page under Settings: it is not a
+         * screen someone navigates to, it is the one that appears over
+         * whatever they were trying to do, and it has its own top bar rather
+         * than borrowing the settings rail.
+         */
+        id: 'crm-paywall',
+        label: 'Paywall',
+        render: () => <PaywallPage />,
       },
     ],
   },
