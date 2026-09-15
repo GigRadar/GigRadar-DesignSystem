@@ -38,15 +38,19 @@ export type FrameProps = {
    */
   scroll?: boolean;
   /**
-   * Lets the frame out of the page's 1100px reading well, up to the window.
+   * Lets the frame out of the page's 1100px reading well, up to the width it
+   * asks for — or to the window, whichever is smaller.
    *
-   * For a screen whose real width exceeds the well — the Inbox is three fixed
-   * columns and a thread, about 1360px before the thread has any room at all.
-   * Held inside the well, the thread is squeezed to ~300px and its header
-   * sheds the title and tags it would never drop in the product. The well is
-   * sized for prose, and a screen is not prose.
+   * For a screen whose real width exceeds the well. The Inbox is three fixed
+   * columns and a thread; held inside the well its thread is squeezed to
+   * ~300px and the chat header sheds the title and tags it would never drop
+   * in the product. The well is sized for prose, and a screen is not prose.
+   *
+   * Pass the width the screen wants rather than `true`, so it stops where its
+   * content stops instead of stretching a fixed composition across whatever
+   * monitor it is opened on.
    */
-  wide?: boolean;
+  wide?: boolean | number;
 };
 
 /**
@@ -78,7 +82,13 @@ export function Frame({
          */
         ...(wide
           ? {
-              width: `calc(100vw - ${WELL_LEFT}px)`,
+              // The room it can have, and the room it asks for — whichever is
+              // less. A numeric `wide` stops the frame at its content's own
+              // width so a fixed composition hugs rather than stretches.
+              width:
+                typeof wide === 'number'
+                  ? `min(${wide}px, calc(100vw - ${WELL_LEFT}px))`
+                  : `calc(100vw - ${WELL_LEFT}px)`,
               maxWidth: `calc(100vw - ${WELL_LEFT}px)`,
             }
           : null),

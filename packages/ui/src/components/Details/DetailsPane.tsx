@@ -14,6 +14,8 @@ export type DetailsPaneStyleProps = {
   /** Space between one section and the next. */
   sectionGap?: CssLength;
   background?: string;
+  /** The rule against the thread. */
+  borderColor?: string;
 };
 
 export type DetailsPaneProps = {
@@ -57,6 +59,7 @@ export const DetailsPane = forwardRef<HTMLElement, DetailsPaneProps>(function De
     padding,
     sectionGap,
     background,
+    borderColor,
     ...rest
   },
   ref,
@@ -70,10 +73,18 @@ export const DetailsPane = forwardRef<HTMLElement, DetailsPaneProps>(function De
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
+        boxSizing: 'border-box',
         width: len(width) ?? `${details.width}px`,
         height: '100%',
         padding: len(padding) ?? `${details.padding}px`,
         backgroundColor: background ?? color.main.white,
+        /*
+         * The mirror of the room list's own rule, in the same colour: the two
+         * fixed columns each draw the edge they present to the thread, so the
+         * seam is one line either side rather than a border on one column and
+         * a bare edge on the other.
+         */
+        borderLeft: `${borderWidthToken.thin}px solid ${borderColor ?? color.main.backgroundAlt}`,
         overflowY: 'auto',
         ...scrollbar,
       }}

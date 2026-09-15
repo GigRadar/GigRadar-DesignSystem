@@ -1,4 +1,4 @@
-import { color, spacing, textStyle } from '@gigradar/theme';
+import { color, component, spacing, textStyle } from '@gigradar/theme';
 import { InboxList, InboxRoom, PlanBadge, SelectionBar } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
 import { CodeBlock } from '../components/CodeBlock';
@@ -7,6 +7,19 @@ import { PageHeader, Section } from '../layout';
 import { CrossLink } from '../navigation';
 import { accounts, clients, rooms, stages } from '../fixtures/inbox';
 import { AssembledInbox } from '../demos/inboxScreen';
+
+/**
+ * The width at which the assembled Inbox is neither squeezed nor stretched.
+ *
+ * Read from the tokens rather than typed as a number: it is the two fixed
+ * columns plus the thread at its own cap and rails, so it follows if any of
+ * the three moves.
+ */
+const INBOX_WIDTH =
+  component.inbox.list.width +
+  component.middle.room.desktopWidth +
+  component.middle.room.desktopPaddingX * 2 +
+  component.details.width;
 
 /** A caption under a demo, matching the other gallery pages. */
 function Caption({ children }: { children: ReactNode }) {
@@ -61,13 +74,16 @@ export function InboxPage() {
           fold a section on the right to see what the pane is mostly for.
         </Caption>
         {/*
-         * Out of the reading well and across the window, with no sideways
-         * scroll. The two fixed columns come to 656px; inside the 1100px well
-         * that leaves the thread barely 300px, which is narrow enough that its
-         * header starts dropping the title and tags — a width the product
-         * never puts it at.
+         * Out of the reading well, and stopping where the screen stops.
+         *
+         * The two fixed columns come to 656px and the thread caps at 724 plus
+         * its M rails — 1412 in total, which is the width at which nothing is
+         * squeezed and nothing is stretched. Inside the 1100px well the thread
+         * gets barely 300px and the chat header starts dropping the title and
+         * tags, a width the product never puts it at; given the whole window
+         * it would instead stretch a composition that has a finite size.
          */}
-        <Frame height={734} wide>
+        <Frame height={734} wide={INBOX_WIDTH}>
           <AssembledInbox />
         </Frame>
         <CodeBlock
