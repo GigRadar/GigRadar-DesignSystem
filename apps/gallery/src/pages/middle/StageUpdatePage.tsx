@@ -41,12 +41,15 @@ const SCREEN_WIDTH = 1421;
  */
 function State({
   name,
+  slug,
   trigger,
   ships,
   children,
 }: {
   /** The state's name, as the Figma frame labels it. */
   name: string;
+  /** Short id for the screenshot the review Artifact captures from this state. */
+  slug: string;
   /** The note under the Figma frame — when this state is on screen. */
   trigger: ReactNode;
   /**
@@ -89,9 +92,15 @@ function State({
       >
         {trigger}
       </p>
-      <Frame wide={SCREEN_WIDTH} height="auto">
-        {children}
-      </Frame>
+      {/* The capture hook. Anchoring the Artifact's screenshots on a named
+          attribute rather than on shape keeps them pinned to the screen even
+          when the page around it grows another frame — the gallery's own nav
+          also looks like "narrow rail beside wide pane". */}
+      <div data-state-screen={slug}>
+        <Frame wide={SCREEN_WIDTH} height="auto">
+          {children}
+        </Frame>
+      </div>
     </VStack>
   );
 }
@@ -113,6 +122,7 @@ export function StageUpdatePage() {
       >
         <State
           name="Stage Transition — Default"
+          slug="default"
           ships
           trigger="A person moves the lead to another stage from the room's stage menu. The line lands in the thread at the moment of the change, using the same entrance as a chat bubble."
         >
@@ -126,6 +136,7 @@ export function StageUpdatePage() {
       >
         <State
           name="Stage Transition — Multiple"
+          slug="multiple"
           ships
           trigger="Several stage changes land in a row. All consecutive changes are shown, with no collapsing and no limit — three changes are three lines, because hiding one would hide who made it."
         >
@@ -142,6 +153,7 @@ export function StageUpdatePage() {
 
         <State
           name="Stage Transition — By System (Auto)"
+          slug="auto"
           ships
           trigger="GigRadar moves the stage itself rather than a person doing it. The attribution reads “GigRadar Automation” as plain text, with no icon and no avatar — the same sentence, only the name differs."
         >
@@ -160,6 +172,7 @@ export function StageUpdatePage() {
 
         <State
           name="Stage Transition — Max Width"
+          slug="maxwidth"
           ships={false}
           trigger="The name is longer than the row can hold. Figma truncates it with an ellipsis; the shipped component wraps instead, so a long name turns the event into two rows. What the name does when it no longer fits is the open question — three proposals below."
         >
@@ -211,6 +224,7 @@ export function StageUpdatePage() {
 
         <State
           name="Stage Transition — Last message in the room list"
+          slug="lastmessage"
           ships={false}
           trigger="The stage change is the newest thing in the room, so it becomes the room's preview in the left column. The row reads “Stage changed to …” under the sender's name, truncated to the column like any other preview."
         >

@@ -130,18 +130,81 @@ Put `LifecycleBadge` in the `title`, which takes a `ReactNode`.
 Devs review without a checkout, so the Artifact carries the same structure as
 the gallery page — **the whole screen, left rail through right pane**.
 
+**BF-4280 is the template.** It is the worked reference for everything below:
+`https://claude.ai/code/artifact/a2973812-cb55-44e6-a3ba-9af17f6ccb7a`. Read it
+before building a new one rather than re-deriving the shape.
+
 An Artifact cannot import `@gigradar/ui`. So:
 
 - **Every shipped section is a screenshot** of the gallery rendering the real
-  components, drawn back slightly (`opacity: .78`).
+  components, drawn back slightly (`opacity: .78; filter: saturate(.9)`).
 - **Only the blocks under review are live HTML**, in their real positions,
   outlined in the brand colour with a small flag.
 - **The proposal switcher sits outside the screen**, in a control bar above it,
   alongside what each proposal buys, costs, and does at scale. Inside the screen
   it would read as a control the product ships.
 
-Capture by anchoring on a stable hook rather than guessing the DOM — the
-gallery's own nav also looks like "narrow rail beside wide pane":
+### The shape
+
+One screen shell, with the frozen sections and the live blocks **interleaved in
+their real order**. Not five separate pictures stacked — the reviewer should be
+looking at one continuous screen that happens to have holes cut in it:
+
+```html
+<div class="controls">      <!-- one control per decision, outside the screen -->
+  <div id="ctl-prompt"></div>
+  <div id="ctl-autoreply"></div>
+</div>
+
+<div class="screen">        <!-- grid: 258px rail + 1fr pane -->
+  <aside class="screen-rail"><img class="frozen" src="data:…" alt="…"></aside>
+  <div class="screen-pane">
+    <img class="frozen" src="data:…" alt="…">   <!-- shipped section -->
+    <div class="live" id="sec-account-prompt">  <!-- under review -->
+      <div class="live-flag">1 · Account Prompt</div>
+      <div class="live-body" id="pane-prompt"></div>
+    </div>
+    <img class="frozen" src="data:…" alt="…">   <!-- shipped section -->
+  </div>
+</div>
+```
+
+The rail image keeps `opacity: 1` — it is chrome the reader navigates by, and
+dimming it makes the screen look disabled rather than photographed.
+
+A `.screen-note` under the shell names which components drew the grey sections
+and says plainly that the outlined blocks are live and clickable.
+
+### Each proposal is an object
+
+One array per decision, each entry carrying the three things a reviewer needs
+and a `render` that builds into a host element:
+
+```js
+var PROMPT = [
+  { n: 1, name: 'Opens in the row',
+    good:  'The account stays directly above its own field…',
+    cost:  'An open prompt pushes the accounts below it off the fold.',
+    scale: 'Fifty rows is a long list — but a list is what fifty should look like.',
+    render: function (host) { /* build DOM into host */ } },
+];
+```
+
+`good` / `cost` / `scale` are not optional. A proposal with no stated cost is
+the one nobody trusts, and `scale` is what catches the layout that works at
+three accounts and dies at fifty.
+
+### They must actually work
+
+The live blocks are prototypes, not pictures: rows open, the search filters, the
+mode menus change, the textarea takes input, tabs switch. A reviewer picking
+between three shapes has to be able to *use* all three. Keep one tiny `el()`
+helper and build with plain DOM — no framework, no CDN.
+
+### Capture
+
+Anchor on a stable hook rather than guessing the DOM — the gallery's own nav
+also looks like "narrow rail beside wide pane":
 
 ```tsx
 <div data-settings-screen="" style={{ /* … */ }}>
@@ -149,8 +212,28 @@ gallery's own nav also looks like "narrow rail beside wide pane":
 
 Then, over CDP: set `shell.style.height = 'auto'` and the pane's `overflowY` to
 `visible` so nothing is clipped, screenshot each pane child by index, and inline
-them as `data:` URIs — the Artifact CSP blocks external images. Keep the page
-comfortably under 16 MB (`sips -Z 1340` per shot is about right).
+them as `data:` URIs — the Artifact CSP blocks external images.
+
+Watch the clip rectangle: a frame wider than the reading well overflows its
+wrapper, so clip to the **frame element**, not the wrapper around it, or every
+shot comes back cropped to the well's width.
+
+JPEG at quality 82 rather than PNG — a five-screen page drops from ~2.4 MB to
+~1 MB, and none of these are line art. Keep the page well under 16 MB.
+
+### Chrome
+
+- **Type**: IBM Plex Sans + IBM Plex Mono from Google Fonts, the one host the
+  CSP admits. Mono carries the eyebrows, ticket numbers and prop names.
+- **Tokens**: lift the palette from `@gigradar/theme` so the live blocks match
+  the screenshots beside them. Define the full light set on bare `:root`, then
+  redefine only the tokens under `prefers-color-scheme: dark` guarded as
+  `:root:not([data-theme="light"])`, and again under `:root[data-theme="dark"]`.
+- **Header**: ticket eyebrow, title, one-paragraph lede, then pills linking
+  JIRA, the PR and the Figma node.
+- **Close with `## What happens after the pick`** and an open-questions block —
+  what none of the proposals answers, so it gets settled before the pick rather
+  than after.
 
 Link the Artifact from the PR body and from each decision comment.
 
@@ -176,3 +259,18 @@ BF-4280 — per-account AI prompt and auto-reply. Two decisions, three proposals
 each: `apps/gallery/src/proposals/AccountPromptProposals.tsx`,
 `AccountAutoReplyProposals.tsx`, placed by
 `apps/gallery/src/pages/ai/PerAccountPromptPage.tsx`.
+
+Its Artifact is the template step 4 points at:
+`https://claude.ai/code/artifact/a2973812-cb55-44e6-a3ba-9af17f6ccb7a`
+
+A second one, built to the same flow but for a set of states rather than a
+screen of sections: "Stage Update in Room" (Figma 8945:23018) —
+`apps/gallery/src/pages/middle/StageUpdatePage.tsx`,
+`apps/gallery/src/proposals/StageEventNameProposals.tsx`.
+
+**Not every ticket is a whole flow.** Check what already ships before proposing:
+three of that node's five states were already drawn correctly by `RoomEvent`, so
+only the two real gaps were worth a reviewer's attention, and only one of those
+had a genuine question behind it. Mark the settled states as such on the page —
+a reviewer who cannot tell which are open spends their attention re-approving
+work that was never in doubt.
