@@ -16,7 +16,7 @@ import {
   type InboxPane,
   type StageName,
 } from '@gigradar/ui';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { accounts, chatRoom, clientDetails, rooms } from '../fixtures/inbox';
 import { DetailsColumn } from '../pages/inbox/DetailsPage';
 
@@ -35,7 +35,29 @@ const noop = () => undefined;
  * and the Details page draw it, and two copies would drift the moment one of
  * them gained a section.
  */
-export function AssembledInbox({ layout = 'desktop' }: { layout?: 'desktop' | 'mobile' }) {
+export function AssembledInbox({
+  layout = 'desktop',
+  events,
+  previewOverrides,
+}: {
+  layout?: 'desktop' | 'mobile';
+  /**
+   * Replaces the stage event in the middle of the thread.
+   *
+   * Passed rather than built here because the states page draws the same screen
+   * five times and only this line differs between them. Omitted, the thread
+   * keeps the single event it has always drawn, so the Inbox page is unchanged.
+   */
+  events?: ReactNode;
+  /**
+   * Replaces a room's last-message preview in the left column, keyed by room id.
+   *
+   * The list is built from one fixture shared by every page; a state that needs
+   * one row to read differently overrides that row rather than forking the
+   * fixture, so the other rows stay identical across the five frames.
+   */
+  previewOverrides?: Record<string, ReactNode>;
+}) {
   const [selected, setSelected] = useState('r1');
   const [query, setQuery] = useState('');
   const [pane, setPane] = useState<InboxPane>('list');
@@ -66,7 +88,7 @@ export function AssembledInbox({ layout = 'desktop' }: { layout?: 'desktop' | 'm
             key={room.id}
             title={room.title}
             sender={room.sender}
-            preview={room.preview}
+            preview={previewOverrides?.[room.id] ?? room.preview}
             timestamp={room.timestamp}
             stage={room.stage}
             name={room.name}
@@ -134,7 +156,9 @@ export function AssembledInbox({ layout = 'desktop' }: { layout?: 'desktop' | 'm
           be a great fit for our project.
         </BubbleChat>
       </RoomMessage>
-      <RoomEvent kind="stage" from="new" to="interested" by="Jane Cooper" time="08:47" />
+      {events ?? (
+        <RoomEvent kind="stage" from="new" to="interested" by="Jane Cooper" time="08:47" />
+      )}
       {/* Jane carries initials rather than a photo, in the thread and in the
           details pane alike — the six sample faces are already spoken for, and
           giving her one of them would put the same face on two people in one

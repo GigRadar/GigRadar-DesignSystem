@@ -852,6 +852,14 @@ export type {
  * the app's question: an external job post carries no client stats, and a room
  * with no meeting should draw no meeting header.
  */
+export { InboxDetails } from './components/Details/InboxDetails.js';
+export type {
+  InboxDetailsProps,
+  DetailsParticipant,
+  DetailsSectionName,
+  DetailsSectionRenderProps,
+} from './components/Details/InboxDetails.js';
+
 export { DetailsPane } from './components/Details/DetailsPane.js';
 export type { DetailsPaneProps, DetailsPaneStyleProps } from './components/Details/DetailsPane.js';
 

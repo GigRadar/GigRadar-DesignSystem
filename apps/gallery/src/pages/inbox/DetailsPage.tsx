@@ -1,16 +1,5 @@
 import { component } from '@gigradar/theme';
-import {
-  ClientJobDetails,
-  CrmAiConfiguration,
-  DetailsPane,
-  DetailsSection,
-  IconLazizaSparkleFill,
-  MeetingBubble,
-  ParticipantList,
-  ParticipantRow,
-  RelevanceButtons,
-  type RelevanceVerdict,
-} from '@gigradar/ui';
+import { InboxDetails, RelevanceButtons, type RelevanceVerdict } from '@gigradar/ui';
 import { useState } from 'react';
 import { CodeBlock } from '../../components/CodeBlock';
 import { Frame } from '../../components/Frame';
@@ -26,70 +15,49 @@ import {
 } from '../../fixtures/inbox';
 import { Caption } from './parts';
 
+/** A section's width inside the pane — the column less its own padding. */
+const SECTION_WIDTH = component.details.width - component.details.padding * 2;
+
 /** The pane at the height the real screen gives it. */
 const PANE_HEIGHT = 734;
+
+/** The meeting the room has booked, as `MeetingBubble` takes it. */
+const MEETINGS = [
+  {
+    state: 'booked' as const,
+    time: upcomingMeeting.sentAt,
+    details: [
+      { label: 'Date', value: upcomingMeeting.date },
+      { label: 'Time', value: upcomingMeeting.time },
+      { label: 'Link', value: upcomingMeeting.link, href: upcomingMeeting.link },
+    ],
+  },
+];
 
 /**
  * The pane with every section, as the screen draws it.
  *
- * Exported so the assembled Inbox page can show the same thing without
- * rebuilding it — the details column is one arrangement, and two copies would
- * drift.
+ * One `InboxDetails` rather than a hand-stacked `DetailsPane`, because that is
+ * what an app would write — a demo that composes the sections by hand would be
+ * showing a screen the product does not build.
+ *
+ * Exported so the assembled Inbox page draws the same thing without rebuilding
+ * it.
  */
 export function DetailsColumn() {
   const [verdict, setVerdict] = useState<RelevanceVerdict | undefined>('relevant');
 
   return (
-    <DetailsPane>
-      <DetailsSection title="Client & Job Details">
-        <ClientJobDetails {...clientDetails} />
-      </DetailsSection>
-
-      <DetailsSection title="Upcoming Meetings">
-        <MeetingBubble
-          state="booked"
-          time={upcomingMeeting.sentAt}
-          details={[
-            { label: 'Date', value: upcomingMeeting.date },
-            { label: 'Time', value: upcomingMeeting.time },
-            { label: 'Link', value: upcomingMeeting.link, href: upcomingMeeting.link },
-          ]}
-        />
-      </DetailsSection>
-
-      <DetailsSection title="CRM AI Configuration" icon={IconLazizaSparkleFill}>
-        <CrmAiConfiguration
-          version={aiConfiguration.version}
-          modes={aiConfiguration.modes}
-          onEdit={() => undefined}
-        />
-      </DetailsSection>
-
-      <DetailsSection title="Relevance">
-        <RelevanceButtons value={verdict} onChange={setVerdict} />
-      </DetailsSection>
-
-      <DetailsSection title="Participant in this room">
-        <ParticipantList>
-          {participants.map((person) => (
-            <ParticipantRow key={person.id} {...person} />
-          ))}
-        </ParticipantList>
-      </DetailsSection>
-
-      <DetailsSection title="Not in this room">
-        <ParticipantList>
-          {notInRoom.map((person) => (
-            <ParticipantRow
-              key={person.id}
-              state="notInRoom"
-              {...person}
-              onAdd={() => undefined}
-            />
-          ))}
-        </ParticipantList>
-      </DetailsSection>
-    </DetailsPane>
+    <InboxDetails
+      client={clientDetails}
+      meetings={MEETINGS}
+      ai={{ ...aiConfiguration, onEdit: () => undefined }}
+      relevance={verdict}
+      onRelevanceChange={setVerdict}
+      participants={participants}
+      notInRoom={notInRoom}
+      onAddParticipant={() => undefined}
+    />
   );
 }
 
@@ -98,6 +66,9 @@ export function DetailsColumn() {
  *
  * The third column of the Inbox — who the client is, what meeting is booked,
  * what the AI is doing, and who is in the room. Figma node 82:8753.
+ *
+ * This page is the column as a whole. Each section it stacks has its own page
+ * beneath it, which is where that section's states are documented.
  */
 export function DetailsPage() {
   return (
@@ -108,307 +79,95 @@ export function DetailsPage() {
       />
 
       <CrossLink
-        eyebrow="Built from components"
+        eyebrow="The sections it stacks"
         links={[
-          { label: 'CRM ▸ Inbox', pageId: 'crm-inbox' },
-          { label: 'Mid ▸ Meeting Bubble', pageId: 'crm-mid-meeting' },
-          { label: 'Components ▸ Avatar', pageId: 'avatar' },
+          { label: 'Details ▸ Client & Job Details', pageId: 'crm-details-client' },
+          { label: 'Details ▸ Upcoming Meetings', pageId: 'crm-details-meetings' },
+          { label: 'Details ▸ CRM AI Configuration', pageId: 'crm-details-ai' },
+          { label: 'Details ▸ Participants', pageId: 'crm-details-participants' },
         ]}
       >
-        Every section folds. The pane holds no section of its own — what goes in it is the
-        caller's, because a room with no meeting should not draw a{' '}
-        <strong>Upcoming Meetings</strong> header with nothing under it, and only the app knows.
-        The meeting card is <strong>MeetingBubble</strong>, borrowed from the thread rather than
-        redrawn here.
+        <strong>InboxDetails</strong> is the screen-level component: give it the room&rsquo;s data
+        and it draws the whole pane. <strong>DetailsPane</strong> and{' '}
+        <strong>DetailsSection</strong> are underneath it for screens that need to compose the
+        sections themselves.
       </CrossLink>
 
       <Section
         title="The column"
         description="The pane as the screen assembles it, at its real 328px. Every header is a hit target: click a label and the section folds."
       >
+        <Caption>
+          A section is drawn when it has something to say — a room with no meeting gets no{' '}
+          <strong>Upcoming Meetings</strong> header over an empty space. Relevance is the one
+          exception: it carries no data, so the handler is what says the product collects a verdict
+          at all.
+        </Caption>
         <Preview>
           <Frame height={PANE_HEIGHT}>
             <DetailsColumn />
           </Frame>
         </Preview>
         <CodeBlock
-          code={`<DetailsPane>
-  <DetailsSection title="Client & Job Details">
-    <ClientJobDetails {...client} />
-  </DetailsSection>
-
-  <DetailsSection title="CRM AI Configuration" icon={IconLazizaSparkleFill}>
-    <CrmAiConfiguration version={version} modes={modes} onEdit={editPrompt} />
-  </DetailsSection>
-
-  <DetailsSection title="Participant in this room">
-    <ParticipantList>
-      {people.map((p) => <ParticipantRow key={p.id} {...p} />)}
-    </ParticipantList>
-  </DetailsSection>
-</DetailsPane>`}
+          code={`<InboxDetails
+  client={{ name: 'Floyd Miles', role: 'Client', stats, rows }}
+  meetings={[{ state: 'booked', details }]}
+  ai={{ version, modes, onEdit: editPrompt }}
+  relevance={verdict}
+  onRelevanceChange={setVerdict}
+  participants={inRoom}
+  notInRoom={candidates}
+  onAddParticipant={addToRoom}
+/>`}
         />
       </Section>
 
       <Section
-        title="ClientJobDetails"
-        description="Who the client is, whether they are awake, how many people they have already talked to, and what the money looks like — in that order, because that is the order the question is answered in."
+        title="Decorating one section"
+        description="`renderSection` replaces a section's body while keeping its header and its fold. Call `defaultRender()` to wrap rather than replace."
       >
-        <Caption>
-          The stat strip is the part that decides it. Six interviews and no hires is a client worth
-          reading twice, and that reads at a glance only because the counters sit above the table
-          rather than inside it.
-        </Caption>
-        <Preview>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <ClientJobDetails {...clientDetails} />
-          </div>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <ClientJobDetails state="loading" />
-          </div>
-        </Preview>
-        <Caption>
-          Its other two states. <strong>external</strong> is not a failure — the room is about a job
-          posted outside Upwork, so there is no client record to load and never will be, which is
-          why it carries no stats and no table. <strong>error</strong> is a load that can be retried.
-        </Caption>
-        <Preview>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <ClientJobDetails state="external" />
-          </div>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <ClientJobDetails state="error" onRetry={() => undefined} />
-          </div>
-        </Preview>
-        <PropsTable
-          rows={[
-            {
-              name: 'state',
-              type: "'default' | 'loading' | 'error' | 'external'",
-              default: "'default'",
-              description:
-                'What the card has to show. `external` is a job posted outside Upwork — no client record, rather than a failed load.',
-            },
-            { name: 'name', type: 'ReactNode', description: "The client's name." },
-            { name: 'role', type: 'ReactNode', description: 'The line under it — "Client".' },
-            {
-              name: 'clientTime',
-              type: 'ReactNode',
-              description: "The client's local time. The row exists for the gap between the two.",
-            },
-            { name: 'yourTime', type: 'ReactNode', description: "The reader's own local time." },
-            {
-              name: 'stats',
-              type: 'ClientStat[]',
-              description: 'The counter strip. Any number is accepted; Figma draws five.',
-            },
-            {
-              name: 'contractType',
-              type: 'ReactNode',
-              description: 'Drawn as the table\'s head row. Omitted, the table starts at its first row.',
-            },
-            { name: 'rows', type: 'ClientDetailRow[]', description: 'The rate rows under the head.' },
-            {
-              name: 'onRetry',
-              type: '() => void',
-              description: 'Retries the load. Only the error state draws it.',
-            },
-          ]}
+        <CodeBlock
+          code={`<InboxDetails
+  {...room}
+  renderSection={({ name, defaultRender }) =>
+    name === 'client' ? (
+      <>
+        {defaultRender()}
+        <OpenInCrmLink id={room.clientId} />
+      </>
+    ) : (
+      defaultRender()
+    )
+  }
+/>`}
         />
+        <Caption>
+          Reach past it to <strong>DetailsPane</strong> when a screen genuinely differs — a pane
+          with a section this does not know about, or one whose folds are driven from outside.
+        </Caption>
       </Section>
 
       <Section
-        title="CrmAiConfiguration"
-        description="What the AI is doing in this room, and on which prompt. The one card on the pane drawn in the Laziza orange."
+        title="Relevance"
+        description="Was this lead worth surfacing. The pair the scanner learns from — the one section with no page of its own, because it is two buttons rather than a surface."
       >
         <Caption>
-          That colour is deliberate. Everything else on the pane is something the reader looks up;
-          this is the only thing acting on the conversation on its own, so it should be findable
-          without reading. <strong>off</strong> keeps the badges and greys them, so the reader can
-          see what would happen if they turned it back on.
-        </Caption>
-        <Preview>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <CrmAiConfiguration
-              version={aiConfiguration.version}
-              modes={aiConfiguration.modes}
-              onEdit={() => undefined}
-            />
-          </div>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <CrmAiConfiguration
-              state="off"
-              version={aiConfiguration.version}
-              modes={aiConfiguration.modes}
-            />
-          </div>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <CrmAiConfiguration state="error" onRetry={() => undefined} />
-          </div>
-        </Preview>
-        <PropsTable
-          rows={[
-            {
-              name: 'state',
-              type: "'default' | 'off' | 'error'",
-              default: "'default'",
-              description:
-                'Switched off is not the same as failed to load — `off` keeps the badges, greyed.',
-            },
-            {
-              name: 'version',
-              type: 'ReactNode',
-              description:
-                'Which revision the room runs on. Shown, not chosen — the choice lives in AI settings.',
-            },
-            {
-              name: 'modes',
-              type: 'AiMessageMode[]',
-              description:
-                'The badges. Each pairs a message type with what the AI does with it — "First • Full Auto".',
-            },
-            {
-              name: 'onEdit',
-              type: '() => void',
-              description: 'Opens the prompt. Draws the pencil when set.',
-            },
-          ]}
-        />
-      </Section>
-
-      <Section
-        title="RelevanceButtons"
-        description="Was this lead worth surfacing. The pair the scanner learns from."
-      >
-        <Caption>
-          At rest the labels are drawn in the border grey rather than in black — unusual, and
+          At rest the labels are drawn in the border grey rather than black — unusual, and
           deliberate: this is feedback the product asks for, not work the reader came to do, so it
           stays quiet until pointed at and only commits to a colour once it holds the answer. The
           two are equally wide because they are a choice between equals.
         </Caption>
         <Preview>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
+          <div style={{ width: SECTION_WIDTH }}>
             <RelevanceButtons />
           </div>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
+          <div style={{ width: SECTION_WIDTH }}>
             <RelevanceButtons value="relevant" />
           </div>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
+          <div style={{ width: SECTION_WIDTH }}>
             <RelevanceButtons value="notRelevant" />
           </div>
         </Preview>
-        <PropsTable
-          rows={[
-            {
-              name: 'value',
-              type: "'relevant' | 'notRelevant'",
-              description: 'Which verdict is recorded, if any.',
-            },
-            {
-              name: 'onChange',
-              type: '(verdict: RelevanceVerdict) => void',
-              description: 'Called with the verdict the reader picked.',
-            },
-            { name: 'disabled', type: 'boolean', description: 'Turns both buttons inert.' },
-          ]}
-        />
-      </Section>
-
-      <Section
-        title="ParticipantRow"
-        description="One person, with their role under their name — and, for someone not yet in the room, the button that pulls them in."
-      >
-        <Caption>
-          The role is the reason the row exists. A name alone does not tell a reader whether the
-          person typing is the client, their own BM, or a freelancer they have never met, and on a
-          shared room that is the first thing worth knowing.
-        </Caption>
-        <Preview>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <ParticipantList>
-              <ParticipantRow {...participants[0]} />
-              <ParticipantRow {...participants[1]} />
-              <ParticipantRow state="notInRoom" {...notInRoom[0]} onAdd={() => undefined} />
-              <ParticipantRow state="notInRoom" {...notInRoom[1]} onAdd={() => undefined} />
-              <ParticipantRow state="loading" />
-            </ParticipantList>
-          </div>
-        </Preview>
-        <PropsTable
-          rows={[
-            {
-              name: 'state',
-              type: "'inRoom' | 'notInRoom' | 'loading'",
-              default: "'inRoom'",
-              description:
-                '`notInRoom` is not an absence — it is a teammate who could be pulled in, and the row carries the button that does it.',
-            },
-            { name: 'name', type: 'ReactNode', description: 'Their name.' },
-            {
-              name: 'role',
-              type: 'ReactNode',
-              description: 'What they are to this room — "Client", "Business Manager".',
-            },
-            {
-              name: 'badge',
-              type: "'gigradar' | 'upworkApi' | ReactNode",
-              description:
-                "The mark in the avatar's corner — how this BM was reached.",
-            },
-            {
-              name: 'onAdd',
-              type: '() => void',
-              description: 'Pulls them into the room. Only `notInRoom` draws it.',
-            },
-          ]}
-        />
-      </Section>
-
-      <Section
-        title="DetailsSection"
-        description="The fold. Every block of the pane is one, which is what makes the pane one thing to learn rather than six."
-      >
-        <Caption>
-          The whole header is the hit target, not just the chevron — the label is the larger thing
-          to aim at, and a reader who has decided to close a section is aiming at its name. A closed
-          section unmounts its body rather than hiding it, so a folded "Not in this room" does not
-          leave four Add buttons in the tab order.
-        </Caption>
-        <Preview>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <DetailsSection title="Relevance">
-              <RelevanceButtons value="relevant" />
-            </DetailsSection>
-          </div>
-          <div style={{ width: component.details.width - component.details.padding * 2 }}>
-            <DetailsSection title="Relevance" defaultOpen={false}>
-              <RelevanceButtons />
-            </DetailsSection>
-          </div>
-        </Preview>
-        <PropsTable
-          rows={[
-            { name: 'title', type: 'ReactNode', description: "The section's name." },
-            {
-              name: 'icon',
-              type: 'IconDef',
-              description:
-                'A glyph before the label. Only the AI section has one, which is what makes it read as the loud one.',
-            },
-            {
-              name: 'open',
-              type: 'boolean',
-              description: 'Drives the fold from the caller. Leave unset to let the section keep its own state.',
-            },
-            { name: 'defaultOpen', type: 'boolean', default: 'true', description: 'Which way an uncontrolled section starts.' },
-            {
-              name: 'onToggle',
-              type: '(open: boolean) => void',
-              description:
-                'Fires for controlled and uncontrolled alike, so an app that only wants to remember the fold does not also have to own it.',
-            },
-          ]}
-        />
       </Section>
 
       <Section
@@ -417,9 +176,69 @@ export function DetailsPage() {
       >
         <Preview>
           <Frame height={400}>
-            <DetailsPane empty />
+            <InboxDetails empty />
           </Frame>
         </Preview>
+      </Section>
+
+      <Section title="Props" description="`InboxDetails` — the whole column from the room's data.">
+        <PropsTable
+          rows={[
+            {
+              name: 'sections',
+              type: 'DetailsSectionName[]',
+              description:
+                'Which sections to draw, in order. Defaults to every section that has data.',
+            },
+            {
+              name: 'client',
+              type: 'ClientJobDetailsProps',
+              description: 'The client and job card. Omit to drop the section.',
+            },
+            {
+              name: 'meetings',
+              type: 'MeetingBubbleProps[]',
+              description:
+                "`MeetingBubble`'s own props — the card is the one the thread draws, so a meeting shown twice is not described two ways.",
+            },
+            {
+              name: 'ai',
+              type: 'CrmAiConfigurationProps',
+              description: 'The AI configuration card. Omit to drop the section.',
+            },
+            {
+              name: 'relevance',
+              type: "'relevant' | 'notRelevant'",
+              description: 'The recorded verdict. The section needs `onRelevanceChange` to appear.',
+            },
+            {
+              name: 'participants',
+              type: 'DetailsParticipant[]',
+              description: 'Who is in the room.',
+            },
+            {
+              name: 'notInRoom',
+              type: 'DetailsParticipant[]',
+              description: 'Who could be added to it. Pair with `onAddParticipant`.',
+            },
+            {
+              name: 'collapsed',
+              type: 'DetailsSectionName[]',
+              description: 'Which sections start folded.',
+            },
+            {
+              name: 'onSectionToggle',
+              type: '(name, open) => void',
+              description: 'Called when a section is folded or unfolded.',
+            },
+            {
+              name: 'renderSection',
+              type: 'RenderProp<DetailsSectionRenderProps>',
+              description: "Replaces one section's body, keeping its header and fold.",
+            },
+            { name: 'empty', type: 'boolean', description: 'Draws the empty state instead.' },
+          ]}
+        />
       </Section>
     </>
   );

@@ -36,6 +36,10 @@ import { SchedulePartsPage } from './pages/middle/SchedulePartsPage';
 import { MeetingsPage } from './pages/middle/MeetingsPage';
 import { CardsPage } from './pages/inbox/CardsPage';
 import { DetailsPage } from './pages/inbox/DetailsPage';
+import { ClientJobDetailsPage } from './pages/details/ClientJobDetailsPage';
+import { UpcomingMeetingsPage } from './pages/details/UpcomingMeetingsPage';
+import { CrmAiConfigurationPage } from './pages/details/CrmAiConfigurationPage';
+import { ParticipantsPage } from './pages/details/ParticipantsPage';
 import { RoomListPage } from './pages/inbox/RoomListPage';
 import { PushNotificationPage } from './pages/inbox/PushNotificationPage';
 import { SyncPage } from './pages/inbox/SyncPage';
@@ -524,20 +528,51 @@ const NAV: NavGroup[] = [
             label: 'Meetings (Mid)',
             render: () => <MeetingsPage />,
           },
+          {
+            /**
+             * The right column — everything known about the room that is open.
+             *
+             * A sibling of the list and the thread, for the same reason the thread
+             * is: the three are columns of one screen, so all three sit inside the
+             * Inbox rather than beside it.
+             *
+             * Its children are the sections the pane stacks, in the order it
+             * stacks them. Each is a real surface with its own states — the client
+             * card alone has four — which is what earns them pages rather than one
+             * page describing six things at once.
+             */
+            id: 'crm-details',
+            label: 'Details (Right)',
+            render: () => <DetailsPage />,
+            children: [
+              {
+                id: 'crm-details-client',
+                label: 'Client & Job Details',
+                render: () => <ClientJobDetailsPage />,
+              },
+              {
+                id: 'crm-details-meetings',
+                label: 'Upcoming Meetings',
+                render: () => <UpcomingMeetingsPage />,
+              },
+              {
+                id: 'crm-details-ai',
+                label: 'CRM AI Configuration',
+                render: () => <CrmAiConfigurationPage />,
+              },
+              {
+                /**
+                 * Both lists on one page. "Participant in this room" and "Not in
+                 * this room" draw the same row in two states, so splitting them
+                 * would document one component twice.
+                 */
+                id: 'crm-details-participants',
+                label: 'Participants',
+                render: () => <ParticipantsPage />,
+              },
+            ],
+          },
         ],
-      },
-      {
-        /**
-         * The right column — everything known about the room that is open.
-         *
-         * A sibling of the list and the thread, for the same reason the thread
-         * is: the three are columns of one screen. It has no children — Figma
-         * files its sections inside the pane rather than as surfaces of their
-         * own, and each is documented on this page.
-         */
-        id: 'crm-details',
-        label: 'Details (Right)',
-        render: () => <DetailsPage />,
       },
     ],
   },

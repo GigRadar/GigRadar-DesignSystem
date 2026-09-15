@@ -44,7 +44,12 @@ export type ParticipantRowProps = {
   /** The button's label. Defaults to "Add". */
   addLabel?: ReactNode;
 } & ParticipantRowStyleProps &
-  Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style'>;
+  /*
+   * `role` is this component's own prop — what the person is to the room —
+   * and it has to win over the ARIA attribute of the same name, which would
+   * otherwise narrow it to a role token and reject any other node.
+   */
+  Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style' | 'role'>;
 
 /**
  * One person, with their role under their name.

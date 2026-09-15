@@ -44,3 +44,15 @@ exists — a name alone does not say whether the person typing is the client, yo
 own BM, or a freelancer you have never met. One component across both lists:
 "Participant in this room" and "Not in this room" draw the same row, and what
 differs is whether it ends in an Add button.
+
+`InboxDetails` is the screen-level component above them: give it the room's
+data and it draws the whole pane, deciding which sections appear, in what
+order, and which are dropped for having nothing to say. Most apps want that
+one — remaking those decisions per app is how two screens drift apart.
+`DetailsPane` and `DetailsSection` stay underneath for screens that genuinely
+differ, and `renderSection` covers the case in between, where a section needs
+decorating rather than replacing.
+
+`ParticipantRow` no longer inherits the DOM `role` attribute. Its own `role`
+prop — what the person is to the room — was being narrowed to an ARIA role
+token, so passing anything else failed to typecheck.
