@@ -7,17 +7,20 @@ import {
   InboxList,
   InboxRoom,
   InboxScreen,
+  MeetingBubble,
   PlanBadge,
   RoomDivider,
   RoomEvent,
   RoomMessage,
   RoomNotice,
+  ScheduledBadge,
+  ScheduleMessageModal,
   Sender,
   type InboxPane,
   type StageName,
 } from '@gigradar/ui';
 import { useState, type ReactNode } from 'react';
-import { accounts, chatRoom, clientDetails, rooms } from '../fixtures/inbox';
+import { accounts, chatRoom, clientDetails, rooms, upcomingMeeting } from '../fixtures/inbox';
 import { DetailsColumn } from '../pages/inbox/DetailsPage';
 
 const noop = () => undefined;
@@ -70,6 +73,15 @@ export function AssembledInbox({
     'notesAndAiReplies',
   ]);
   const [draft, setDraft] = useState('');
+  // The composer's own two modes, and the scheduler it can open. Held here
+  // rather than left undriven: an inert Message/Note pair and a missing clock
+  // are the difference between the room the product ships and a picture of it.
+  const [composerMode, setComposerMode] = useState<'message' | 'note'>('message');
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [scheduleAt, setScheduleAt] = useState<Date | null>(null);
+  const [scheduleTime, setScheduleTime] = useState('09:00');
+  const [scheduleZone, setScheduleZone] = useState('you');
+  const [autoCancel, setAutoCancel] = useState(true);
 
   const actions = { onEdit: noop, onDelete: noop, onDownload: noop };
 
@@ -137,9 +149,15 @@ export function AssembledInbox({
       composer={
         <Composer
           layout={layout}
+          mode={composerMode}
+          onModeChange={setComposerMode}
           hasDraft={draft.length > 0}
           chooseBm={{ name: 'Marina Ovcharenko', tone: 'volcano' }}
           onSend={noop}
+          // Passing this is what draws the clock beside send. The Inbox is the
+          // Chat Room in its third column, so it gets the whole composer —
+          // both modes and both send actions — not a reduced one.
+          onSchedule={() => setScheduleOpen(true)}
           field={{ value: draft, onValueChange: setDraft, maxLength: 5000 }}
         />
       }
@@ -168,17 +186,58 @@ export function AssembledInbox({
           Thank you! I&rsquo;d be glad to walk you through the flows I have in mind — is Wednesday
           still good for a call?
         </BubbleChat>
+        {/* The call that came out of that message. A meeting is a thing the room
+            arranged, so it belongs in the thread beside the message proposing
+            it — the right pane lists it again as a booking, which is a
+            different question ("what is coming up") than this one ("what did we
+            agree to"). */}
+        <MeetingBubble
+          side="own"
+          state="booked"
+          time={upcomingMeeting.sentAt}
+          details={[
+            { label: 'Date', value: upcomingMeeting.date },
+            { label: 'Time', value: upcomingMeeting.time },
+            { label: 'Link', value: upcomingMeeting.link, href: upcomingMeeting.link },
+          ]}
+        />
       </RoomMessage>
+      {/* The room says it has messages waiting to go out. Drawn at the foot of
+          the thread rather than in the header: it is about this conversation's
+          queue, and the header already carries what the room *is*. */}
+      <ScheduledBadge place="room" autoCancel={autoCancel} onNavigate={noop} />
     </ChatRoom>
   );
 
   return (
-    <InboxScreen
-      layout={layout}
-      pane={pane}
-      list={list}
-      room={room}
-      details={<DetailsColumn />}
-    />
+    <>
+      <InboxScreen
+        layout={layout}
+        pane={pane}
+        list={list}
+        room={room}
+        details={<DetailsColumn />}
+      />
+      {/* Outside the screen rather than inside the room: the picker is a modal
+          over the whole window in the product, and nesting it in a column would
+          trap it in that column's stacking context. */}
+      <ScheduleMessageModal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        date={scheduleAt}
+        onDateChange={setScheduleAt}
+        time={scheduleTime}
+        onTimeChange={setScheduleTime}
+        timezones={[
+          { id: 'you', label: 'You', offset: '(UTC+08:00)', avatar: { initials: 'MO', tone: 'purple' } },
+          { id: 'client', label: 'Client', offset: '(UTC+06:00)', avatar: { initials: 'FM', tone: 'purple' } },
+        ]}
+        timezoneId={scheduleZone}
+        onTimezoneChange={setScheduleZone}
+        autoCancel={autoCancel}
+        onAutoCancelChange={setAutoCancel}
+        onSchedule={() => setScheduleOpen(false)}
+      />
+    </>
   );
 }
