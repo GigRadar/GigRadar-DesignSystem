@@ -218,8 +218,21 @@ Watch the clip rectangle: a frame wider than the reading well overflows its
 wrapper, so clip to the **frame element**, not the wrapper around it, or every
 shot comes back cropped to the well's width.
 
-JPEG at quality 82 rather than PNG — a five-screen page drops from ~2.4 MB to
-~1 MB, and none of these are line art. Keep the page well under 16 MB.
+**Shoot at `deviceScaleFactor: 2`.** A shot captured at 1x and displayed near
+its natural width is visibly soft — the screenshots sit beside live HTML, and
+blurred chrome next to crisp text reads as a broken image rather than a
+photograph.
+
+**Squeeze the dead space out before shooting, never crop it after.** A room with
+a short thread is mostly empty wash with the composer pinned at the bottom: the
+Inbox draws 1588px for about 560px of messages. Cropping to fit the page loses
+the composer, which is the part that says the thread can be written into. Set
+the screen's own height instead — `frame.style.height = 'auto'` and the screen
+to ~900px — and the header, the messages and the composer all survive while only
+the blank middle goes.
+
+JPEG at quality 84 rather than PNG — none of these are line art. At 2x a
+five-screen page lands around 4 MB, comfortably under the 16 MB cap.
 
 ### Chrome
 
