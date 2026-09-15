@@ -6,6 +6,7 @@ import { Frame } from '../components/Frame';
 import { PageHeader, Section } from '../layout';
 import { CrossLink } from '../navigation';
 import { accounts, clients, rooms, stages } from '../fixtures/inbox';
+import { AssembledInbox } from '../demos/inboxScreen';
 
 /** A caption under a demo, matching the other gallery pages. */
 function Caption({ children }: { children: ReactNode }) {
@@ -20,8 +21,8 @@ function Caption({ children }: { children: ReactNode }) {
  * CRM ▸ Inbox.
  *
  * The screen as it is assembled, with the pieces documented on their own under
- * the children of this page. The left column is what exists today; the message
- * thread and the client panel beside it are still to be built.
+ * the children of this page. All three columns ship: the room list, the message
+ * thread, and the details pane beside them.
  */
 export function InboxPage() {
   const [selected, setSelected] = useState('r1');
@@ -33,7 +34,7 @@ export function InboxPage() {
     <>
       <PageHeader
         title="Inbox"
-        description="The CRM's conversation screen — the room list, its filters, and the connection indicator. Figma node 1362:26728."
+        description="The CRM's conversation screen — the room list, the message thread, and the details pane. Figma node 1362:26728."
       />
 
       <CrossLink
@@ -49,6 +50,44 @@ export function InboxPage() {
         SubNav Figma draws inside it — the account picker, mark as read, the searchbar, and the
         websocket indicator — is documented beneath it, nested the way Figma nests them.
       </CrossLink>
+
+      <Section
+        title="The screen"
+        description="All three columns, from one set of fixtures. `InboxScreen` decides how many are on screen; the columns themselves are the same components at either width."
+      >
+        <Caption>
+          The three describe one conversation — the room selected on the left is the thread in the
+          middle and the client on the right. Pick another room to see the left column follow;
+          fold a section on the right to see what the pane is mostly for.
+        </Caption>
+        {/*
+         * Scrolled sideways rather than squeezed. The three columns come to
+         * about 1360px, which is wider than the gallery's content well — and a
+         * screen shown narrower than it ships is a screen whose header wraps
+         * in ways the real one never does.
+         */}
+        <div style={{ overflowX: 'auto' }}>
+          <div style={{ minWidth: 1360 }}>
+            <Frame height={734}>
+              <AssembledInbox />
+            </Frame>
+          </div>
+        </div>
+        <CodeBlock
+          code={`<InboxScreen
+  list={<InboxList …>{rooms.map((room) => <InboxRoom … />)}</InboxList>}
+  room={<ChatRoom header={<ChatHeader … />} composer={<Composer … />}>…</ChatRoom>}
+  details={
+    <DetailsPane>
+      <DetailsSection title="Client & Job Details">
+        <ClientJobDetails {...client} />
+      </DetailsSection>
+      …
+    </DetailsPane>
+  }
+/>`}
+        />
+      </Section>
 
       <Section
         title="The column"

@@ -846,6 +846,55 @@ export type {
 } from './components/Middle/AutoCancelSwitch.js';
 
 /**
+ * The Inbox's right column — the details pane and the sections it stacks.
+ *
+ * Every section is exported on its own, because which of them a room has is
+ * the app's question: an external job post carries no client stats, and a room
+ * with no meeting should draw no meeting header.
+ */
+export { DetailsPane } from './components/Details/DetailsPane.js';
+export type { DetailsPaneProps, DetailsPaneStyleProps } from './components/Details/DetailsPane.js';
+
+export { DetailsSection } from './components/Details/DetailsSection.js';
+export type {
+  DetailsSectionProps,
+  DetailsSectionStyleProps,
+} from './components/Details/DetailsSection.js';
+
+export { ClientJobDetails } from './components/Details/ClientJobDetails.js';
+export type {
+  ClientJobDetailsProps,
+  ClientJobDetailsStyleProps,
+  ClientJobState,
+  ClientStat,
+  ClientDetailRow,
+} from './components/Details/ClientJobDetails.js';
+
+export { CrmAiConfiguration } from './components/Details/CrmAiConfiguration.js';
+export type {
+  CrmAiConfigurationProps,
+  CrmAiConfigurationStyleProps,
+  CrmAiConfigState,
+  AiMessageMode,
+} from './components/Details/CrmAiConfiguration.js';
+
+export { RelevanceButton, RelevanceButtons } from './components/Details/RelevanceButton.js';
+export type {
+  RelevanceButtonProps,
+  RelevanceButtonStyleProps,
+  RelevanceButtonsProps,
+  RelevanceVerdict,
+} from './components/Details/RelevanceButton.js';
+
+export { ParticipantRow, ParticipantList } from './components/Details/ParticipantRow.js';
+export type {
+  ParticipantRowProps,
+  ParticipantRowStyleProps,
+  ParticipantListProps,
+  ParticipantState,
+} from './components/Details/ParticipantRow.js';
+
+/**
  * The icon set — `Icon` plus one `IconDef` per glyph (`IconLockFill`,
  * `IconSearch`, …). The full-set registry is deliberately NOT exported here;
  * the gallery imports it from the package internals so product bundles only

@@ -3207,6 +3207,169 @@ const datePicker = {
 } as const;
 
 /**
+ * The Inbox's right pane — the client, the meeting, the AI configuration, and
+ * who is in the room.
+ *
+ * Figma: the pane at 82:8753, its sections at 4408:31380 (client and job),
+ * 4285:25258 (CRM AI configuration), 588:16397 (relevance), and 3600:24728
+ * (participant).
+ *
+ * The pane is a stack of collapsible sections rather than one card, because
+ * what it shows varies per room: an external job post has no client stats, a
+ * room with no meeting has no meeting card, and a section that cannot be
+ * closed would leave the reader scrolling past emptiness to reach the part
+ * they came for.
+ *
+ * Several gaps below are a literal 8. The spacing scale steps 6 → 12, and 8 is
+ * what Figma draws between a section header and its body, inside the AI card,
+ * and between a participant's avatar and their name. Rounding those to 6 or 12
+ * would be a visible change to every section on the pane, so the odd value is
+ * named here rather than silently moved onto the scale.
+ */
+export const details = {
+  /** The column's own width — the same 328 the thread is laid out against. */
+  width: 328,
+  padding: spacing.m,
+  /** Space between one section and the next. */
+  sectionGap: spacing.l,
+
+  /** A section's own header — its label and the chevron that folds it. */
+  section: {
+    /** Space between the header and the body it opens. */
+    gap: 8,
+    /** Space between the header's glyph and its label. */
+    titleGap: 8,
+    titleIconSize: 20,
+    chevronSize: 14,
+    /**
+     * How long the fold takes.
+     *
+     * Short enough that a reader closing four sections in a row is not waiting
+     * on the animation, long enough that the sections below are seen to move
+     * rather than to jump.
+     */
+    duration: 160,
+  },
+
+  /** The client and job card. */
+  client: {
+    radius: radius.m,
+    padding: 13,
+    gap: spacing.s,
+    borderWidth: borderWidth.thin,
+    avatarSize: 40,
+    /** Space between the avatar and the name beside it. */
+    headerGap: 10,
+    /** Space between the name and the role under it. */
+    nameGap: 1,
+    /**
+     * The glyph disc the `external` state draws where a client's face would
+     * be. Figma gives it the avatar's own 1.25px ring rather than a hairline,
+     * so it reads as an avatar rather than as a badge.
+     */
+    externalBorderWidth: 1.25,
+    externalIconSize: 20,
+    /** The clock rows — client time, and the reader's own. */
+    timeGap: spacing.xxs,
+    timeIconSize: 16,
+    /** The five-up counter strip. */
+    statGap: spacing.xs,
+    statPaddingX: 5,
+    statPaddingY: 8,
+    statRadius: radius.xs,
+    statGapY: 1,
+    statValueSize: fontSize.m,
+    statLabelSize: 10,
+    /**
+     * The small pills beside the clock — the client's UTC offset and the
+     * reader's own — and the contract-type pill in the table's head row.
+     *
+     * Tighter than any badge on the scale: these sit inside a 17px line of
+     * text and have to read as annotations on it rather than as controls.
+     */
+    pillPaddingY: 3,
+    pillPaddingX: 9,
+    /** The rate table under it. */
+    tableRadius: radius.s,
+    tablePaddingX: 14,
+    /** The table's head row sits taller than its body rows. */
+    headPaddingTop: 9,
+    headPaddingBottom: 10,
+    rowPaddingTop: 7,
+    rowPaddingBottom: 8,
+    /** The bars the loading state draws in place of each value. */
+    skeletonRadius: radius.xs,
+    skeletonHeight: 17,
+  },
+
+  /** The CRM AI configuration card — the one drawn in the Laziza orange. */
+  aiConfig: {
+    radius: radius.m,
+    padding: spacing.m,
+    gap: 8,
+    /** Thicker than the client card's hairline: this card is the loud one. */
+    borderWidth: borderWidth.medium,
+    /** Space between a row's label and its value. */
+    rowGap: spacing.xxs,
+    /** The prompt-version field. */
+    fieldPadding: 8,
+    fieldRadius: radius.xs,
+    editIconSize: 24,
+    /** The message-type badges. */
+    badgeGap: spacing.xxs,
+    badgePaddingX: 8,
+    badgePaddingY: 2,
+    badgeRadius: 100,
+    /** The dot between a badge's two halves — "First • Full Auto". */
+    badgeDotSize: 3,
+    /** The struck-through sparkle the error state draws. */
+    errorMarkSize: 40,
+  },
+
+  /** The relevant / not relevant pair. */
+  relevance: {
+    height: 32,
+    radius: radius.xs,
+    paddingX: spacing.m,
+    /** Space between the pair. */
+    gap: 8,
+    borderWidth: borderWidth.thin,
+    iconSize: 20,
+  },
+
+  /** One person in the room, or one who could be added to it. */
+  participant: {
+    height: 32,
+    gap: 8,
+    /** Space between one row and the next. */
+    rowGap: 10,
+    avatarSize: 32,
+    /** The "Add" button on a row for someone not in the room. */
+    addPaddingLeft: spacing.xs,
+    addPaddingRight: spacing.s,
+    addPaddingY: spacing.xs,
+    addRadius: radius.xs,
+    addGap: spacing.xs,
+    addIconSize: 16,
+    /** The bar the loading row draws in place of a name. */
+    skeletonWidth: 63,
+    skeletonHeight: 31,
+    skeletonRadius: radius.xs,
+  },
+
+  /**
+   * The pane's own empty state.
+   *
+   * Held narrower than the column so the explanation breaks into short lines
+   * under its glyph, the way the room list's empty state does.
+   */
+  emptyMarkSize: 40,
+  emptyIconSize: 20,
+  emptyWidth: 240,
+  emptyGap: 8,
+} as const;
+
+/**
  * The app's left navigation rail — Figma node 2712:30773 ("Left Panel").
  *
  * One entry per product area: Onboarding, Unified Inbox, Dashboard, Sequence,
@@ -3264,6 +3427,7 @@ export const component = {
   checkbox,
   confirm,
   datePicker,
+  details,
   iconButton,
   inbox,
   middle,

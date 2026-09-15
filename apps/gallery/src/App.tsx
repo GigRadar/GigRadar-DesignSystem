@@ -35,6 +35,7 @@ import { ScheduledRoomPage } from './pages/middle/ScheduledRoomPage';
 import { SchedulePartsPage } from './pages/middle/SchedulePartsPage';
 import { MeetingsPage } from './pages/middle/MeetingsPage';
 import { CardsPage } from './pages/inbox/CardsPage';
+import { DetailsPage } from './pages/inbox/DetailsPage';
 import { RoomListPage } from './pages/inbox/RoomListPage';
 import { PushNotificationPage } from './pages/inbox/PushNotificationPage';
 import { SyncPage } from './pages/inbox/SyncPage';
@@ -524,6 +525,19 @@ const NAV: NavGroup[] = [
             render: () => <MeetingsPage />,
           },
         ],
+      },
+      {
+        /**
+         * The right column — everything known about the room that is open.
+         *
+         * A sibling of the list and the thread, for the same reason the thread
+         * is: the three are columns of one screen. It has no children — Figma
+         * files its sections inside the pane rather than as surfaces of their
+         * own, and each is documented on this page.
+         */
+        id: 'crm-details',
+        label: 'Details (Right)',
+        render: () => <DetailsPage />,
       },
     ],
   },

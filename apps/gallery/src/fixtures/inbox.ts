@@ -185,3 +185,89 @@ export const leadStages: StageName[] = [
   'wrongTarget',
   'alreadyEquipped',
 ];
+
+/**
+ * The right pane's sample data — the same room, seen from the side.
+ *
+ * Floyd Miles is `rooms[0]`'s client and the chat room's, so the three columns
+ * of the assembled screen describe one conversation rather than three
+ * unrelated ones. The numbers are Figma's own (node 82:8753): a client who has
+ * interviewed six people and hired none is the case the stat strip exists to
+ * make legible.
+ */
+export const clientDetails = {
+  name: 'Floyd Miles',
+  role: 'Client',
+  avatarSrc: face('1507003211169-0a1dd7228f2d'),
+  clientTime: '02:10',
+  yourTime: '09:00',
+  utcOffset: 'UTC +1',
+  gmtOffset: 'GMT +1',
+  stats: [
+    { label: 'Sent', value: '0' },
+    { label: 'Interview', value: '6' },
+    { label: 'Hired', value: '0' },
+    { label: 'Unanswer', value: '0' },
+    { label: 'Offered', value: '0' },
+  ],
+  contractType: 'Hourly Rate',
+  rows: [
+    { label: 'Rate', value: '$10.00' },
+    { label: 'Avg rate', value: '$11,437.65' },
+    { label: 'Avg interviewed rate', value: '$9,501.67' },
+    { label: 'Min rate', value: '$10.00' },
+    { label: 'Max rate', value: '$12,000.00' },
+    { label: 'Last client activity', value: '4 days ago' },
+  ],
+};
+
+/** What the AI is set to do in this room. */
+export const aiConfiguration = {
+  version: 'Tightened follow-up cadence',
+  modes: [
+    { type: 'First', mode: 'Full Auto' },
+    { type: 'Other', mode: 'Co-pilot' },
+  ],
+};
+
+/**
+ * Who is in the room, and who could be.
+ *
+ * Five in and four out, which is the size Figma draws and the size that shows
+ * what the lists are for: the in-room list is read, and the out-of-room list
+ * is acted on.
+ */
+export const participants = [
+  { id: 'floyd', name: 'Floyd Miles', role: 'Client', avatarSrc: face('1507003211169-0a1dd7228f2d') },
+  {
+    id: 'maria',
+    name: 'Maria Ovcharenko',
+    role: 'Business Manager',
+    avatarSrc: face('1494790108377-be9c29b29330'),
+    badge: 'gigradar' as const,
+  },
+  { id: 'jane', name: 'Jane Cooper', role: 'Freelancer' },
+  { id: 'samuel', name: 'Samuel', role: 'Freelancer' },
+  { id: 'kulusevski', name: 'Kulusevski', role: 'Freelancer' },
+];
+
+export const notInRoom = [
+  { id: 'dimaria', name: 'Di Maria', role: 'Client', avatarSrc: face('1517841905240-472988babdf9') },
+  {
+    id: 'hermans',
+    name: 'Hermans',
+    role: 'Business Manager',
+    avatarSrc: face('1534528741775-53994a69daeb'),
+    badge: 'upworkApi' as const,
+  },
+  { id: 'cristiano', name: 'Cristiano', role: 'Freelancer', avatarSrc: face('1500648767791-00dcc994a43e') },
+  { id: 'pascol', name: 'Pascol Herman', role: 'Freelancer' },
+];
+
+/** The meeting the room has booked — the card the pane borrows from Middle. */
+export const upcomingMeeting = {
+  date: 'December 3, 2025',
+  time: '15:00 - 15:30 (Asia/Makassar)',
+  link: 'https://zoom.us/j/1234567890',
+  sentAt: '08:30',
+};
