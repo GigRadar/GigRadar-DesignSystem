@@ -34,6 +34,7 @@ import { ComposerPage } from './pages/middle/ComposerPage';
 import { ScheduledRoomPage } from './pages/middle/ScheduledRoomPage';
 import { SchedulePartsPage } from './pages/middle/SchedulePartsPage';
 import { MeetingsPage } from './pages/middle/MeetingsPage';
+import { StageUpdatePage } from './pages/middle/StageUpdatePage';
 import { CardsPage } from './pages/inbox/CardsPage';
 import { DetailsPage } from './pages/inbox/DetailsPage';
 import { ClientJobDetailsPage } from './pages/details/ClientJobDetailsPage';
@@ -527,6 +528,21 @@ const NAV: NavGroup[] = [
             id: 'crm-mid-meetings',
             label: 'Meetings (Mid)',
             render: () => <MeetingsPage />,
+          },
+          {
+            /**
+             * A flow rather than a component — the five states the thread can
+             * be in around a stage change.
+             *
+             * Filed beside the room's parts because that is where the states
+             * are drawn, but it documents a behaviour spanning two columns: the
+             * event in the thread, and the same change as the room's preview in
+             * the list. `RoomEvent` has its own entry under the parts; this
+             * page is the flow that entry belongs to.
+             */
+            id: 'crm-mid-stage-update',
+            label: 'Stage Update in Room',
+            render: () => <StageUpdatePage />,
           },
           {
             /**
