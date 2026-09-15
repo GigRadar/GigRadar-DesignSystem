@@ -863,6 +863,9 @@ export type {
   PaywallPlanRenderProps,
 } from './components/Paywall/Paywall.js';
 
+export { PaywallBackdrop } from './components/Paywall/PaywallBackdrop.js';
+export type { PaywallBackdropProps } from './components/Paywall/PaywallBackdrop.js';
+
 export { PlanCard } from './components/Paywall/PlanCard.js';
 export type {
   PlanCardProps,

@@ -1,4 +1,4 @@
-import { color, component, textStyle } from '@gigradar/theme';
+import { borderWidth, color, component, textStyle } from '@gigradar/theme';
 import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { len, type CssLength } from '../../internal/length.js';
 import type { RenderProp, WithDefaultRender } from '../../internal/render.js';
@@ -6,6 +6,7 @@ import { Icon } from '../../icons/Icon.js';
 import { IconLockFill } from '../../icons/defs.js';
 import { RentApiBanner } from '../UpworkApiKey/RentApiBanner.js';
 import { PlanCard, type PlanCardProps, type PlanCardTone } from './PlanCard.js';
+import { PaywallBackdrop } from './PaywallBackdrop.js';
 import { PaywallSwitchButton, SubscriptionSwitch } from './SubscriptionSwitch.js';
 
 const { paywall } = component;
@@ -87,6 +88,16 @@ export type PaywallProps = {
   /** The plan pill on the right of the top bar. Omit to drop it. */
   planBadge?: ReactNode;
 
+  /**
+   * Draws the wash behind the modal.
+   *
+   * On by default: the artwork is part of what the modal is, not decoration
+   * added to it. Turn it off where the paywall is embedded in a surface that
+   * brings its own background.
+   * @default true
+   */
+  backdrop?: boolean;
+
   /** Offers a rented API key under the cards. Omit to drop the banner. */
   onRentApiKey?: () => void;
 
@@ -137,6 +148,7 @@ export const Paywall = forwardRef<HTMLDivElement, PaywallProps>(function Paywall
     status,
     daysRemaining,
     planBadge,
+    backdrop = true,
     onRentApiKey,
     renderPlans,
     renderPlan,
@@ -191,6 +203,9 @@ export const Paywall = forwardRef<HTMLDivElement, PaywallProps>(function Paywall
     <div
       ref={ref}
       style={{
+        position: 'relative',
+        isolation: 'isolate',
+        overflow: 'hidden',
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
@@ -199,10 +214,18 @@ export const Paywall = forwardRef<HTMLDivElement, PaywallProps>(function Paywall
         maxWidth: '100%',
         padding: len(padding) ?? `${paywall.padding}px`,
         borderRadius: len(radius) ?? `${paywall.radius}px`,
-        backgroundColor: background ?? color.main.background,
+        border: `${borderWidth.thin}px solid ${color.main.backgroundAlt}`,
+        /*
+         * White, with the artwork painted over it. The wash is the modal's
+         * own background rather than something behind it, so the rings are
+         * clipped by the same rounded corner the cards sit inside.
+         */
+        backgroundColor: background ?? color.main.white,
       }}
       {...rest}
     >
+      {backdrop && <PaywallBackdrop />}
+
       {/* The top bar — where the workspace stands, the cycle, and its plan. */}
       <div
         style={{

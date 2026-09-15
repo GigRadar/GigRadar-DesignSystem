@@ -278,10 +278,23 @@ export const PlanCard = forwardRef<HTMLDivElement, PlanCardProps>(function PlanC
           {actionLabel ?? (current ? `${name ?? tone} plan` : `Choose ${name ?? tone} Plan`)}
         </button>
 
+        {/*
+         * A plan already being paid for has no trial left to start, so the
+         * button goes — but its space stays. The three cards sit in a row and
+         * are read across, and a card that loses 40px of height drags its
+         * feature list out of line with the two beside it, which is the one
+         * thing the row is for.
+         *
+         * `visibility` rather than a spacer div: the button keeps its own
+         * metrics, so the reserved space cannot drift from the real one.
+         */}
         {trialLabel != null && (
           <button
             type="button"
-            onClick={onTrial}
+            onClick={current ? undefined : onTrial}
+            disabled={current}
+            aria-hidden={current}
+            tabIndex={current ? -1 : undefined}
             style={{
               ...textStyle.mMedium,
               display: 'inline-flex',
@@ -294,6 +307,7 @@ export const PlanCard = forwardRef<HTMLDivElement, PlanCardProps>(function PlanC
               backgroundColor: color.navbar.hover,
               color: color.navbar.text,
               cursor: 'pointer',
+              visibility: current ? 'hidden' : undefined,
             }}
           >
             {trialLabel}

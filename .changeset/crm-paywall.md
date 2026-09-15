@@ -42,3 +42,13 @@ is drawn in, and the navy its feature lists are set in.
 
 The rented-key offer is the shipped `RentApiBanner`, borrowed from the API key
 screen rather than redrawn.
+
+The modal carries Figma's own wash (node 5117:20946) — a blurred blue field
+and a set of concentric rings, kept as the export rather than rebuilt in CSS.
+It is the modal's background rather than something behind it, so the artwork
+is clipped by the same rounded corner the cards sit inside, and `backdrop`
+turns it off where the paywall is embedded in a surface that brings its own.
+
+A plan already being paid for hides its free-trial button but keeps its space,
+so the three cards stay the same height and their feature lists stay on one
+line across the row.

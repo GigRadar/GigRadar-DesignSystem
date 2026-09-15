@@ -1996,7 +1996,8 @@ export const paywall = {
   /** The modal itself. */
   width: 764,
   padding: spacing.xl,
-  radius: radius.l,
+  /** Figma draws the modal at 32 (node 5117:20946), not the `l` step's 24. */
+  radius: radius.xl,
   /** Space between the top bar, the headline, the cards, and the banner. */
   sectionGap: spacing.xl,
   /** The bar across the top — the period badge, the switch, the plan pill. */
