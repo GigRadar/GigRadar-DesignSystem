@@ -64,7 +64,7 @@ export function ComposerPage() {
         links={[
           { label: 'Components ▸ Main ▸ Button', pageId: 'button' },
           { label: 'Mid ▸ Bubble Chat', pageId: 'crm-mid-bubble' },
-          { label: 'Mid ▸ Laziza AI', pageId: 'crm-mid-laziza' },
+          { label: 'Laziza AI ▸ Internal only', pageId: 'crm-laziza-internal' },
         ]}
       >
         The Message / Note tabs are <strong>ComposerButton</strong>, filed with the buttons because

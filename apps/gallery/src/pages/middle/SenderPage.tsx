@@ -30,7 +30,7 @@ export function SenderPage() {
         eyebrow="Built from components"
         links={[
           { label: 'Mid ▸ Bubble Chat', pageId: 'crm-mid-bubble' },
-          { label: 'Mid ▸ Laziza AI', pageId: 'crm-mid-laziza' },
+          { label: 'Laziza AI ▸ Author Badge', pageId: 'crm-laziza-badge' },
           { label: 'Components ▸ Main ▸ Avatar', pageId: 'avatar' },
         ]}
       >

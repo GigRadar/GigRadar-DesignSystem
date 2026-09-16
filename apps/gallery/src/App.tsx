@@ -31,6 +31,9 @@ import { AttachmentBubblePage } from './pages/middle/AttachmentBubblePage';
 import { SenderPage } from './pages/middle/SenderPage';
 import { ChatActionPage } from './pages/middle/ChatActionPage';
 import { LazizaAiPage } from './pages/middle/LazizaAiPage';
+import { LazizaAuthorBadgePage } from './pages/middle/laziza/AuthorBadgePage';
+import { LazizaInThreadPage } from './pages/middle/laziza/InThreadPage';
+import { LazizaInternalPage } from './pages/middle/laziza/InternalPage';
 import { ComposerPage } from './pages/middle/ComposerPage';
 import { ScheduledRoomPage } from './pages/middle/ScheduledRoomPage';
 import { SchedulePartsPage } from './pages/middle/SchedulePartsPage';
@@ -464,18 +467,6 @@ const NAV: NavGroup[] = [
               },
               {
                 /**
-                 * Not a component — a set of marks the ordinary chat components
-                 * take on when the AI is what acted. Filed here because the rule
-                 * for when the amber appears is one decision, and splitting it
-                 * across the bubble, sender, and badge pages would leave it
-                 * written down nowhere.
-                 */
-                id: 'crm-mid-laziza',
-                label: 'Laziza AI',
-                render: () => <LazizaAiPage />,
-              },
-              {
-                /**
                  * The box a message is written in. A child of the chat room
                  * rather than a page of its own: it only exists at the foot of
                  * a thread, and reading it apart from the messages it produces
@@ -484,6 +475,41 @@ const NAV: NavGroup[] = [
                 id: 'crm-mid-composer',
                 label: 'Composer',
                 render: () => <ComposerPage />,
+              },
+            ],
+          },
+          {
+            /**
+             * The AI's presence across the thread — a sibling of the chat room
+             * rather than one of its parts.
+             *
+             * The pages under `crm-mid` are the pieces a room is assembled
+             * from. Laziza runs across all of them: it sends messages, it
+             * drafts for people, it writes comments. Filed inside the room it
+             * would be a fourth kind of bubble; filed here it is what it
+             * actually is — one rule about when the amber appears, applied in
+             * three places.
+             */
+            id: 'crm-laziza',
+            label: 'Laziza AI (Mid)',
+            render: () => <LazizaAiPage />,
+            children: [
+              {
+                // The one real component in the set. The rest is ordinary chat
+                // components wearing the amber.
+                id: 'crm-laziza-badge',
+                label: 'Author Badge',
+                render: () => <LazizaAuthorBadgePage />,
+              },
+              {
+                id: 'crm-laziza-thread',
+                label: 'In the thread',
+                render: () => <LazizaInThreadPage />,
+              },
+              {
+                id: 'crm-laziza-internal',
+                label: 'Internal only',
+                render: () => <LazizaInternalPage />,
               },
             ],
           },
