@@ -157,6 +157,20 @@ export type {
   AiToolBadgeStyleProps,
 } from './components/AiTool/AiToolBadge.js';
 
+export { DraftCard } from './components/Laziza/DraftCard.js';
+export type {
+  DraftCardProps,
+  DraftCardStyleProps,
+  DraftCardState,
+} from './components/Laziza/DraftCard.js';
+
+export { MentionMenu } from './components/Laziza/MentionMenu.js';
+export type {
+  MentionMenuProps,
+  MentionMenuStyleProps,
+  MentionMenuItem,
+} from './components/Laziza/MentionMenu.js';
+
 export { MentionPreset } from './components/MentionPreset/MentionPreset.js';
 export type {
   MentionPresetProps,

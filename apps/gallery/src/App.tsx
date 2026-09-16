@@ -33,6 +33,7 @@ import { ChatActionPage } from './pages/middle/ChatActionPage';
 import { LazizaAiPage } from './pages/middle/LazizaAiPage';
 import { LazizaAuthorBadgePage } from './pages/middle/laziza/AuthorBadgePage';
 import { LazizaInThreadPage } from './pages/middle/laziza/InThreadPage';
+import { LazizaDraftingPage } from './pages/middle/laziza/DraftingPage';
 import { LazizaInternalPage } from './pages/middle/laziza/InternalPage';
 import { ComposerPage } from './pages/middle/ComposerPage';
 import { ScheduledRoomPage } from './pages/middle/ScheduledRoomPage';
@@ -510,6 +511,17 @@ const NAV: NavGroup[] = [
                 id: 'crm-laziza-internal',
                 label: 'Internal only',
                 render: () => <LazizaInternalPage />,
+              },
+              {
+                /**
+                 * What happens between typing @laziza and a sent reply. Filed
+                 * last because it is the only page here that is a sequence
+                 * rather than a mark — the others say what the amber means,
+                 * this says when it appears.
+                 */
+                id: 'crm-laziza-drafting',
+                label: 'Drafting',
+                render: () => <LazizaDraftingPage />,
               },
             ],
           },

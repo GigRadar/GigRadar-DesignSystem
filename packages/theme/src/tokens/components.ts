@@ -969,6 +969,54 @@ export const aiTool = {
  * UI as much as it is a list, which is why a row carries a drag handle, a
  * priority number, and a pair of move buttons rather than just its content.
  */
+/**
+ * Laziza's drafting surfaces — Figma node 3451:37876.
+ *
+ * The suggested-reply card and the `@laziza` menu the composer opens. Both are
+ * amber, both are internal, and neither is a bubble: a draft has not been sent
+ * and a menu is not a message.
+ */
+export const laziza = {
+  /** The suggested-reply card. */
+  draft: {
+    /** Figma draws 520px, the width of a long reply without a scrollbar. */
+    width: 520,
+    padding: spacing.s,
+    gap: spacing.xs,
+    radius: radius.m,
+    /**
+     * Dashed rather than solid.
+     *
+     * A solid bubble is a thing that happened; this has not been sent, and the
+     * broken edge is what says so before the label is read.
+     */
+    borderStyle: 'dashed',
+    /** The row of dots while Laziza is working. */
+    dotSize: 6,
+    dotGap: spacing.xxs,
+    /** How far each dot fades behind the one before it. */
+    dotFadeStep: 0.25,
+  },
+  /** The `@laziza` menu, opened from the composer. */
+  menu: {
+    width: 340,
+    /**
+     * The menu opens upward into the thread, so an unbounded one would cover
+     * the messages the preset is about. Past this it scrolls.
+     */
+    maxHeight: 232,
+    padding: spacing.xxs,
+    radius: radius.s,
+    /** One row. */
+    row: {
+      paddingX: spacing.s,
+      paddingY: spacing.xs,
+      gap: spacing.xxs,
+      radius: radius.xs,
+    },
+  },
+} as const;
+
 export const mentionPreset = {
   /** One row. */
   row: {
@@ -3545,6 +3593,7 @@ export const component = {
   modal,
   notification,
   pagination,
+  laziza,
   mentionPreset,
   navPanel,
   prompt,
