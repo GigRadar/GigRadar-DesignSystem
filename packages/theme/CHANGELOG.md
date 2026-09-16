@@ -1,5 +1,169 @@
 # @gigradar/theme
 
+## 2.2.0
+
+### Minor Changes
+
+- 81489b5: CRM: the paywall — plan cards, the billing switch, and the locked modal
+
+  `Paywall` is the screen-level component: give it the plans and where the
+  workspace stands, and it draws the modal. Figma's three periods are one layout
+  with three answers to the same question — what is this workspace allowed to do
+  right now — so they are a `period` prop rather than three screens. A paying
+  workspace gets its own card marked `current` and the rest relabelled as
+  upgrades; the other two periods get a locked badge and a row of offers. The
+  rented-key banner appears only for a paying workspace, because someone who has
+  not chosen a plan has a more immediate decision in front of them.
+
+  `PlanCard` is one component for Basic, Pro and Unlimited. They are the same
+  card at the same width with the same rows, and what differs is the accent
+  colouring the edge, the bullets and the button — three files would be three
+  places to fix the next time a row is added to all of them. Every plan lists
+  every feature, with the ones it does not include left on the card in grey: what
+  a cheaper plan does _not_ buy is the argument for the dearer one, and dropping
+  those rows would leave three cards of different heights saying nothing about
+  each other.
+
+  `SubscriptionSwitch` and `PaywallSwitchButton` take their segments as children
+  rather than a list of cycles. Figma's own component carries Quarterly and
+  Semi-annual hidden beside Monthly and Annual, so which cycles a product sells
+  is the product's question. Only the cycle that saves money carries a pill,
+  which is what makes it an argument rather than a label.
+
+  `PlanBadge` gains a `basic` tone and its unpaid tones are corrected to the
+  Figma node (4016:22047): `trial` and `free` now sit on the nav wash in grey
+  rather than as a solid fill, because they name a state the workspace is passing
+  through rather than a plan it is on, and `unlimited` takes the near-black the
+  Unlimited card is drawn in rather than the brand blue. Each paid tone matches
+  its plan's card, so a badge in a header and a card in the modal can be paired
+  by eye.
+
+  `color.main.ink` and `color.main.inkSoft` are new — the near-black the top plan
+  is drawn in, and the navy its feature lists are set in.
+
+  The rented-key offer is the shipped `RentApiBanner`, borrowed from the API key
+  screen rather than redrawn.
+
+  The modal carries Figma's own wash (node 5117:20946) — a blurred blue field
+  and a set of concentric rings, kept as the export rather than rebuilt in CSS.
+  It is the modal's background rather than something behind it, so the artwork
+  is clipped by the same rounded corner the cards sit inside, and `backdrop`
+  turns it off where the paywall is embedded in a surface that brings its own.
+
+  A plan already being paid for hides its free-trial button but keeps its space,
+  so the three cards stay the same height and their feature lists stay on one
+  line across the row.
+
+- 9549243: Inbox: the details pane — client, meeting, AI configuration, and who is in the room
+
+  The CRM ▸ Inbox gains its third column. `DetailsPane` stacks and scrolls; it
+  holds no section of its own, because which sections a room has is the app's
+  question — a room with no meeting should not draw an "Upcoming Meetings" header
+  with nothing under it.
+
+  `DetailsSection` is the fold every block shares. The whole header is the hit
+  target rather than just the chevron: the label is the larger thing to aim at,
+  and a reader closing a section is aiming at its name. A closed section unmounts
+  its body instead of hiding it, so a folded "Not in this room" does not leave
+  four Add buttons in the tab order. Controlled and uncontrolled both work, and
+  the pane ships no persistence — where the fold is remembered is the app's
+  decision, and a design system writing to `localStorage` would answer it for
+  every consumer at once.
+
+  `ClientJobDetails` answers one question, in the order it gets answered: who they
+  are, whether they are awake, how many people they have already talked to, and
+  what the money looks like. The stat strip sits above the rate table because it
+  is the part that decides it — six interviews and no hires reads at a glance.
+  `external` is a state rather than a separate component: a job posted outside
+  Upwork has no hiring history, so the card carries no stats and no table, which
+  is different from `error`, a load that can be retried.
+
+  `CrmAiConfiguration` is the one card drawn in the Laziza orange with a 1.5px
+  border. Everything else on the pane is something the reader looks up; this is
+  the only thing acting on the conversation on its own, so it should be findable
+  without reading. `off` keeps the message-type badges and greys them, so the
+  reader can see what would happen if they turned it back on. The prompt version
+  is shown, not chosen — that choice lives in AI settings.
+
+  `RelevanceButtons` draws the pair at rest in the border grey rather than black.
+  It is feedback the product asks for, not work the reader came to do, so it stays
+  quiet until pointed at and only commits to a colour once it holds the answer.
+  The two are equally wide because they are a choice between equals.
+
+  `ParticipantRow` carries the role under the name, which is the reason the row
+  exists — a name alone does not say whether the person typing is the client, your
+  own BM, or a freelancer you have never met. One component across both lists:
+  "Participant in this room" and "Not in this room" draw the same row, and what
+  differs is whether it ends in an Add button.
+
+  `InboxDetails` is the screen-level component above them: give it the room's
+  data and it draws the whole pane, deciding which sections appear, in what
+  order, and which are dropped for having nothing to say. Most apps want that
+  one — remaking those decisions per app is how two screens drift apart.
+  `DetailsPane` and `DetailsSection` stay underneath for screens that genuinely
+  differ, and `renderSection` covers the case in between, where a section needs
+  decorating rather than replacing.
+
+  `ParticipantRow` no longer inherits the DOM `role` attribute. Its own `role`
+  prop — what the person is to the room — was being narrowed to an ARIA role
+  token, so passing anything else failed to typecheck.
+
+- 4d4a887: Inbox: the chat thread, its composer, and the scheduled and meeting surfaces
+
+  The CRM ▸ Inbox thread gains the components it draws. `BubbleChat` carries the
+  message and its delivery state, with `ChatAction` on hover — download only where
+  there is an attachment to download, and edit and delete only inside the hour
+  after sending, since a message Upwork has already delivered cannot be recalled.
+  Incoming bubbles get the hover fill but only the download action, because the
+  rest are not yours to perform.
+
+  `Composer` replaces the message field: rich-text marks with their shortcuts on
+  both platforms, an attachment row that previews uploads while they are in
+  flight, and a schedule control beside send. On mobile the marks collapse behind
+  a chevron rather than wrapping, trading them against the attach and meeting
+  controls for the width they need.
+
+  `ChatRoom` sticks the date separator to the top of the thread while it floats,
+  dropping the shadow once another separator meets it, and narrates its own empty
+  and notice states.
+
+  Scheduled messages get `ScheduledBadge`, `ScheduleMessageModal`, and a room that
+  rings its bubbles purple and keeps their actions indefinitely — nothing has left
+  the server yet, so the hour limit does not apply, and Send now and Reschedule
+  join the set. `MeetingBubble` draws a meeting through propose, booked,
+  rescheduled, cancelled, ended, and recording, with the details it happens to
+  carry passed as rows rather than folded into the state.
+
+  `Avatar` now scales its initials to a custom `diameter`. Text sized for the
+  named size overflowed a smaller circle — a 20px avatar drew its two letters at
+  the medium size and spilled them past the edge.
+
+  `DatePicker` gains a month dropdown and single-chevron navigation, for pickers
+  that never need to cross a year.
+
+- 22f1d06: Laziza drafting: the mention menu and the suggested-reply card
+
+  Typing `@laziza` in the composer opens the team's saved mention presets; picking
+  one fills the composer with that preset's prompt, which the user edits before
+  sending. Laziza thinks, then answers — sometimes with a reply drafted for the
+  client. Figma node 3451:37876, flow 7219:55390.
+
+  `MentionMenu` lists the presets saved in AI Configuration. It is deliberately
+  not `MentionPreset`, which is the settings-list row: that one carries move,
+  delete and a priority badge, all controls for _managing_ presets, and a menu
+  offering them would be a settings screen opened over a conversation. Same data,
+  two surfaces, two jobs.
+
+  `DraftCard` is the card a draft arrives in, across `drafting` and `draft`. It is
+  not a `BubbleChat` and could not be one: a bubble is a message that happened,
+  and a draft is a proposal about one. The dashed edge is that distinction, and
+  the controls sit inside the card because the draft and the things you do to it
+  dismiss together — a row of buttons orphaned under a bubble has to answer which
+  bubble it belongs to.
+
+  The drafting dots fade rather than animate in sequence, so the state still reads
+  in a screenshot, a test, and a print.
+
 ## 2.1.1
 
 ### Patch Changes
