@@ -114,7 +114,7 @@ export function ScheduledRoomPage() {
   return (
     <>
       <PageHeader
-        title="Schedule Message Room"
+        title="Schedule Message (Mid)"
         description="The queue of messages waiting to go out, and what became of them. Figma nodes 3523:37230 (the header) and 4512:26977 (the events)."
       />
 

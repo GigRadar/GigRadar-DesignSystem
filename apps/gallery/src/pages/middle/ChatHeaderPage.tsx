@@ -1,10 +1,17 @@
-import { ChatHeader } from '@gigradar/ui';
+import {
+  ChatHeader,
+  HeaderMetaTag,
+  HeaderNavButton,
+  IconAssignedPeopleFill,
+  IconPresetDocumentFill,
+} from '@gigradar/ui';
 import { useState } from 'react';
 import { CodeBlock } from '../../components/CodeBlock';
+import { PropsTable } from '../../components/PropsTable';
 import { PageHeader, Section } from '../../layout';
 import { CrossLink } from '../../navigation';
 import { chatRoom } from '../../fixtures/inbox';
-import { Caption, Thread } from './parts';
+import { Caption, Row, Thread } from './parts';
 
 /**
  * Mid ▸ Chat Header — Figma node 3523:37230.
@@ -171,6 +178,86 @@ export function ChatHeaderPage() {
           meta tags make.
         </Caption>
         <CodeBlock code={`<ChatHeader layout="mobile" title={room.title} onBack={goBack} />`} />
+      </Section>
+
+      <Section
+        title="The parts it is built from"
+        description="Both ship on their own, because a screen that builds its own header band needs the same controls at the same size. `ChatHeader` composes them; nothing stops you composing them yourself."
+      >
+        <Row>
+          <HeaderMetaTag icon={IconPresetDocumentFill} variant="brand">
+            V1 Jane — UI UX
+          </HeaderMetaTag>
+          <HeaderMetaTag icon={IconAssignedPeopleFill}>Jane Cooper</HeaderMetaTag>
+          <HeaderMetaTag icon={IconAssignedPeopleFill} label="Assignee" />
+          <HeaderNavButton action="back" label="Back" />
+          <HeaderNavButton action="collapse" label="Close sidebar" />
+        </Row>
+        <Caption>
+          The third tag carries no label — that is what the mobile header draws, where there is room
+          for the mark but not the name. It takes `label` instead, since a glyph alone has nothing
+          for a screen reader to read.
+        </Caption>
+        <CodeBlock
+          code={`<HeaderMetaTag icon={IconPresetDocumentFill} variant="brand" onClick={pickPreset}>
+  {room.preset}
+</HeaderMetaTag>
+
+<HeaderNavButton action="back" label="Back" onClick={goBack} />`}
+        />
+      </Section>
+
+      <Section
+        title="Props"
+        description="`HeaderMetaTag` above the rule, `HeaderNavButton` below it. Both also take the usual per-instance style overrides."
+      >
+        <PropsTable
+          rows={[
+            {
+              name: 'icon',
+              type: 'IconDef',
+              description:
+                'The glyph. Always drawn — it is what survives when the label does not.',
+            },
+            {
+              name: 'children',
+              type: 'ReactNode',
+              description:
+                'The label. Omitted, the tag collapses to its glyph, which is what the mobile header draws.',
+            },
+            {
+              name: 'variant',
+              type: "'brand' | 'outline'",
+              default: "'outline'",
+              description:
+                'Brand fills the pill — the reply preset. Outline is the assignee, a quieter fact about the same room.',
+            },
+            {
+              name: 'label',
+              type: 'string',
+              description:
+                'Names the tag for assistive tech. Required with no children — a glyph-only tag has nothing else to read.',
+            },
+            {
+              name: 'onClick',
+              type: '() => void',
+              description:
+                'Makes the tag a button. Without it the tag renders as a span: a focusable element that does nothing is worse than a plain one.',
+            },
+            {
+              name: 'action',
+              type: "'back' | 'collapse'",
+              default: "'back'",
+              description:
+                'Which chevron. Back is the mobile header; collapse is the scheduled header’s Close Sidebar slot.',
+            },
+            {
+              name: 'icon',
+              type: 'IconDef',
+              description: "Overrides the action's own glyph, for a band that needs a third.",
+            },
+          ]}
+        />
       </Section>
     </>
   );
