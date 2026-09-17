@@ -1,6 +1,7 @@
 import { spacing } from '@gigradar/theme';
 import { AttachmentBubble } from '@gigradar/ui';
 import { CodeBlock } from '../../components/CodeBlock';
+import { PropsTable } from '../../components/PropsTable';
 import { PageHeader, Section } from '../../layout';
 import { CrossLink } from '../../navigation';
 import { Caption, Surface } from './parts';
@@ -109,6 +110,72 @@ export function AttachmentBubblePage() {
   onOpen={openFile}
   actions={{ onDownload: downloadFile, onDelete: deleteFile }}
 />`}
+        />
+      </Section>
+
+      <Section
+        title="Props"
+        description="A file and a picture are one component in two kinds rather than two components: they carry the same delivery state, the same hover controls and the same scheduled ring, and only the body between them differs."
+      >
+        <PropsTable
+          rows={[
+            {
+              name: 'name',
+              type: 'ReactNode',
+              description: "The file's name. Truncates rather than wrapping — the bubble is fixed.",
+            },
+            {
+              name: 'type',
+              type: 'ReactNode',
+              description:
+                'The file type, drawn under the name — “PDF”. Ignored for a picture, which does not carry one.',
+            },
+            {
+              name: 'kind',
+              type: "'file' | 'picture'",
+              default: "'file'",
+              description: 'Which body to draw — the file row, or the thumbnail.',
+            },
+            { name: 'time', type: 'ReactNode', description: 'The time under the bubble.' },
+            {
+              name: 'state',
+              type: "'sending' | 'sent' | 'read' | 'offline' | 'error'",
+              default: "'sent'",
+              description: 'The delivery, drawn beside the time — the same states a message carries.',
+            },
+            {
+              name: 'failed',
+              type: 'boolean',
+              default: 'false',
+              description:
+                'The upload did not complete. Washes the bubble red and drops the controls: there is nothing to open, and nothing to download.',
+            },
+            { name: 'onOpen', type: '() => void', description: 'Opens the file.' },
+            {
+              name: 'actions',
+              type: 'ChatActionProps',
+              description:
+                'The hover controls. Download is offered on both sides — a file someone sent you is still a file you can keep — while edit and delete stay on your own attachment inside the edit window.',
+            },
+            {
+              name: 'side',
+              type: "'own' | 'other'",
+              default: "'other'",
+              description: 'Whose attachment it is, and which way the row reads.',
+            },
+            {
+              name: 'sentAt',
+              type: 'Date | number',
+              description: 'Drives the edit window, exactly as it does on a message bubble.',
+            },
+            {
+              name: 'scheduled',
+              type: 'boolean',
+              default: 'false',
+              description:
+                'Rings the bubble in the schedule purple — a file attached to a message that has not gone out yet.',
+            },
+          ]}
         />
       </Section>
     </>

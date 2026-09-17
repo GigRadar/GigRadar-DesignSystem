@@ -1,6 +1,7 @@
 import { spacing } from '@gigradar/theme';
 import { ChatAction, SendIndicator } from '@gigradar/ui';
 import { CodeBlock } from '../../components/CodeBlock';
+import { PropsTable } from '../../components/PropsTable';
 import { PageHeader, Section } from '../../layout';
 import { CrossLink } from '../../navigation';
 import { Caption, Row, Surface } from './parts';
@@ -98,6 +99,47 @@ export function ChatActionPage() {
         <CodeBlock
           code={`<SendIndicator time="08:30" state="read" />
 <SendIndicator time="08:30" state="sent" edited />`}
+        />
+      </Section>
+
+      <Section
+        title="Props"
+        description="Every prop is a handler, and every handler draws its own control. There is no `actions` list and no `variant`: which controls a message offers is a fact about that message, and passing the ones that apply is the same thing as saying so."
+      >
+        <PropsTable
+          rows={[
+            {
+              name: 'onEdit',
+              type: '() => void',
+              description: 'Edit the message. Omitted, the control is not drawn.',
+            },
+            {
+              name: 'onDelete',
+              type: '() => void',
+              description: 'Delete the message — the one destructive control, drawn in the error red.',
+            },
+            {
+              name: 'onDownload',
+              type: '() => void',
+              description:
+                'Download the file. Only an attachment or picture bubble offers this; a text bubble has no file.',
+            },
+            {
+              name: 'onSendNow',
+              type: '() => void',
+              description: 'Send a scheduled message now, rather than waiting for its slot.',
+            },
+            {
+              name: 'onReschedule',
+              type: '() => void',
+              description: 'Move a scheduled message to a different slot.',
+            },
+            {
+              name: 'onCancel',
+              type: '() => void',
+              description: 'Cancel a scheduled message, or deny a proposal.',
+            },
+          ]}
         />
       </Section>
     </>

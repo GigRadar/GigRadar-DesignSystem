@@ -1,6 +1,7 @@
 import { spacing } from '@gigradar/theme';
 import { BubbleChat } from '@gigradar/ui';
 import { CodeBlock } from '../../components/CodeBlock';
+import { PropsTable } from '../../components/PropsTable';
 import { PageHeader, Section } from '../../layout';
 import { CrossLink } from '../../navigation';
 import { Caption, Surface } from './parts';
@@ -155,6 +156,87 @@ export function BubbleChatPage() {
 >
   Lorem Ipsum dolor sit amet
 </BubbleChat>`}
+        />
+      </Section>
+
+      <Section
+        title="Props"
+        description="Three independent axes — side, tone and state — plus the flags that change what the bubble is rather than how it looks. Built to compose, so “my scheduled comment that failed to send” is a combination rather than a variant nobody drew."
+      >
+        <PropsTable
+          rows={[
+            { name: 'children', type: 'ReactNode', description: 'The message.' },
+            {
+              name: 'side',
+              type: "'own' | 'other'",
+              default: "'other'",
+              description:
+                'Whose message it is. Only an own message carries a delivery state and an edit control — the other side has no delivery to report.',
+            },
+            {
+              name: 'tone',
+              type: "'message' | 'comment' | 'system'",
+              default: "'message'",
+              description:
+                'What surface it is. A comment is internal and takes the Laziza wash; a system message is the room speaking rather than a person.',
+            },
+            { name: 'time', type: 'ReactNode', description: 'The time under the message.' },
+            {
+              name: 'state',
+              type: "'sending' | 'sent' | 'read' | 'offline' | 'error'",
+              default: "'sent'",
+              description:
+                'The delivery, drawn beside the time. Five rather than a boolean, because “not delivered” means different things: offline resolves itself, error asks for action.',
+            },
+            {
+              name: 'edited',
+              type: 'boolean',
+              description: 'Marks a message changed after it was sent.',
+            },
+            {
+              name: 'deleted',
+              type: 'boolean',
+              default: 'false',
+              description:
+                'Draws the italic placeholder. A deleted message keeps its place in the thread, so the conversation around it still reads in order.',
+            },
+            {
+              name: 'disabled',
+              type: 'boolean',
+              description: 'Grays a message that cannot be acted on yet.',
+            },
+            {
+              name: 'scheduled',
+              type: 'boolean',
+              default: 'false',
+              description:
+                'Rings the bubble in the schedule purple — written but not sent. An outline rather than a fill, so it still reads as the message it will become.',
+            },
+            {
+              name: 'locked',
+              type: 'boolean',
+              default: 'false',
+              description:
+                'The lock glyph before the message — the room saying a Business Manager is needed. Only meaningful on a system message.',
+            },
+            {
+              name: 'code',
+              type: 'ReactNode',
+              description: 'A short code chip after the message — the variable a preset filled in.',
+            },
+            {
+              name: 'actions',
+              type: 'ChatActionProps',
+              description:
+                'The hover controls. Passing them makes the bubble draw its own bar; without them it is inert.',
+            },
+            {
+              name: 'sentAt',
+              type: 'Date | number',
+              description:
+                'Drives the edit window — an hour after sending, Upwork refuses a change, so the bar stops offering one. Omitted, the message is treated as still editable. Ignored while scheduled, since a queued message has not reached Upwork at all.',
+            },
+          ]}
         />
       </Section>
     </>

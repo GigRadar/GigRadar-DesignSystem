@@ -1,6 +1,7 @@
 import { spacing } from '@gigradar/theme';
 import { AuthorBadge, BubbleChat, SendIndicator, Sender } from '@gigradar/ui';
 import { CodeBlock } from '../../components/CodeBlock';
+import { PropsTable } from '../../components/PropsTable';
 import { PageHeader, Section } from '../../layout';
 import { CrossLink } from '../../navigation';
 import { Caption, Surface } from './parts';
@@ -162,6 +163,53 @@ export function SenderPage() {
           The indicator inside the bubble is <code>SendIndicator</code>, usable on its own:{' '}
           <SendIndicator time="08:30" state="read" />
         </Caption>
+      </Section>
+
+      <Section
+        title="Props"
+        description="Figma's fourteen states are three independent things — which side, what kind of sender, which badges follow the name — so they are three props rather than a union of fourteen."
+      >
+        <PropsTable
+          rows={[
+            { name: 'name', type: 'ReactNode', description: "The sender's name." },
+            {
+              name: 'avatar',
+              type: "{ src, service, badge, tone }",
+              description:
+                'Passed through to Avatar. A photo, a service mark, or tinted initials, with an optional mini avatar pinned to the corner.',
+            },
+            {
+              name: 'side',
+              type: "'own' | 'other'",
+              default: "'other'",
+              description:
+                'Mirrors the row — an own message moves the avatar to the trailing edge and reads the name right-to-left, so a thread scans as two columns.',
+            },
+            {
+              name: 'badges',
+              type: 'ReactNode',
+              description:
+                'Whatever follows the name — who it was sent on behalf of, whether the AI wrote it, when it is scheduled for. They stack in the order passed, and reverse with the row on an own message.',
+            },
+            {
+              name: 'divider',
+              type: 'ReactNode',
+              description:
+                'The unread rule across the row — “New Message”, or “New Comment” on a comment. The rule fills the space the name does not, so it reads as a divider rather than a label.',
+            },
+            {
+              name: 'dividerTone',
+              type: "'message' | 'comment'",
+              description: 'Tints the divider for a comment, which is amber rather than brand blue.',
+            },
+            {
+              name: 'loading',
+              type: 'boolean',
+              default: 'false',
+              description: 'The skeleton drawn while the first page loads.',
+            },
+          ]}
+        />
       </Section>
     </>
   );
