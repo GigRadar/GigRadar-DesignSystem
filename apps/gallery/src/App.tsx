@@ -39,6 +39,11 @@ import { ComposerPage } from './pages/middle/ComposerPage';
 import { ScheduledRoomPage } from './pages/middle/ScheduledRoomPage';
 import { SchedulePartsPage } from './pages/middle/SchedulePartsPage';
 import { MeetingsPage } from './pages/middle/MeetingsPage';
+import { DashboardPage } from './pages/dashboard/DashboardPage';
+import { StatsPage } from './pages/dashboard/StatsPage';
+import { TaskFeedPage } from './pages/dashboard/TaskFeedPage';
+import { FunnelGraphsPage } from './pages/dashboard/FunnelGraphsPage';
+import { KanbanPipelinePage } from './pages/dashboard/KanbanPipelinePage';
 import { CardsPage } from './pages/inbox/CardsPage';
 import { DetailsPage } from './pages/inbox/DetailsPage';
 import { ClientJobDetailsPage } from './pages/details/ClientJobDetailsPage';
@@ -328,6 +333,60 @@ const NAV: NavGroup[] = [
               { id: 'crm-notif-slack', label: 'Slack', render: () => <SlackNotificationPage /> },
               { id: 'crm-notif-browser', label: 'Browser', render: () => <BrowserNotificationPage /> },
             ],
+          },
+        ],
+      },
+      {
+        /**
+         * The numbers screen — the funnel and the lead pipeline.
+         *
+         * Filed above Inbox because the product's own rail lists it first, and
+         * a sibling of it rather than a page under it: the two are separate
+         * areas of the CRM with their own headers, not two views of one
+         * screen.
+         *
+         * Its children are the screen's two columns, left to right. The right
+         * one has no parts of its own yet; its page says so rather than
+         * stubbing a design that has not been drawn.
+         */
+        id: 'crm-dashboard',
+        label: 'Dashboard',
+        render: () => <DashboardPage />,
+        children: [
+          {
+            /**
+             * The left column, and everything drawn inside it.
+             *
+             * The funnel and the pipeline are filed under it rather than
+             * beside it because neither is a screen of its own: they share a
+             * column, a scroll, and one date range. The nesting mirrors the
+             * Inbox's, where the room list owns the SubNavs drawn inside it.
+             */
+            id: 'crm-dashboard-stats',
+            label: 'Stats (Left)',
+            render: () => <StatsPage />,
+            children: [
+              {
+                id: 'crm-dashboard-funnel',
+                label: 'Funnel Graphs',
+                render: () => <FunnelGraphsPage />,
+              },
+              {
+                id: 'crm-dashboard-pipeline',
+                label: 'Kanban Pipeline',
+                render: () => <KanbanPipelinePage />,
+              },
+            ],
+          },
+          {
+            /**
+             * The right column. Filed with no children because it has no
+             * parts yet — the page says what it will hold rather than
+             * stubbing it.
+             */
+            id: 'crm-dashboard-tasks',
+            label: 'Task Feed (Right)',
+            render: () => <TaskFeedPage />,
           },
         ],
       },
@@ -650,14 +709,52 @@ const flatten = (page: Page): Page[] => [page, ...(page.children ?? []).flatMap(
 
 const PAGES: Page[] = NAV.flatMap((group) => groupPages(group).flatMap(flatten));
 
+/**
+ * Every folder row, shut, by page id.
+ *
+ * Only the folder rows — the pages nested inside a card, like CRM ▸ Dashboard
+ * or Components ▸ Main. The cards themselves (FOUNDATIONS, COMPONENTS, CRM)
+ * and the sections inside one stay open: those are the fixed shape of the
+ * system, worth seeing at a glance, and folding them would hide that shape
+ * behind a click. It is the pages under them — the part that grows every time
+ * a screen ships — that starts folded, so the rail opens to one screen of
+ * headings rather than several hundred rows.
+ *
+ * Derived from `NAV` rather than written out, so a folder added later starts
+ * shut like the rest instead of being the one that is open by default.
+ *
+ * None of this traps anyone: `navigate` opens every ancestor of its target, so
+ * a cross-page link still reveals where it landed, and searching ignores this
+ * flag entirely.
+ */
+const ALL_FOLDED = Object.fromEntries(
+  NAV.flatMap((group) => groupPages(group).flatMap(flatten))
+    .filter((page) => (page.children?.length ?? 0) > 0)
+    .map((page) => [page.id, true]),
+) as Record<string, boolean>;
+
+/**
+ * Every section, shut, keyed by "group/section" — see `ALL_FOLDED` above for
+ * the reasoning. A section (Components ▸ Main, Components ▸ CRM) is a band of
+ * pages inside a card, the same shape as a folder row one level up, so it
+ * folds by the same default: the card's two section headings show at a
+ * glance, and opening one reveals the dozen pages inside it.
+ */
+const ALL_SECTIONS_FOLDED = Object.fromEntries(
+  NAV.flatMap((group) =>
+    (group.sections ?? []).map((section) => [`${group.title}/${section.title}`, true]),
+  ),
+) as Record<string, boolean>;
+
 export function App() {
   const [active, setActive] = useState(PAGES[0]?.id ?? '');
-  // Folders start open, so a section's pages are visible without a click.
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  // Groups too — keyed by title, which is what identifies a group.
+  // Folder rows start shut — see `ALL_FOLDED` for why. Groups and sections
+  // start open: they are the system's fixed shape, not its growing part.
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(ALL_FOLDED);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-  // And the sections inside a group, keyed by "group/section".
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(
+    ALL_SECTIONS_FOLDED,
+  );
   const [railCollapsed, setRailCollapsed] = useState(false);
   const [query, setQuery] = useState('');
 

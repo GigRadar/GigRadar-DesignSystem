@@ -478,6 +478,71 @@ export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
 export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/AvatarGroup.js';
 
 export { DatePicker } from './components/DatePicker/DatePicker.js';
+
+/**
+ * The Dashboard — the CRM's numbers screen.
+ *
+ * Two halves that do not share a scale: the funnel, read at a glance, and the
+ * pipeline, read a card at a time. The bands (`DashboardHeader`,
+ * `FunnelStatsBand`, `PipelineBand`) are the layout, and everything else fills
+ * one slot in them.
+ *
+ * Figma draws the funnel chart and its callouts as shapes rather than as
+ * components, so those two are built here rather than mapped from a variant.
+ */
+export { FunnelStat } from './components/Dashboard/FunnelStat.js';
+export type {
+  FunnelStatProps,
+  FunnelStatStyleProps,
+  FunnelStatMetric,
+} from './components/Dashboard/FunnelStat.js';
+
+export { FunnelChart, FunnelCallout } from './components/Dashboard/FunnelChart.js';
+export type {
+  FunnelChartProps,
+  FunnelChartStyleProps,
+  FunnelCalloutProps,
+  FunnelCalloutStyleProps,
+} from './components/Dashboard/FunnelChart.js';
+
+export { KanbanCard } from './components/Dashboard/KanbanCard.js';
+export type {
+  KanbanCardProps,
+  KanbanCardStyleProps,
+  KanbanCardParticipant,
+} from './components/Dashboard/KanbanCard.js';
+
+export { KanbanBoard } from './components/Dashboard/KanbanBoard.js';
+export type {
+  KanbanBoardProps,
+  KanbanBoardStyleProps,
+  KanbanBoardState,
+} from './components/Dashboard/KanbanBoard.js';
+
+export { DateRangeField } from './components/Dashboard/DateRangeField.js';
+export type {
+  DateRangeFieldProps,
+  DateRangeFieldStyleProps,
+} from './components/Dashboard/DateRangeField.js';
+
+export {
+  DashboardHeader,
+  FunnelSection,
+  FunnelStatsBand,
+  PipelineBand,
+  TitleSelect,
+} from './components/Dashboard/DashboardBands.js';
+export type {
+  DashboardHeaderProps,
+  DashboardHeaderStyleProps,
+  FunnelSectionProps,
+  FunnelSectionStyleProps,
+  FunnelStatsBandProps,
+  FunnelStatsBandStyleProps,
+  PipelineBandProps,
+  PipelineBandStyleProps,
+  TitleSelectProps,
+} from './components/Dashboard/DashboardBands.js';
 export type {
   DatePickerProps,
   DatePickerStyleProps,
@@ -961,3 +1026,44 @@ export * from './icons/index.js';
  */
 export { tokens, color, spacing, radius, shadow, typography, textStyle, avatarTone } from '@gigradar/theme';
 export type { StageName } from '@gigradar/theme';
+
+export { TaskFeed } from './components/TaskFeed/TaskFeed.js';
+export type {
+  TaskFeedProps,
+  TaskFeedStyleProps,
+  TaskFeedState,
+  TaskFeedFilter,
+} from './components/TaskFeed/TaskFeed.js';
+
+export { TaskFeedCard } from './components/TaskFeed/TaskFeedCard.js';
+export type {
+  TaskFeedCardProps,
+  TaskFeedCardStyleProps,
+  TaskCardState,
+} from './components/TaskFeed/TaskFeedCard.js';
+
+export { TaskFeedButton } from './components/TaskFeed/TaskFeedButton.js';
+export type {
+  TaskFeedButtonProps,
+  TaskFeedButtonStyleProps,
+} from './components/TaskFeed/TaskFeedButton.js';
+
+export { StageIcon } from './components/TaskFeed/StageIcon.js';
+export type {
+  StageIconProps,
+  StageIconStyleProps,
+  TaskStage,
+} from './components/TaskFeed/StageIcon.js';
+
+export {
+  TaskFeedEmpty,
+  TaskFeedComingSoon,
+  TaskFeedLoading,
+  TaskFeedEnd,
+} from './components/TaskFeed/TaskFeedStates.js';
+export type {
+  TaskFeedEmptyProps,
+  TaskFeedComingSoonProps,
+  TaskFeedLoadingProps,
+  TaskFeedEndProps,
+} from './components/TaskFeed/TaskFeedStates.js';

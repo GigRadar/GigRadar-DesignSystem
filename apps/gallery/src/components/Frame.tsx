@@ -12,6 +12,17 @@ import type { ReactNode } from 'react';
  */
 const WELL_LEFT = 280 + spacing.xxl;
 
+/**
+ * The gutter a `wide` frame keeps on its right.
+ *
+ * The same as the well's left padding, so a screen that escapes the well sits
+ * as far from the window's right edge as it does from the nav rail. Without
+ * it the frame ran to the last pixel of the viewport, and whatever a screen
+ * put at its far right — the Task Feed rail, a thread's send button — read
+ * as pressed against the browser rather than as the edge of a design.
+ */
+const WELL_RIGHT = spacing.xxl;
+
 export type FrameProps = {
   children: ReactNode;
   /**
@@ -76,9 +87,9 @@ export function Frame({
         display: hug ? 'inline-block' : undefined,
         /*
          * `100cqw` would be cleaner, but the well is a plain `max-width` on
-         * `main` rather than a container, so the frame reclaims the gutters by
-         * measuring the viewport: the well's own right padding plus whatever
-         * the cap is holding back.
+         * `main` rather than a container, so the frame reclaims what the cap
+         * is holding back by measuring the viewport — and stops `WELL_RIGHT`
+         * short of the window, so the screen has a gutter on both sides.
          */
         ...(wide
           ? {
@@ -87,9 +98,9 @@ export function Frame({
               // width so a fixed composition hugs rather than stretches.
               width:
                 typeof wide === 'number'
-                  ? `min(${wide}px, calc(100vw - ${WELL_LEFT}px))`
-                  : `calc(100vw - ${WELL_LEFT}px)`,
-              maxWidth: `calc(100vw - ${WELL_LEFT}px)`,
+                  ? `min(${wide}px, calc(100vw - ${WELL_LEFT + WELL_RIGHT}px))`
+                  : `calc(100vw - ${WELL_LEFT + WELL_RIGHT}px)`,
+              maxWidth: `calc(100vw - ${WELL_LEFT + WELL_RIGHT}px)`,
             }
           : null),
         // An auto frame is sized by what is inside it, so it neither crops

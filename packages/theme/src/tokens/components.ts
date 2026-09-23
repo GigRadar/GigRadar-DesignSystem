@@ -2136,6 +2136,489 @@ export const paywall = {
 } as const;
 
 /**
+ * Dashboard — the CRM's numbers screen (Figma node 447:3878).
+ *
+ * Two halves that do not share a scale: the funnel stats read at a glance from
+ * across a desk, and the pipeline reads a card at a time up close. That is why
+ * the stat's figure is 32px while a kanban card's title is 12px — they are the
+ * same screen but not the same reading distance, and one scale between them
+ * would make one of the two wrong.
+ */
+export const dashboard = {
+  /**
+   * How tall the screen stands.
+   *
+   * The dashboard is a full-height screen in the product: the funnel takes
+   * what it needs at the top and the pipeline fills everything under it, so
+   * the boards reach the bottom of the window rather than stopping at their
+   * last card. This is that height where the screen is shown inside something
+   * that has no height of its own, such as a documentation frame.
+   */
+  screenHeight: 900,
+  /** The stats band above the funnel chart. */
+  stats: {
+    /**
+     * How far the second of two stacked stats is pulled up toward the first.
+     *
+     * The closing rates share one column, and stacked at their natural
+     * spacing that column runs far below every other, which is what forces
+     * the chart down for the whole band. Tightening the pair closes that
+     * overhang at its source rather than cropping the chart to compensate.
+     *
+     * Tighter than the gap between a stat's own blocks, so the two rates read
+     * as one pair rather than as two stats that happen to be stacked — but
+     * still a gap: at a negative value the second rate's label collides with
+     * the first's last figure.
+     */
+    pairedGap: spacing.xs,
+    /**
+     * A stat column's ideal width — what Figma draws, and what the band gives
+     * every column when there is room for all of them.
+     *
+     * The band never wraps: the funnel is a sequence read left to right and
+     * ending at the closing rates, and a step on a second row is a step out of
+     * order. So the columns share whatever width there is, shrinking together
+     * below this rather than dropping off the end.
+     */
+    columnWidth: 182,
+    /**
+     * How narrow a column may be squeezed before the band lets itself scroll.
+     *
+     * Past this the label wraps to three lines and the figure stops being
+     * readable at a glance, at which point scrolling a legible funnel beats
+     * showing an illegible one.
+     */
+    columnMinWidth: 104,
+    columnPaddingX: spacing.s,
+    /** Between the label block, the figure, and each sub-metric. */
+    gap: spacing.xxs,
+    /** Inside the label block — title to figure. */
+    tightGap: 2,
+    /** The headline percentage. Below the type scale's top step by design. */
+    figureFontSize: 32,
+    figureLetterSpacing: -1.2,
+    labelFontSize: fontSize.m,
+    /** The sub-metrics under the figure — "Total Reply", "134". */
+    metricLabelFontSize: fontSize.s,
+    metricValueFontSize: fontSize.s,
+    /** The divider between two stat columns. */
+    dividerWidth: borderWidth.thin,
+    /** The skeleton bars the loading state draws in place of each line. */
+    skeletonRadius: radius.xs,
+    skeletonTitleWidth: 137,
+    skeletonTitleHeight: 17,
+  },
+  /**
+   * The area chart behind the funnel.
+   *
+   * Drawn rather than charted: it is one smooth band with no axes, no grid and
+   * no readable values — the numbers are the stats above it. A charting
+   * library would bring scales and ticks this deliberately does not have.
+   */
+  chart: {
+    /** How tall the band is at its own scale. Figma draws 196px. */
+    height: 196,
+    /** The fill's two stops, front band over back band. */
+    frontOpacity: 1,
+    backOpacity: 0.45,
+    /** The paging chevron floating over the chart's left edge. */
+    pagerSize: 28,
+    pagerOffsetX: spacing.s,
+    /**
+     * How far the chart is pulled up under the stats.
+     *
+     * The stats band is as tall as its tallest column, and that is the one
+     * holding both closing rates — so every other column ends well above the
+     * band's foot, leaving a stripe of empty white between the numbers and the
+     * curve. The chart is lifted into that stripe rather than the column being
+     * shortened, because the empty space belongs to the band's own layout and
+     * closing it there would cramp the two rates against each other.
+     *
+     * Negative, and applied as a top margin. The box overlaps the figures, so
+     * the curve is held off its own top edge by `overlapHeadroom` — that way
+     * the lift closes the white stripe without the band ever being able to
+     * run behind a number, however tall the curve gets.
+     */
+    overlapY: -384,
+    /**
+     * How much of the chart's box is kept clear at the top.
+     *
+     * Less than the lift, which is the whole point: matching it would put the
+     * curve back exactly where it started and close no stripe at all. This is
+     * the clearance under the shortest column's last figure, so the curve
+     * still rises well into the band's empty lower half while never reaching
+     * the numbers in the column that runs furthest down.
+     *
+     * It tracks the lift: pulling the box up twice as far puts its top twice
+     * as close to the figures, so the curve has to be held off by more to keep
+     * the same distance from them.
+     */
+    overlapHeadroom: 296,
+    /**
+     * The coordinate space the band's path is built in.
+     *
+     * Arbitrary, and deliberately so: the shape is stretched to whatever width
+     * the screen gives it, so these are the numbers the curve is *described*
+     * in rather than the size it is drawn at. A round 1000 keeps the path's
+     * own arithmetic readable.
+     */
+    viewBoxWidth: 1000,
+    viewBoxHeight: 200,
+    /** The band's fill, top and bottom of the gradient. */
+    gradientTopOpacity: 0.55,
+    gradientBottomOpacity: 0.9,
+    /**
+     * How far along the band the callouts sit.
+     *
+     * A fraction rather than a length: the callouts annotate the curve's
+     * descent, which is at the same proportion of the band at every width.
+     */
+    calloutOffsetX: '28%',
+  },
+  /**
+   * The small metric cards that float over the chart — FRT, TRR, OHR.
+   *
+   * A card rather than another stat column: these are diagnostics about the
+   * funnel rather than steps in it, which is what earns them their own surface
+   * instead of a seventh column.
+   */
+  callout: {
+    paddingX: spacing.xs,
+    paddingY: spacing.xxs,
+    gap: spacing.xs,
+    radius: radius.xs,
+    /**
+     * The card's outline.
+     *
+     * A callout floats on the chart's fill rather than on the page, and a
+     * white card on a saturated band reads as a hole punched in it. The border
+     * gives the card an edge of its own so it sits on the band instead.
+     */
+    borderWidth: borderWidth.thin,
+    labelFontSize: fontSize.s,
+    valueFontSize: fontSize.s,
+    /** The nudge row under a callout's figure — "Boost with GigRadar CRM →". */
+    actionPaddingX: spacing.xs,
+    actionPaddingY: 3,
+    actionRadius: radius.xs,
+    actionFontSize: 11,
+  },
+  /** The band above a section — its sentence and its controls. */
+  header: {
+    /**
+     * Between the words of the heading's sentence and the choices inside it.
+     *
+     * The heading is a flex row so the `TitleSelect` buttons sit on the
+     * baseline with the text, and flex drops the whitespace between its
+     * items — without a gap, "Your Funnel for" runs straight into "all team".
+     * This is that word space, as a token rather than a literal so the
+     * sentence keeps its rhythm if the heading's type size changes.
+     */
+    wordGap: spacing.s,
+  },
+  /** The pipeline band under the chart. */
+  pipeline: {
+    /** Between the boards. Figma draws 8px. */
+    boardGap: spacing.xs,
+    headerGap: spacing.s,
+    headerPaddingY: spacing.m,
+    /**
+     * How far the row is pulled left of the page's own inset.
+     *
+     * A board carries `board.padding` plus `board.headerPaddingX` before its
+     * title draws — its own internal margin, same as every board has. Left at
+     * the page's inset, that margin stacks on top of it and the first board's
+     * title lands to the right of "Leads Dashboard" and the chart above it.
+     * Pulling the row left by exactly that margin cancels it, so the title
+     * lines up with everything else on the page's left edge instead of with
+     * its own container.
+     */
+    // Matches board.padding + board.headerPaddingX below — written out
+    // rather than referenced because `board` is declared later in this same
+    // object literal.
+    edgeCorrection: spacing.xxs + spacing.xxs,
+  },
+  /** One stage's column. */
+  board: {
+    /**
+     * A board's ideal width. Figma draws 147.33px, which is the pipeline's
+     * width divided by six — rounded here, because a third of a pixel is a
+     * Figma artefact rather than a decision.
+     *
+     * Like the stats, the pipeline never wraps: the stages are ordered and end
+     * at Closed, and a stage on a second row breaks the order a lead is
+     * dragged along. The boards share the width instead.
+     */
+    width: 147,
+    /**
+     * How narrow a board may be squeezed before the pipeline scrolls.
+     *
+     * Below this a card's title has room for about two words a line, which is
+     * not a title any more.
+     */
+    minWidth: 96,
+    padding: spacing.xxs,
+    gap: spacing.xxs,
+    radius: radius.m,
+    /**
+     * How tall a board stands when the screen leaves it nothing to fill.
+     *
+     * The boards stretch to the height the pipeline is given and shrink with
+     * it, so this is a floor for the unbounded case — a board rendered on its
+     * own, in a documentation frame, or under a funnel that has taken the
+     * whole screen. Figma draws 434px.
+     *
+     * Applied as `min-height` on the band rather than on each board: a floor
+     * on the board itself cannot be overridden by the space available, so a
+     * short screen would overflow instead of fitting. Every board is the same
+     * height regardless — a stage is a container the whole pipeline shares,
+     * and a short column stopping at its last card would read as a gap in the
+     * band rather than as a stage with room left in it.
+     */
+    minHeight: 434,
+    /** The stage name and its deal summary. */
+    headerPaddingX: spacing.xxs,
+    headerPaddingY: 2,
+    titleFontSize: fontSize.m,
+    /** The title is greyed back so the cards read first. */
+    titleOpacity: 0.7,
+    /** "$1500 • 3 Deals" — below the scale, like the prompt's counter. */
+    summaryFontSize: 9,
+    summaryGap: spacing.xxs,
+    /** The dot between the total and the count. */
+    summaryDotSize: 2,
+    /** The empty, error and not-found states drawn in place of cards. */
+    stateGap: spacing.xs,
+    statePaddingX: spacing.m,
+    statePaddingY: spacing.xl,
+    stateIconSize: 48,
+    stateTitleFontSize: fontSize.s,
+    stateBodyFontSize: 11,
+    /** Between a state's heading and the sentence under it. */
+    stateTextGap: 2,
+  },
+  /** One lead, as a card in a board. */
+  card: {
+    padding: 6,
+    gap: 6,
+    radius: radius.s,
+    /** Between the title, the activity line, and the people row. */
+    tightGap: 2,
+    titleFontSize: fontSize.s,
+    /** "Proposal viewed 6 days ago" — a step under the title. */
+    activityFontSize: 11,
+    peopleFontSize: fontSize.s,
+    /** The stacked participant avatars. */
+    avatarSize: 14,
+    avatarOverlap: -8,
+    avatarGap: spacing.xxs,
+    /** The amount on the card's trailing edge. */
+    amountFontSize: fontSize.m,
+    /** The stage pill, which is smaller here than in the room list. */
+    stagePillFontSize: 11,
+    stagePillPaddingX: 8,
+    stagePillPaddingY: 2,
+    /**
+     * How many lines of the job title are kept.
+     *
+     * Two, then clipped: one line loses too many titles to be worth reading,
+     * and a card that grew to fit would make a column's height a function of
+     * its longest title.
+     */
+    titleLines: 2,
+    /** How far a card fades while it is being dragged. */
+    draggingOpacity: 0.6,
+    /** The tilt that says a dragged card has been picked up. */
+    draggingTilt: '-1deg',
+  },
+  /** The date range field in the screen's top right. */
+  dateField: {
+    height: controlHeight.medium,
+    paddingX: spacing.s,
+    gap: spacing.xs,
+    radius: radius.xs,
+    fontSize: fontSize.m,
+    iconSize: 16,
+    /** How far the calendar sits below the field it opens from. */
+    popoverOffset: spacing.xxs,
+    /**
+     * The calendar's stacking order.
+     *
+     * Above the stats it covers, below a modal: the field sits inside the page
+     * rather than over it, so its popover has to clear the screen's own
+     * content without competing with anything drawn on top of the screen.
+     */
+    popoverZIndex: 10,
+  },
+} as const;
+
+/**
+ * The Task Feed — the CRM dashboard's right-hand column.
+ *
+ * Figma: node 473:6454, with the card at 733:4475 and the stage marker at
+ * 431:11969.
+ */
+export const taskFeed = {
+  /**
+   * The column's own width, and the rule down its leading edge.
+   *
+   * Fixed rather than shared: the feed is a rail beside the dashboard, not a
+   * second panel competing with it for the width. The cards inside size
+   * themselves off this, so widening the rail widens them.
+   */
+  width: 328,
+  /** The header band carrying the title and the open-task count. */
+  header: {
+    height: 75,
+    paddingX: 32,
+    paddingY: spacing.m,
+    gap: spacing.xs,
+    /** The count beside the title. */
+    counterSize: 24,
+  },
+  /** The filter row — "Open" / "Snoozed", and "Mark all as complete". */
+  filters: {
+    padding: spacing.s,
+    gap: spacing.xxs,
+    buttonPaddingX: spacing.xs,
+    buttonPaddingY: spacing.xxs,
+    buttonRadius: radius.xs,
+  },
+  /** The scrolling list of cards. */
+  list: {
+    padding: spacing.s,
+    gap: 10,
+  },
+  /** One task card. */
+  card: {
+    /**
+     * What Figma draws a card at — 304px, which is the 328px rail less its
+     * 12px of padding either side.
+     *
+     * A maximum rather than a fixed width. At exactly the padded width the
+     * card has no slack, so a scrollbar claiming its few pixels pushes the
+     * card over and the right-hand padding collapses. The list gives the card
+     * the width it has and this caps it, so the gap survives the scrollbar.
+     */
+    maxWidth: 304,
+    /**
+     * The card's own ground — a blue so pale it reads as white until a card
+     * sits on the column's white beside it.
+     *
+     * Not `color.main.background`: that is the app's page ground (#F5F8FF) and
+     * this is a shade warmer, drawn from the card itself in Figma.
+     */
+    background: '#F6FAFF',
+    padding: spacing.s,
+    radius: spacing.m,
+    gap: spacing.xs,
+    /** Between the stage marker and the card's text column. */
+    markGap: spacing.m,
+    /** Between the title row and the description under it. */
+    textGap: spacing.xxs,
+    /**
+     * How many lines the description is held at — always, then clipped.
+     *
+     * Fixed rather than natural: the cards sit in a scrolling column, and a
+     * card that grows by a line for a longer sentence makes the column jump
+     * as tasks arrive and complete. Two lines is what Figma draws and what a
+     * task's explanation needs before it is better read on the lead itself.
+     *
+     * A line count, not Figma's 29px: that figure assumes Figma's own line
+     * height, and at the theme's paragraph leading two lines are taller. The
+     * card turns this into a height with the leading the text actually uses,
+     * so the box and the lines in it cannot disagree.
+     */
+    descriptionLines: 2,
+    /** The time and the unread dot on the title row's trailing edge. */
+    timeFontSize: 10,
+    timeOpacity: 0.5,
+    newDotSize: 8,
+    /** The edge an unread card carries, a step lighter than hover's brand blue. */
+    unreadBorder: '#5DADFD',
+    /** The action row along the card's foot. */
+    actionGap: spacing.xxs,
+    /**
+     * How long the card holds its "Snoozed" / "Marked as Completed" cover
+     * before it leaves the list.
+     *
+     * Long enough to read four words, short enough that the feed does not feel
+     * stuck: the confirmation is an acknowledgement, not a message worth
+     * waiting through. The card is already on its way out when it appears.
+     */
+    confirmationMs: 1200,
+  },
+  /** The "Mark as Complete" / "Snooze" buttons. */
+  button: {
+    paddingX: spacing.xs,
+    paddingY: spacing.xxs,
+    radius: radius.xs,
+  },
+  /**
+   * The stage marker — a tinted disc carrying the stage's glyph.
+   *
+   * The disc is the stage's color at a fifth strength and the glyph is the
+   * same color at full, so the pair reads as one mark rather than an icon on
+   * a swatch. `Fallback` is the exception and sits on white: it is the stage
+   * for a task with no stage, and a tint would imply one.
+   */
+  stageIcon: {
+    /**
+     * Each stage's color — the glyph at full strength, the disc behind it at
+     * `backgroundAlpha`.
+     *
+     * Their own set rather than `color.stage`: that palette is the pipeline's
+     * background fills, already paired with a dark foreground, and these have
+     * to carry a glyph at 12px on a pale disc. `mentioned` shares `new`'s blue
+     * deliberately — being named in a thread is a message arriving.
+     */
+    tone: {
+      new: '#5DADFD',
+      interested: '#48C78E',
+      notInterested: '#FF4F4F',
+      objection: '#9775FA',
+      closed: '#50C3E3',
+      mentioned: '#5DADFD',
+    },
+    size: 32,
+    iconSize: 12,
+    /** How much of the stage's color the disc keeps behind the glyph. */
+    backgroundAlpha: 0.2,
+    /** `$` and `@` are set as text, not drawn as icons. */
+    glyphFontSize: fontSize.m,
+  },
+  /**
+   * The divider closing the list when every task is done.
+   *
+   * A rule either side of the words rather than a heading: it marks the end
+   * of the run, and a heading would read as the start of another section.
+   */
+  endDivider: {
+    height: 50,
+    paddingX: 32,
+    gap: 10,
+    opacity: 0.7,
+  },
+  /**
+   * The empty and coming-soon states.
+   *
+   * Sized to the Inbox's own empty state rather than to Figma's 64px spot
+   * illustrations. The rail is narrow and these states are ordinary — a
+   * caught-up feed is the good outcome, not an error — so a drawn illustration
+   * gives the moment more ceremony than it earns, and a second illustration
+   * style to maintain. The disc is the same badge pair used everywhere else a
+   * glyph needs a ground.
+   */
+  empty: {
+    markSize: 40,
+    iconSize: 20,
+    width: 240,
+    gap: spacing.s,
+    padding: spacing.l,
+  },
+} as const;
+
+/**
  * Documentation chrome.
  *
  * The gallery's own surfaces — preview panels, prop tables, code blocks. These
@@ -3584,6 +4067,8 @@ export const component = {
   button,
   checkbox,
   confirm,
+  dashboard,
+  taskFeed,
   datePicker,
   paywall,
   details,
