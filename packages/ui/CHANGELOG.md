@@ -1,5 +1,148 @@
 # @gigradar/ui
 
+## 2.3.0
+
+### Minor Changes
+
+- 41510bd: Dashboard: the CRM's numbers screen, left side
+
+  The funnel and the lead pipeline — Figma node 447:3878. Six components plus the
+  bands that lay them out, and a `component.dashboard` token block behind them.
+
+  `FunnelStat` is one step of the funnel — a rate, its movement against the
+  comparison period, and the counts it is derived from (Figma's "Section
+  Content", node 751:7118). Its sub-metrics are a list rather than two named
+  props: what they count changes per step, so naming them would bake one step's
+  vocabulary into every other. It carries Figma's loading state, drawing a grey
+  bar per line rather than a spinner, so the band keeps its shape while it fills.
+
+  `FunnelChart` and `FunnelCallout` have no Figma component behind them and are
+  drawn here. The chart is a shape, not a chart: no axes, no gridlines, no ticks,
+  no library. Every number on the screen is already written out in the stats
+  above it, so the band's job is the drop-off's shape, and anything that invited
+  reading a value off it would promise a precision it does not have. The callouts
+  — FRT, TRR, OHR — float over it because they are properties of how the team
+  works the funnel rather than steps a lead passes through.
+
+  `KanbanBoard` is one stage (node 2010:2069) with the four states Figma draws.
+  Only two of them speak: an empty stage is ordinary, and six columns each
+  explaining their emptiness would bury the columns that have leads in them.
+  `KanbanCard` is one lead in it (node 1994:5317), reusing the room list's
+  `StagePill` and the generic `Avatar` a step smaller — six columns sit side by
+  side, and at the Inbox's sizes a board would hold two cards before scrolling.
+
+  `DateRangeField` is the period everything is scoped by. It is a trigger around
+  the existing `DatePicker`, not a second calendar: both ends sit in one box
+  because a range is one value, and two fields invite picking an end without the
+  other.
+
+  The bands — `DashboardHeader`, `FunnelSection`, `FunnelStatsBand`,
+  `PipelineBand`, and the `TitleSelect` that puts a choice inside a heading's
+  sentence — are the layout. Both bands keep their columns on one row and shrink
+  them together as the width drops, rather than wrapping: the funnel is a
+  sequence ending at the closing rates, and the pipeline is a sequence ending at
+  Closed, so a column on a second row is a column out of order. They scroll only
+  once every column has been squeezed to its own minimum, past which a card's
+  title has room for about two words a line.
+
+  The chart is lifted under the stats rather than stacked after them. The band is
+  as tall as its tallest column — the one holding both closing rates — so every
+  other column ended well above its foot and left a stripe of white between the
+  numbers and the curve. `chart.overlapY` pulls the chart up into that stripe,
+  and `chart.overlapHeadroom` holds the curve off the box's own top so the lift
+  only ever closes empty space and the band cannot run behind a figure.
+
+  `FunnelSection` owns the column rules and runs them the full height of the
+  numbers and the chart together. A rule stopping at the foot of the figures cut
+  the section in two and left the chart looking like a separate panel beneath it;
+  running down, the rules frame it and the chart reads as floating under the
+  columns.
+
+  The Task Feed column down the right is not built yet.
+
+- 41510bd: Icons: the seven the Task Feed's stage marker needs
+
+  The Task Feed's `StageIcon` (Figma node 431:11969) marks each card with the
+  stage it came from. Five of its seven variants draw an icon, and four of those
+  had nothing in the set to draw with: no hand, no heart, no telephone, and
+  nothing crossed out with a slash rather than an X. The other two variants set
+  `$` and `@` as text, so they need no icon at all.
+
+  `raise-hand`, `heart`, and `phone` land in both weights. Only the fill is
+  needed today — the stage marker is a tinted disc with a solid glyph — but the
+  set pairs its weights, and an icon that arrives alone tends to stay alone.
+
+  `nosign` has no pair. It is a circle with a slash and the slash _is_ the
+  drawing; a stroke weight would be the same picture at a different thickness.
+  Following `mentioned` and `warning`, an unpaired icon carries no suffix.
+
+  `nosign` keeps its SF Symbols name rather than becoming `slash-circle`. The
+  existing `x-cirlce-round-*` is the neighbouring idea — a circle with an X —
+  and two names as close as `x-circle` and `slash-circle` would be picked
+  between by guessing.
+
+  These are the stage marker's icons only. The Task Feed's own components are
+  not built yet.
+
+- 41510bd: Task Feed: the CRM dashboard's right-hand column
+
+  Everything waiting on the user, newest first — Figma node 473:6454, with the
+  card at 733:4475, its buttons at 476:4785, and the stage marker at 431:11969.
+  Five components and a `component.taskFeed` token block behind them.
+
+  `TaskFeed` is the rail. Fixed at 328px rather than sharing the dashboard's
+  width: the feed accompanies the numbers, and a column that grew with the window
+  would take width from the funnel it sits beside. Cards come in as children
+  rather than as a `tasks` array — what a task is differs per stage, and a prop
+  would have to describe every one of those shapes before the column could draw
+  one.
+
+  `TaskFeedCard` writes its body once and lets state change only its edge and its
+  cover. Figma draws five bordered variants over one identical body; as five
+  variants in code that would be five copies of the same three lines of text. The
+  border is transparent by default so a card does not shift by a pixel when a
+  state gives it one, and the description is held at a fixed two lines so the
+  column does not jump as tasks of different lengths arrive and complete.
+
+  `snoozed` and `completed` cover the card rather than replacing its content. The
+  card is on its way out of the column, and swapping what is inside it would
+  change its height on the way, shifting every card below while the confirmation
+  is still being read.
+
+  `StageIcon` is the disc at the head of each card. The disc is the stage's color
+  at a fifth strength and the glyph is the same color at full, so the two read as
+  one mark rather than an icon dropped on a swatch — mixed toward white rather
+  than set as an alpha, because the marker sits on the card's own tint and a
+  transparent disc would pick that up and shift per state. `closed` and
+  `mentioned` set `$` and `@` as text: those characters are already the symbols
+  for a deal's value and for being named in a thread, and an icon of either would
+  be a picture of a letterform. `fallback` is the one stage on white — it stands
+  for a task with no stage, and a tint would invent one.
+
+  `TaskFeedButton` is not the design system's `Button`. That one is sized to be
+  the thing you came to the screen to press; these two sit at the foot of every
+  card in a scrolling column, so they are quiet and only darken under the pointer.
+  A rail of ordinary buttons would read as a rail of calls to action.
+
+  The empty and coming-soon states draw a glyph on a tinted disc rather than
+  Figma's 64px spot illustrations. The rail is narrow and both moments are
+  ordinary — a caught-up feed is the good outcome, not an error — so an
+  illustration gives them more ceremony than they earn, and commits the set to a
+  second art style to keep in step with the icons. The disc is the same badge
+  pair the Inbox's own empty state uses, so these read as part of the product
+  rather than as a place it stops.
+
+  `TaskFeedEnd` closes a list that still has cards in it, which is why it is
+  separate from the empty state: a rule under the last card, not a panel
+  replacing it. A rule either side of the words rather than a heading — it marks
+  the end of the run, and a heading would read as the start of another section.
+
+### Patch Changes
+
+- Updated dependencies [41510bd]
+- Updated dependencies [41510bd]
+  - @gigradar/theme@2.3.0
+
 ## 2.2.0
 
 ### Minor Changes
