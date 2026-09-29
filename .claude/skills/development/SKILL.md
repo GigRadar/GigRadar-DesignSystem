@@ -158,6 +158,14 @@ An Artifact cannot import `@gigradar/ui`. So:
 - **The proposal switcher sits outside the screen**, in a control bar above it,
   alongside what each proposal buys, costs, and does at scale. Inside the screen
   it would read as a control the product ships.
+- **The flag is a proposal picker too.** Every live block's flag — desktop and
+  phone alike — is a button reading `Under review · Proposal N` with a caret,
+  opening a dropdown of all proposals by number and name. It writes the same
+  state as the control bar's tabs, so the two never disagree, and a reviewer who
+  has scrolled down the screen switches without going back up. A static label
+  there is a bug. The flag sits on the frame's edge (`top: -9px; left: 14px`),
+  outside any `overflow: hidden`, so its menu is never clipped. BF-4280's
+  `flagPicker` is the reference implementation.
 
 ### The shape
 
