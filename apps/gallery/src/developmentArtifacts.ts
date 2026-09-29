@@ -24,18 +24,11 @@ export type DevelopmentArtifact = {
 };
 
 /*
+ * Empty while nothing is under review.
+ *
  * BF-4280 (per-account prompt and auto-reply) and the stage event's max-width
- * name were decided: the winning proposals moved into `packages/ui` and their
- * surfaces became ordinary gallery pages, which is where a decided design
- * belongs. What is left here is still open.
+ * name were both decided: the winning proposals moved into `packages/ui` and
+ * their surfaces became ordinary gallery pages, which is where a decided
+ * design belongs. The next review adds its entry here.
  */
-export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [
-  {
-    ticket: 'BF-3481',
-    title: 'Room type and Create BM room',
-    question:
-      'Proposal 1 picked (header tag + Create BM room band + confirm modal) and built into packages/ui; awaiting review of the built result.',
-    decisions: 1,
-    url: 'https://claude.ai/artifact/BgHUXKC7K3HXUYK5MsgfED',
-  },
-];
+export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [];

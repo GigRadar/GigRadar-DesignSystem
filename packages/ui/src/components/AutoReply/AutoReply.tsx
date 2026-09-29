@@ -65,6 +65,24 @@ export type AutoReplyFooterRenderProps = WithDefaultRender & {
   dirty: boolean;
 };
 
+/** What the prompt block gets when a caller replaces it. */
+export type AutoReplyPromptRenderProps = WithDefaultRender & {
+  /** The open tab, so a caller can draw a different block per message class. */
+  tab: AutoReplyTab | undefined;
+  /** The open tab's mode. */
+  value: ReplyMode | undefined;
+};
+
+/**
+ * How the mode options sit.
+ *
+ * `row` is the desktop card: three options side by side, each with its
+ * one-line description. `column` stacks them full width, which is what a phone
+ * wants — side by side at 402px each option is ~105px and its description
+ * cannot fit.
+ */
+export type AutoReplyOptionsDirection = 'row' | 'column';
+
 /** Per-instance overrides for the card's own metrics. */
 export type AutoReplyStyleProps = {
   radius?: CssLength;
@@ -86,6 +104,23 @@ export type AutoReplyProps = {
   /** The chosen mode. */
   value?: ReplyMode;
   onChange?: (mode: ReplyMode) => void;
+  /**
+   * How the mode options sit — side by side, or stacked for a phone.
+   *
+   * @default 'row'
+   */
+  optionsDirection?: AutoReplyOptionsDirection;
+
+  /**
+   * Content directly under the mode row, before the prompt.
+   *
+   * Where the open mode is explained — `AutoReplyNote` for what the mode does
+   * and where its result shows up, `ReplyRateStat` on the first-reply tab,
+   * and on the other tab the template picker and `StopRuleList`. It sits
+   * under the row rather than inside each option because an option's
+   * description is one truncated line on a desktop and is dropped on a phone.
+   */
+  details?: ReactNode;
 
   /** Heading over the extra-prompt block. */
   promptLabel?: ReactNode;
@@ -111,6 +146,12 @@ export type AutoReplyProps = {
    */
   resetTitle?: ReactNode;
   resetDescription?: ReactNode;
+  /**
+   * Marks the card as changed from outside — edits made inside `details`
+   * (a template picked, a prompt typed) that the card cannot see itself.
+   * Save and Cancel enable while either this or the card's own edits say so.
+   */
+  dirty?: boolean;
   /** Puts Save in its loading state and blocks editing. */
   saving?: boolean;
   /**
@@ -125,6 +166,13 @@ export type AutoReplyProps = {
   renderOption?: RenderProp<AutoReplyOptionRenderProps>;
   /** Replaces the footer row. */
   renderFooter?: RenderProp<AutoReplyFooterRenderProps>;
+  /**
+   * Replaces the additional-prompt block. Return `null` to drop it — the
+   * all-other-replies tab carries its prompt inside `details`, under a
+   * template picker, and a second prompt below would be two places to write
+   * the same instructions.
+   */
+  renderPrompt?: RenderProp<AutoReplyPromptRenderProps>;
 } & AutoReplyStyleProps;
 
 /**
@@ -149,6 +197,8 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
     options = [],
     value,
     onChange,
+    optionsDirection = 'row',
+    details,
     promptLabel = 'Additional prompt',
     promptValue,
     defaultPromptValue = '',
@@ -162,9 +212,11 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
     resetTitle = 'Discard your changes?',
     resetDescription = 'The reply modes and prompts go back to the last saved version. This cannot be undone.',
     saving = false,
+    dirty: externalDirty = false,
     disabled = false,
     renderOption,
     renderFooter,
+    renderPrompt,
     radius,
     padding,
     gap,
@@ -175,7 +227,8 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
 ) {
   const groupName = useId();
   const [uncontrolledPrompt, setUncontrolledPrompt] = useState(defaultPromptValue);
-  const [dirty, setDirty] = useState(false);
+  const [ownDirty, setDirty] = useState(false);
+  const dirty = ownDirty || externalDirty;
 
   const isPromptControlled = promptValue !== undefined;
   const prompt = isPromptControlled ? promptValue : uncontrolledPrompt;
@@ -204,6 +257,33 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
     fontFamily: typography.fontFamily.base,
     opacity: disabled ? autoReply.disabledOpacity : undefined,
   };
+
+  const defaultPrompt = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
+      <span style={{ ...typography.textStyle.mMedium, color: color.main.black }}>
+        {promptLabel}
+      </span>
+      <AutoReplyButton
+        title={promptLabel}
+        markerIcon={IconEditPencilArrow}
+        selected={promptEnabled}
+        name={`${groupName}-prompt`}
+        disabled={disabled || saving}
+        onSelect={() => {
+          setDirty(true);
+          onPromptEnabledChange?.(!promptEnabled);
+        }}
+      >
+        <CustomPromptField
+          value={prompt}
+          onChange={commitPrompt}
+          placeholder={promptPlaceholder}
+          minHeight={autoReply.promptHeight}
+          disabled={disabled || saving || !promptEnabled}
+        />
+      </AutoReplyButton>
+    </div>
+  );
 
   const defaultFooter = () => (
     <div
@@ -291,7 +371,14 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
           backgroundColor: color.main.white,
         }}
       >
-        <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: optionsDirection,
+            gap: autoReply.optionsGap,
+            width: '100%',
+          }}
+        >
           {options.map((option) => {
             const selected = option.id === value;
             const defaultRender = () => (
@@ -312,37 +399,36 @@ export const AutoReply = forwardRef<HTMLDivElement, AutoReplyProps>(function Aut
             );
 
             return (
-              <div key={option.id} style={{ flex: '1 1 0', minWidth: 0, display: 'flex' }}>
+              <div
+                key={option.id}
+                style={{
+                  flex: optionsDirection === 'row' ? '1 1 0' : '0 0 auto',
+                  minWidth: 0,
+                  display: 'flex',
+                }}
+              >
                 {renderOption ? renderOption({ option, selected, defaultRender }) : defaultRender()}
               </div>
             );
           })}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
-          <span style={{ ...typography.textStyle.mMedium, color: color.main.black }}>
-            {promptLabel}
-          </span>
-          <AutoReplyButton
-            title={promptLabel}
-            markerIcon={IconEditPencilArrow}
-            selected={promptEnabled}
-            name={`${groupName}-prompt`}
-            disabled={disabled || saving}
-            onSelect={() => {
-              setDirty(true);
-              onPromptEnabledChange?.(!promptEnabled);
+        {details !== undefined && details !== null && details !== false && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: autoReply.details.gap,
+              width: '100%',
             }}
           >
-            <CustomPromptField
-              value={prompt}
-              onChange={commitPrompt}
-              placeholder={promptPlaceholder}
-              minHeight={autoReply.promptHeight}
-              disabled={disabled || saving || !promptEnabled}
-            />
-          </AutoReplyButton>
-        </div>
+            {details}
+          </div>
+        )}
+
+        {renderPrompt
+          ? renderPrompt({ tab: activeTab, value, defaultRender: defaultPrompt })
+          : defaultPrompt()}
       </div>
 
       {renderFooter ? renderFooter({ dirty, defaultRender: defaultFooter }) : defaultFooter()}
