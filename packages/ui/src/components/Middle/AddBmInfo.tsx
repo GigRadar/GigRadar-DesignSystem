@@ -19,8 +19,15 @@ export type AddBmInfoStyleProps = {
 };
 
 export type AddBmInfoProps = {
-  /** The manager being offered — the person the Add button adds to the room. */
-  managerName: string;
+  /**
+   * The manager being offered — the person the button adds to the room, or the
+   * one the new room is created with.
+   *
+   * Omit it when there is nobody to offer: a team with no Business Manager
+   * connected. The chip is dropped rather than drawn empty, and the prompt is
+   * what says why the button cannot run.
+   */
+  managerName?: string;
   /** Their photo. Falls back to initials from `managerName`. */
   managerAvatar?: string;
   /**
@@ -28,8 +35,14 @@ export type AddBmInfoProps = {
    * plan, but it says the same thing in the common case.
    */
   children?: ReactNode;
-  /** The Add button's label. */
+  /** The button's label. "Create BM room" for a one-to-one room. */
   actionLabel?: ReactNode;
+  /**
+   * The button's label while `adding`. A one-to-one room is not adding anyone —
+   * it is creating a new room — so it passes "Creating".
+   * @default 'Adding'
+   */
+  busyLabel?: ReactNode;
   /**
    * Whether the add is in flight. Figma's "Adding" state: the button goes grey,
    * the glyph becomes a spinner, and it stops accepting clicks.
@@ -60,6 +73,10 @@ export type AddBmInfoProps = {
  * the same component on a bordered row; `ChatHeader` composes it rather than
  * redrawing it.
  *
+ * The same band carries a one-to-one room's offer to start a Business Manager
+ * room (BF-3481): `actionLabel="Create BM room"`, `busyLabel="Creating"`, and no
+ * `managerName` when the team has nobody to create it with.
+ *
  * `adding` is a prop rather than internal state: whether the add succeeded is
  * known by whatever owns the room, and a spinner that clears itself would
  * clear before the room actually changed.
@@ -70,6 +87,7 @@ export const AddBmInfo = forwardRef<HTMLDivElement, AddBmInfoProps>(function Add
     managerAvatar,
     children = 'Add our Business Manager to enable meetings and attachments.',
     actionLabel = 'Add',
+    busyLabel = 'Adding',
     adding = false,
     disabled = false,
     onAdd,
@@ -118,45 +136,47 @@ export const AddBmInfo = forwardRef<HTMLDivElement, AddBmInfoProps>(function Add
       </span>
       {/* The manager's chip. Not a button — it names who is being added, and the
           Add button beside it is the only thing to press. */}
-      <span
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          flexShrink: 0,
-          gap: addBm.chipGap,
-          paddingLeft: addBm.chipPaddingX,
-          paddingRight: addBm.chipPaddingX,
-          paddingTop: addBm.chipPaddingY,
-          paddingBottom: addBm.chipPaddingY,
-          borderRadius: addBm.chipRadius,
-          backgroundColor: color.main.white,
-        }}
-      >
-        <Avatar
-          size="small"
-          diameter={addBm.avatarSize}
-          name={managerName}
-          src={managerAvatar}
-          badge="upworkApi"
-        />
-        {/* Compact keeps only the first name. The avatar beside it already
-            identifies the person, and a surname truncated to "Maria Ovcha…"
-            spends the room without adding anything the reader can use. The full
-            name stays as the title, so it is still reachable. */}
+      {managerName != null && (
         <span
-          title={compact ? managerName : undefined}
           style={{
-            ...textStyle.sMedium,
-            color: color.navbar.text2,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            maxWidth: compact ? addBm.compactNameMaxWidth : undefined,
+            display: 'inline-flex',
+            alignItems: 'center',
+            flexShrink: 0,
+            gap: addBm.chipGap,
+            paddingLeft: addBm.chipPaddingX,
+            paddingRight: addBm.chipPaddingX,
+            paddingTop: addBm.chipPaddingY,
+            paddingBottom: addBm.chipPaddingY,
+            borderRadius: addBm.chipRadius,
+            backgroundColor: color.main.white,
           }}
         >
-          {compact ? managerName.split(' ')[0] : managerName}
+          <Avatar
+            size="small"
+            diameter={addBm.avatarSize}
+            name={managerName}
+            src={managerAvatar}
+            badge="upworkApi"
+          />
+          {/* Compact keeps only the first name. The avatar beside it already
+              identifies the person, and a surname truncated to "Maria Ovcha…"
+              spends the room without adding anything the reader can use. The full
+              name stays as the title, so it is still reachable. */}
+          <span
+            title={compact ? managerName : undefined}
+            style={{
+              ...textStyle.sMedium,
+              color: color.navbar.text2,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: compact ? addBm.compactNameMaxWidth : undefined,
+            }}
+          >
+            {compact ? managerName.split(' ')[0] : managerName}
+          </span>
         </span>
-      </span>
+      )}
       <button
         type="button"
         disabled={busy}
@@ -194,7 +214,7 @@ export const AddBmInfo = forwardRef<HTMLDivElement, AddBmInfoProps>(function Add
             whiteSpace: 'nowrap',
           }}
         >
-          {adding ? 'Adding' : actionLabel}
+          {adding ? busyLabel : actionLabel}
         </span>
       </button>
     </div>

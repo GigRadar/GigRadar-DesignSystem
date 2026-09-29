@@ -737,6 +737,20 @@ export type {
 export { AddBmInfo } from './components/Middle/AddBmInfo.js';
 export type { AddBmInfoProps, AddBmInfoStyleProps } from './components/Middle/AddBmInfo.js';
 
+/**
+ * The room's type, and a one-to-one room's way to a Business Manager room
+ * (BF-3481). The tag rides on `ChatHeader`'s meta row through its `roomType`
+ * prop; the band is `AddBmInfo`; the confirmation is its own modal.
+ */
+export { RoomTypeTag, roomTypeLabels } from './components/Middle/RoomTypeTag.js';
+export type { RoomTypeTagProps, RoomType } from './components/Middle/RoomTypeTag.js';
+
+export { CreateBmRoomModal, CreateBmRoomConfirm } from './components/Middle/CreateBmRoomModal.js';
+export type {
+  CreateBmRoomModalProps,
+  CreateBmRoomConfirmProps,
+} from './components/Middle/CreateBmRoomModal.js';
+
 export { FilterChat, defaultChatFilters } from './components/Middle/FilterChat.js';
 export type {
   FilterChatProps,

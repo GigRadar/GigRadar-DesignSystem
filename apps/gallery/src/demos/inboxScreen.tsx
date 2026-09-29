@@ -15,12 +15,21 @@ import {
   RoomNotice,
   ScheduleMessageModal,
   Sender,
+  type ChatHeaderProps,
+  type ChooseBmButtonProps,
   type InboxPane,
   type StageName,
   type TextMark,
 } from '@gigradar/ui';
-import { useState, type ReactNode } from 'react';
-import { accounts, chatRoom, clientDetails, rooms, upcomingMeeting } from '../fixtures/inbox';
+import { useEffect, useState, type ReactNode } from 'react';
+import {
+  accounts,
+  chatRoom,
+  clientDetails,
+  rooms,
+  upcomingMeeting,
+  type Room,
+} from '../fixtures/inbox';
 import { DetailsColumn } from '../pages/inbox/DetailsPage';
 
 const noop = () => undefined;
@@ -43,6 +52,12 @@ export function AssembledInbox({
   initialPane = 'list',
   events,
   previewOverrides,
+  headerProps,
+  wrapHeader,
+  thread,
+  details,
+  chooseBm = { name: 'Marina Ovcharenko', tone: 'volcano' },
+  leadRoom,
 }: {
   layout?: 'desktop' | 'mobile';
   /**
@@ -71,8 +86,49 @@ export function AssembledInbox({
    * fixture, so the other rows stay identical across the five frames.
    */
   previewOverrides?: Record<string, ReactNode>;
+  /**
+   * Merged over the header the room otherwise draws.
+   *
+   * For a review that changes what the header says — a tag on its meta row, a
+   * band under it — without forking the room. Everything not passed keeps the
+   * fixture's value, so the header is the same one the Inbox page shows.
+   */
+  headerProps?: Partial<ChatHeaderProps>;
+  /**
+   * Wraps the header in something of the caller's.
+   *
+   * The header's meta row clips its overflow, so anything that has to hang
+   * below a tag — a popover under review — cannot live inside it. A positioned
+   * wrapper around the whole band can.
+   */
+  wrapHeader?: (header: ReactNode) => ReactNode;
+  /**
+   * Replaces the thread entirely.
+   *
+   * `events` swaps one line in the usual thread; this swaps all of it, for a
+   * state that is a different room altogether — a room that was only just
+   * created has none of the usual thread's history.
+   */
+  thread?: ReactNode;
+  /** Replaces the details column. */
+  details?: ReactNode;
+  /**
+   * Who the composer's Business Manager picker shows. `null` drops the picker,
+   * which is what a room with no Business Manager in it draws.
+   */
+  chooseBm?: Pick<ChooseBmButtonProps, 'name' | 'avatar' | 'tone'> | null;
+  /**
+   * A room put at the top of the list and selected — the room a state has just
+   * moved the reader into. Omitted, the list is the fixture's and `r1` is open.
+   */
+  leadRoom?: Room;
 }) {
-  const [selected, setSelected] = useState('r1');
+  const [selected, setSelected] = useState(leadRoom?.id ?? 'r1');
+  // A state that moves the reader into a new room selects it as it appears,
+  // the way the product would after creating it.
+  useEffect(() => {
+    if (leadRoom) setSelected(leadRoom.id);
+  }, [leadRoom?.id]);
   const [query, setQuery] = useState('');
   const [pane, setPane] = useState<InboxPane>(initialPane);
   const [stage, setStage] = useState<StageName>('interested');
@@ -105,7 +161,7 @@ export function AssembledInbox({
       onQueryChange={setQuery}
       connection="online"
     >
-      {rooms.map((room) => {
+      {(leadRoom ? [leadRoom, ...rooms] : rooms).map((room) => {
         const account = accounts.find((item) => item.id === room.accountId);
         return (
           <InboxRoom
@@ -132,39 +188,42 @@ export function AssembledInbox({
     </InboxList>
   );
 
+  const headerNode = (
+    <ChatHeader
+      layout={layout}
+      title={chatRoom.title}
+      topic={chatRoom.topic}
+      clientName={chatRoom.clientName}
+      clientTone={chatRoom.clientTone}
+      preset={chatRoom.preset}
+      assignee={chatRoom.assignee}
+      stage={stage}
+      stageOpen={stageOpen}
+      onStageClick={() => setStageOpen((open) => !open)}
+      onStageChange={(next) => {
+        setStage(next);
+        setStageOpen(false);
+      }}
+      filters={defaultChatFilters}
+      shownFilters={shownFilters}
+      onFiltersChange={setShownFilters}
+      filterOpen={filterOpen}
+      onFilterClick={() => setFilterOpen((open) => !open)}
+      onBack={layout === 'mobile' ? () => setPane('list') : undefined}
+      {...headerProps}
+    />
+  );
+
   const room = (
     <ChatRoom
-      header={
-        <ChatHeader
-          layout={layout}
-          title={chatRoom.title}
-          topic={chatRoom.topic}
-          clientName={chatRoom.clientName}
-          clientTone={chatRoom.clientTone}
-          preset={chatRoom.preset}
-          assignee={chatRoom.assignee}
-          stage={stage}
-          stageOpen={stageOpen}
-          onStageClick={() => setStageOpen((open) => !open)}
-          onStageChange={(next) => {
-            setStage(next);
-            setStageOpen(false);
-          }}
-          filters={defaultChatFilters}
-          shownFilters={shownFilters}
-          onFiltersChange={setShownFilters}
-          filterOpen={filterOpen}
-          onFilterClick={() => setFilterOpen((open) => !open)}
-          onBack={layout === 'mobile' ? () => setPane('list') : undefined}
-        />
-      }
+      header={wrapHeader ? wrapHeader(headerNode) : headerNode}
       composer={
         <Composer
           layout={layout}
           mode={composerMode}
           onModeChange={setComposerMode}
           hasDraft={draft.length > 0}
-          chooseBm={{ name: 'Marina Ovcharenko', tone: 'volcano' }}
+          chooseBm={chooseBm ?? undefined}
           onSend={noop}
           // Passing this is what draws the clock beside send. The Inbox is the
           // Chat Room in its third column, so it gets the whole composer —
@@ -185,53 +244,60 @@ export function AssembledInbox({
                   ? current.filter((item) => item !== mark)
                   : [...current, mark],
               ),
-            onAttach: noop,
-            onMeeting: noop,
+            // Meetings and attachments go through the Business Manager, so a
+            // room without one has neither control — the reason a one-to-one
+            // room is worth moving out of.
+            onAttach: chooseBm ? noop : undefined,
+            onMeeting: chooseBm ? noop : undefined,
             onDraftAi: noop,
           }}
         />
       }
     >
-      <RoomNotice>
-        Chat started on April 25, 2025, at 18:20. Marina Ovcharenko has accepted the job offer.
-      </RoomNotice>
-      <RoomDivider>Today</RoomDivider>
-      <RoomMessage
-        sender={<Sender name="Floyd Miles" avatar={{ src: clientDetails.avatarSrc }} />}
-      >
-        <BubbleChat time="08:30" actions={actions}>
-          We were really impressed with your portfolio and how your expertise in Product UI/UX will
-          be a great fit for our project.
-        </BubbleChat>
-      </RoomMessage>
-      {events ?? (
-        <RoomEvent kind="stage" from="new" to="interested" by="Jane Cooper" time="08:47" />
+      {thread ?? (
+        <>
+        <RoomNotice>
+          Chat started on April 25, 2025, at 18:20. Marina Ovcharenko has accepted the job offer.
+        </RoomNotice>
+        <RoomDivider>Today</RoomDivider>
+        <RoomMessage
+          sender={<Sender name="Floyd Miles" avatar={{ src: clientDetails.avatarSrc }} />}
+        >
+          <BubbleChat time="08:30" actions={actions}>
+            We were really impressed with your portfolio and how your expertise in Product UI/UX will
+            be a great fit for our project.
+          </BubbleChat>
+        </RoomMessage>
+        {events ?? (
+          <RoomEvent kind="stage" from="new" to="interested" by="Jane Cooper" time="08:47" />
+        )}
+        {/* Jane carries initials rather than a photo, in the thread and in the
+            details pane alike — the six sample faces are already spoken for, and
+            giving her one of them would put the same face on two people in one
+            screen. It is also the fallback worth seeing in a demo. */}
+        <RoomMessage side="own" sender={<Sender side="own" name="Jane Cooper" avatar={{}} />}>
+          <BubbleChat side="own" time="08:52" actions={actions}>
+            Thank you! I&rsquo;d be glad to walk you through the flows I have in mind — is Wednesday
+            still good for a call?
+          </BubbleChat>
+          {/* The call that came out of that message. A meeting is a thing the room
+              arranged, so it belongs in the thread beside the message proposing
+              it — the right pane lists it again as a booking, which is a
+              different question ("what is coming up") than this one ("what did we
+              agree to"). */}
+          <MeetingBubble
+            side="own"
+            state="booked"
+            time={upcomingMeeting.sentAt}
+            details={[
+              { label: 'Date', value: upcomingMeeting.date },
+              { label: 'Time', value: upcomingMeeting.time },
+              { label: 'Link', value: upcomingMeeting.link, href: upcomingMeeting.link },
+            ]}
+          />
+        </RoomMessage>
+        </>
       )}
-      {/* Jane carries initials rather than a photo, in the thread and in the
-          details pane alike — the six sample faces are already spoken for, and
-          giving her one of them would put the same face on two people in one
-          screen. It is also the fallback worth seeing in a demo. */}
-      <RoomMessage side="own" sender={<Sender side="own" name="Jane Cooper" avatar={{}} />}>
-        <BubbleChat side="own" time="08:52" actions={actions}>
-          Thank you! I&rsquo;d be glad to walk you through the flows I have in mind — is Wednesday
-          still good for a call?
-        </BubbleChat>
-        {/* The call that came out of that message. A meeting is a thing the room
-            arranged, so it belongs in the thread beside the message proposing
-            it — the right pane lists it again as a booking, which is a
-            different question ("what is coming up") than this one ("what did we
-            agree to"). */}
-        <MeetingBubble
-          side="own"
-          state="booked"
-          time={upcomingMeeting.sentAt}
-          details={[
-            { label: 'Date', value: upcomingMeeting.date },
-            { label: 'Time', value: upcomingMeeting.time },
-            { label: 'Link', value: upcomingMeeting.link, href: upcomingMeeting.link },
-          ]}
-        />
-      </RoomMessage>
     </ChatRoom>
   );
 
@@ -242,7 +308,7 @@ export function AssembledInbox({
         pane={pane}
         list={list}
         room={room}
-        details={<DetailsColumn />}
+        details={details ?? <DetailsColumn />}
       />
       {/* Outside the screen rather than inside the room: the picker is a modal
           over the whole window in the product, and nesting it in a column would
