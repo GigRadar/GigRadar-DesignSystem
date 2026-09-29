@@ -56,8 +56,27 @@ export type SettingsScreenProps = {
    * prompt after the team prompt it appends to — rather than at the end, since
    * where a section falls is part of what is being reviewed.
    */
-  after?: Partial<Record<'prompt' | 'presets' | 'autoReply' | 'tools', ReactNode>>;
+  after?: Partial<Record<SectionKey, ReactNode>>;
+  /**
+   * A shipped section swapped for the block under review, keyed the same way.
+   *
+   * For a proposal that changes a section rather than adding one beside it —
+   * two Auto Reply cards on one screen would be reviewing which one is real.
+   * Only Auto Reply takes one so far; the others follow when a review needs it.
+   */
+  instead?: { autoReply?: ReactNode };
+  /**
+   * Draws the screen as a phone does: the AI Configuration pane on its own at
+   * 402px, without the rail. A phone shows one pane at a time, and the pane is
+   * where every section under review lives.
+   */
+  phone?: boolean;
 };
+
+type SectionKey = 'prompt' | 'presets' | 'autoReply' | 'tools';
+
+/** The phone the settings pane is drawn at — the same 402px the Inbox stacks at. */
+export const PHONE_WIDTH = 402;
 
 /**
  * The whole screen: rail on the left, AI Configuration on the right.
@@ -66,7 +85,7 @@ export type SettingsScreenProps = {
  * pane, both scrolling inside a rounded card — so a section under review is
  * seen at the width and beside the neighbours it will really have.
  */
-export function SettingsScreen({ after }: SettingsScreenProps) {
+export function SettingsScreen({ after, instead, phone = false }: SettingsScreenProps) {
   const [selected, setSelected] = useState('prompt');
   const [versionId, setVersionId] = useState('v2');
   const [saved, setSaved] = useState<string | null>(null);
@@ -77,7 +96,7 @@ export function SettingsScreen({ after }: SettingsScreenProps) {
       style={{
         display: 'flex',
         alignItems: 'stretch',
-        width: '100%',
+        width: phone ? PHONE_WIDTH : '100%',
         height: 760,
         backgroundColor: color.main.white,
         borderRadius: radius.l,
@@ -85,12 +104,14 @@ export function SettingsScreen({ after }: SettingsScreenProps) {
         overflow: 'hidden',
       }}
     >
-      <SettingsPanel
-        items={SETTINGS_ITEMS}
-        value={selected}
-        onSelect={(item) => setSelected(item.id)}
-        title="Settings"
-      />
+      {!phone && (
+        <SettingsPanel
+          items={SETTINGS_ITEMS}
+          value={selected}
+          onSelect={(item) => setSelected(item.id)}
+          title="Settings"
+        />
+      )}
 
       {/* The pane scrolls on its own, the way the real screen does — the rail
           stays put while the sections move. */}
@@ -140,12 +161,14 @@ export function SettingsScreen({ after }: SettingsScreenProps) {
 
         {after?.presets}
 
-        <SettingsSection
-          title="Auto Reply"
-          description="Reply to every message in a thread, or only the first one."
-        >
-          <AutoReplyDemo />
-        </SettingsSection>
+        {instead?.autoReply ?? (
+          <SettingsSection
+            title="Auto Reply"
+            description="Reply to every message in a thread, or only the first one."
+          >
+            <AutoReplyDemo />
+          </SettingsSection>
+        )}
 
         {after?.autoReply}
 
