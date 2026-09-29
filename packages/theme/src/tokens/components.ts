@@ -3236,6 +3236,22 @@ const middle = {
     actionIconSize: 14,
   },
   /**
+   * The room-type tag on the header's meta row — One-to-one, or Business
+   * Manager (BF-3481). A `HeaderMetaTag`; these are only its own additions.
+   */
+  roomType: {
+    /** The grey bar drawn while the room's participants are still loading. */
+    skeletonWidth: 96,
+    skeletonHeight: 20,
+  },
+  /**
+   * The confirmation before a one-to-one starts a Business Manager room.
+   * Narrower than the default modal: it is two sentences and two buttons.
+   */
+  createBmRoom: {
+    width: 440,
+  },
+  /**
    * The filter-chat popover, which the header's filter button opens.
    *
    * Figma: node 4486:31137. A menu rather than an inline panel, so it carries

@@ -19,6 +19,7 @@ import { HeaderMetaTag } from './HeaderMetaTag.js';
 import { HeaderNavButton } from './HeaderNavButton.js';
 import { LeadStageButton } from './LeadStageButton.js';
 import { MenuButton } from './MenuButton.js';
+import { RoomTypeTag, type RoomType } from './RoomTypeTag.js';
 
 const { header } = component.middle;
 
@@ -47,6 +48,19 @@ export type ChatHeaderProps = {
   title: ReactNode;
   /** The line under the title: who is in the room. Figma draws "Team". */
   topic?: ReactNode;
+  /**
+   * What kind of room this is — drawn as a `RoomTypeTag` at the head of the
+   * meta row. Omitted, no tag is drawn. It says the same thing "Team" did, more
+   * precisely, so a screen that passes it usually drops `topic`.
+   */
+  roomType?: RoomType;
+  /**
+   * Whether the room's type is still unknown. Draws the tag's loading bar in
+   * its place. Pair it with no `addBusinessManager`: nothing is offered until
+   * the room is known.
+   * @default false
+   */
+  roomTypeLoading?: boolean;
   /** The client's photo, and the name its initials fall back to. */
   clientName?: string;
   clientAvatar?: string;
@@ -119,6 +133,10 @@ export type ChatHeaderProps = {
   /**
    * The Business Manager band under the header — Figma's "BM not in this room".
    * Pass the manager's details to draw it; omit it and the header is one band.
+   *
+   * A one-to-one room passes it too, with `actionLabel="Create BM room"` and
+   * `busyLabel="Creating"`: the band is the same offer, and the confirmation it
+   * opens is `CreateBmRoomModal`.
    */
   addBusinessManager?: Omit<AddBmInfoProps, 'paddingX' | 'paddingY' | 'background'>;
 } & ChatHeaderStyleProps &
@@ -144,6 +162,8 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
   {
     title,
     topic,
+    roomType,
+    roomTypeLoading = false,
     clientName,
     clientAvatar,
     clientTone,
@@ -329,6 +349,9 @@ export const ChatHeader = forwardRef<HTMLElement, ChatHeaderProps>(function Chat
                   overflow: 'hidden',
                 }}
               >
+                {(roomType != null || roomTypeLoading) && (
+                  <RoomTypeTag type={roomType} loading={roomTypeLoading} />
+                )}
                 {topic != null && (
                   <span
                     style={{

@@ -34,7 +34,7 @@ export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [
     ticket: 'BF-3481',
     title: 'Room type and Create BM room',
     question:
-      'Where a room says whether it is one-to-one or has a Business Manager, and how loudly a one-to-one offers to become one.',
+      'Proposal 1 picked (header tag + Create BM room band + confirm modal) and built into packages/ui; awaiting review of the built result.',
     decisions: 1,
     url: 'https://claude.ai/artifact/BgHUXKC7K3HXUYK5MsgfED',
   },

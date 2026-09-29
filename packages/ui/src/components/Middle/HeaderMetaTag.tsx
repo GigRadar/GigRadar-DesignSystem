@@ -11,9 +11,11 @@ const { header } = component.middle;
  *
  * `brand` is filled and blue — the reply preset, which is a setting the room
  * carries. `outline` is a bare ring in the nav text — the assignee, which names
- * a person rather than a configuration.
+ * a person rather than a configuration. `meeting` is ringed and tinted in the
+ * meetings green — the Business Manager room type, whose point is that it can
+ * book meetings, so the tag says so in the colour meetings already use.
  */
-export type HeaderMetaTagVariant = 'brand' | 'outline';
+export type HeaderMetaTagVariant = 'brand' | 'outline' | 'meeting';
 
 /** Per-instance overrides for the tag's own metrics. */
 export type HeaderMetaTagStyleProps = {
@@ -81,8 +83,13 @@ export const HeaderMetaTag = forwardRef<HTMLElement, HeaderMetaTagProps>(functio
   ref,
 ) {
   const brand = variant === 'brand';
-  const tone = textColor ?? (brand ? color.badge.foreground : color.navbar.text);
-  const edge = borderColor ?? (brand ? color.badge.foreground : color.navbar.text);
+  const meeting = variant === 'meeting';
+  const tone =
+    textColor ??
+    (brand ? color.badge.foreground : meeting ? color.accent.meetings.hover : color.navbar.text);
+  const edge =
+    borderColor ??
+    (brand ? color.badge.foreground : meeting ? color.accent.meetings.main : color.navbar.text);
 
   const style = {
     display: 'inline-flex',
@@ -108,7 +115,13 @@ export const HeaderMetaTag = forwardRef<HTMLElement, HeaderMetaTagProps>(functio
     // Figma draws the brand tag's edge thinner than the hairline step; at 12px
     // type the difference from 1px is visible, so it keeps its own value.
     border: `${brand ? header.tag.brandBorderWidth : borderWidth.thin}px solid ${edge}`,
-    backgroundColor: background ?? (brand ? color.navbar.disabledBackground : 'transparent'),
+    backgroundColor:
+      background ??
+      (brand
+        ? color.navbar.disabledBackground
+        : meeting
+          ? color.accent.meetings.background
+          : 'transparent'),
     cursor: onClick ? 'pointer' : 'default',
   };
 
