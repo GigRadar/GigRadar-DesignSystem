@@ -26,9 +26,11 @@ export type DevelopmentArtifact = {
 /*
  * Empty while nothing is under review.
  *
- * BF-4280 (per-account prompt and auto-reply) and the stage event's max-width
- * name were both decided: the winning proposals moved into `packages/ui` and
- * their surfaces became ordinary gallery pages, which is where a decided
- * design belongs. The next review adds its entry here.
+ * BF-4280 (per-account prompt and auto-reply), the stage event's max-width
+ * name, BF-4111 (custom prompt setup), BF-4113 (auto-reply mode clarity) and
+ * BF-3481 (room type and Create BM room) were all decided: the winning
+ * proposals moved into `packages/ui` and their surfaces became ordinary gallery
+ * pages, which is where a decided design belongs. The next review adds its
+ * entry here.
  */
 export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [];

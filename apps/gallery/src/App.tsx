@@ -27,6 +27,9 @@ import { FilterChatPage } from './pages/middle/FilterChatPage';
 import { MenuButtonPage } from './pages/middle/MenuButtonPage';
 import { LeadStageButtonPage } from './pages/middle/LeadStageButtonPage';
 import { StageUpdatePage } from './pages/middle/StageUpdatePage';
+import { RoomTypePage } from './pages/middle/RoomTypePage';
+import { CustomPromptSetupPage } from './pages/ai/CustomPromptSetupPage';
+import { AiModeClarityPage } from './pages/ai/AiModeClarityPage';
 import { BubbleChatPage } from './pages/middle/BubbleChatPage';
 import { AttachmentBubblePage } from './pages/middle/AttachmentBubblePage';
 import { SenderPage } from './pages/middle/SenderPage';
@@ -286,7 +289,19 @@ const NAV: NavGroup[] = [
             // The screen's sections, in the order it stacks them.
             children: [
               { id: 'crm-ai-prompt', label: 'Custom Prompt', render: () => <CustomPromptPage /> },
+              {
+                // BF-4111 — the first-time setup of the same card: templates, not a blank box.
+                id: 'crm-ai-prompt-setup',
+                label: 'Custom Prompt Setup',
+                render: () => <CustomPromptSetupPage />,
+              },
               { id: 'crm-ai-auto-reply', label: 'Auto Reply', render: () => <AutoReplyPage /> },
+              {
+                // BF-4113 — what each mode does, the reply-rate line, and the fixed stop rules.
+                id: 'crm-ai-mode-clarity',
+                label: 'Auto Reply Mode Clarity',
+                render: () => <AiModeClarityPage />,
+              },
               { id: 'crm-ai-presets', label: 'Mention Preset', render: () => <MentionPresetPage /> },
               { id: 'crm-ai-tools', label: 'AI Tools', render: () => <AiToolsPage /> },
               {
@@ -516,6 +531,12 @@ const NAV: NavGroup[] = [
                 id: 'crm-mid-stage-update',
                 label: 'Stage Update in Room',
                 render: () => <StageUpdatePage />,
+              },
+              {
+                // BF-3481 — the room's type on its header, and starting a Business Manager room.
+                id: 'crm-mid-room-type',
+                label: 'Room Type & Create BM Room',
+                render: () => <RoomTypePage />,
               },
               {
                 id: 'crm-mid-bubble',

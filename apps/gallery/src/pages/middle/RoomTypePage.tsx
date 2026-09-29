@@ -22,10 +22,8 @@ import { Caption, Surface } from './parts';
  *
  * Proposal 1 won the review: a type tag on the header's meta row, and the
  * shipped Business Manager band offering Create BM room on every one-to-one,
- * confirmed in a modal. It is built — `RoomTypeTag`, `ChatHeader.roomType`,
- * `AddBmInfo.busyLabel`, `CreateBmRoomModal` — but still marked in development
- * while the built result is reviewed, so the page stays out of the nav and is
- * reached from the sidebar's review list.
+ * confirmed in a modal. It ships as `RoomTypeTag`, `ChatHeader.roomType`,
+ * `AddBmInfo.busyLabel` and `CreateBmRoomModal`.
  */
 
 /** The width the Inbox wants before its thread starts losing its layout. */
@@ -114,7 +112,7 @@ export function RoomTypePage() {
     <>
       <PageHeader
         title="Room type & Create BM room"
-        description="BF-3481. The room says whether it is one-to-one or has a Business Manager, and a one-to-one can start a Business Manager room — which is what unlocks meetings (BF-2947). Proposal 1 of the review, built and awaiting review."
+        description="BF-3481. The room says whether it is one-to-one or has a Business Manager, and a one-to-one can start a Business Manager room — which is what unlocks meetings (BF-2947)."
       />
 
       <CrossLink
@@ -133,7 +131,6 @@ export function RoomTypePage() {
 
       <Section
         title="Live example"
-        stage="development"
         description="The whole flow in the real Inbox, at both widths. The request is faked with a 1.8s timer; the modal is the real CreateBmRoomModal, mounted inside the frame."
       >
         <TryIt />
@@ -141,7 +138,6 @@ export function RoomTypePage() {
 
       <Section
         title="Every state"
-        stage="development"
         description="The six states the room passes through, the whole Inbox at 1421px beside the phone. The phone opens on the room, where the tag and the band live."
       >
         {ROOM_TYPE_STEPS.map((state) => (
@@ -161,7 +157,6 @@ export function RoomTypePage() {
 
       <Section
         title="The parts"
-        stage="development"
         description="The three pieces on their own. The tag and the band are shipped components with new optional props; the confirmation is new."
       >
         <Surface>
@@ -206,7 +201,7 @@ export function RoomTypePage() {
         </Caption>
       </Section>
 
-      <Section title="Usage" stage="development">
+      <Section title="Usage">
         <CodeBlock
           code={`const [step, setStep] = useState<'idle' | 'confirm' | 'creating'>('idle');
 
@@ -248,7 +243,7 @@ export function RoomTypePage() {
         />
       </Section>
 
-      <Section title="ChatHeader — new props" stage="development">
+      <Section title="ChatHeader — new props">
         <PropsTable
           rows={[
             {
@@ -268,7 +263,7 @@ export function RoomTypePage() {
         />
       </Section>
 
-      <Section title="RoomTypeTag" stage="development">
+      <Section title="RoomTypeTag">
         <PropsTable
           rows={[
             { name: 'type', type: "'oneToOne' | 'businessManager'", default: "'oneToOne'", description: 'The room’s type. Business Manager takes the meetings green.' },
@@ -279,7 +274,7 @@ export function RoomTypePage() {
         />
       </Section>
 
-      <Section title="AddBmInfo — new and changed props" stage="development">
+      <Section title="AddBmInfo — new and changed props">
         <PropsTable
           rows={[
             { name: 'busyLabel', type: 'ReactNode', default: "'Adding'", description: 'The button’s label while adding. A one-to-one passes "Creating".' },
@@ -288,7 +283,7 @@ export function RoomTypePage() {
         />
       </Section>
 
-      <Section title="CreateBmRoomModal" stage="development">
+      <Section title="CreateBmRoomModal">
         <PropsTable
           rows={[
             { name: 'open', type: 'boolean', description: 'Whether the confirmation is on screen.' },
