@@ -482,6 +482,26 @@ export type {
   PromptVariablesRenderProps,
 } from './components/Prompt/AiPromptConfig.js';
 
+export {
+  PromptSetup,
+  DEFAULT_PROMPT_GUIDANCE,
+  DEFAULT_PROMPT_PLACEHOLDER,
+} from './components/Prompt/PromptSetup.js';
+export type {
+  PromptSetupProps,
+  PromptSetupView,
+  PromptGuidancePoint,
+} from './components/Prompt/PromptSetup.js';
+
+export { PromptTemplatePicker } from './components/Prompt/PromptTemplatePicker.js';
+export type {
+  PromptTemplate,
+  PromptTemplatePickerProps,
+} from './components/Prompt/PromptTemplatePicker.js';
+
+export { promptSaveState, promptBlanks, samePrompt } from './components/Prompt/promptSaveState.js';
+export type { PromptSaveState, PromptSaveReason } from './components/Prompt/promptSaveState.js';
+
 /**
  * The render-prop convention shared by the higher-level components.
  * See `internal/render.ts` for why only they take render props.

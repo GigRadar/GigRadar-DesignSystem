@@ -1502,6 +1502,68 @@ export const accountPrompt = {
   stackedFieldMinHeight: 96,
 } as const;
 
+/**
+ * Setting up the custom prompt — `PromptSetup` and `PromptTemplatePicker`
+ * (BF-4111).
+ *
+ * No Figma node: the design was picked from three gallery proposals, so these
+ * values are the gallery's, built from the same scale as `prompt` and
+ * `accountPrompt` beside it.
+ */
+export const promptSetup = {
+  /** Between the head row and the card or picker under it. */
+  gap: spacing.s,
+  /** Between the label, the guidance mark and the status badge. */
+  headGap: spacing.xs,
+  /** The guidance mark beside the label. */
+  infoIconSize: 16,
+  /** The field's visible height. Taller when narrow, where lines wrap sooner. */
+  fieldMinHeight: 180,
+  narrowFieldMinHeight: 220,
+  /** The read-only template preview. */
+  previewMinHeight: 170,
+  narrowPreviewMinHeight: 240,
+  /** The guidance tooltip and the first-visit popup, capped to a readable measure. */
+  tooltipMaxWidth: 360,
+  narrowTooltipMaxWidth: 300,
+  popupMaxWidth: 300,
+  narrowPopupMaxWidth: 260,
+  /** The five guidance points inside the tooltip. */
+  guidance: {
+    gap: spacing.xs,
+    listGap: spacing.xxs,
+    indent: spacing.m,
+  },
+  /** The footer that replaces the card's version row while setting up. */
+  footer: {
+    padding: spacing.m,
+    gap: spacing.xs,
+    reasonGap: spacing.xxs,
+    /** Width the reason keeps before the buttons wrap under it. */
+    reasonBasis: 220,
+    reasonIconSize: 14,
+    buttonIconSize: 16,
+  },
+  /** The picker panel that stands in for the empty field. */
+  picker: {
+    padding: spacing.m,
+    gap: spacing.s,
+    radius: radius.m,
+    /** Tiles per row. Five templates and "Write my own" fill two rows of three. */
+    columns: 3,
+    narrowColumns: 1,
+    cardGap: spacing.xs,
+    linkGap: spacing.xxs,
+    linkIconSize: 14,
+  },
+  /** One template tile. */
+  template: {
+    padding: spacing.s,
+    gap: spacing.xxs,
+    radius: radius.s,
+  },
+} as const;
+
 export const upworkAccounts = {
   /** The left column. Figma draws a fixed 640px against a flexible right. */
   listColumn: {
@@ -4165,6 +4227,7 @@ export const component = {
   toggle,
   tooltip,
   accountPrompt,
+  promptSetup,
   upworkAccounts,
   upworkApiKey,
   docs,

@@ -58,19 +58,33 @@ export type SettingsScreenProps = {
    */
   after?: Partial<Record<SectionKey, ReactNode>>;
   /**
-   * A shipped section swapped for the block under review, keyed the same way.
+   * A shipped section swapped for the block standing in for it, keyed the same way.
    *
-   * For a proposal that changes a section rather than adding one beside it —
-   * two Auto Reply cards on one screen would be reviewing which one is real.
-   * Only Auto Reply takes one so far; the others follow when a review needs it.
+   * For a design that changes a section rather than adding one beside it — two
+   * Auto Reply cards, or the old prompt field next to its own replacement, would
+   * leave a reader asking which one is real.
    */
-  instead?: { autoReply?: ReactNode };
+  instead?: Partial<Record<'prompt' | 'autoReply', ReactNode>>;
   /**
-   * Draws the screen as a phone does: the AI Configuration pane on its own at
-   * 402px, without the rail. A phone shows one pane at a time, and the pane is
-   * where every section under review lives.
+   * Draws the screen as a phone does: the AI Configuration pane on its own, no
+   * wider than 402px, without the rail. A phone shows one pane at a time, and the
+   * pane is where every section a state is about lives.
    */
   phone?: boolean;
+  /**
+   * Stops after the named section.
+   *
+   * For a state frame about one section, where the three below it are the same
+   * in every frame and only push the thing under review off the shot.
+   */
+  through?: 'prompt';
+  /**
+   * The screen's height. `auto` lets the pane grow to its content, which is
+   * what a state frame wants — a fixed box would scroll the state out of view.
+   *
+   * @default 760
+   */
+  height?: number | 'auto';
 };
 
 type SectionKey = 'prompt' | 'presets' | 'autoReply' | 'tools';
@@ -85,7 +99,13 @@ export const PHONE_WIDTH = 402;
  * pane, both scrolling inside a rounded card — so a section under review is
  * seen at the width and beside the neighbours it will really have.
  */
-export function SettingsScreen({ after, instead, phone = false }: SettingsScreenProps) {
+export function SettingsScreen({
+  after,
+  instead,
+  phone = false,
+  through,
+  height = 760,
+}: SettingsScreenProps) {
   const [selected, setSelected] = useState('prompt');
   const [versionId, setVersionId] = useState('v2');
   const [saved, setSaved] = useState<string | null>(null);
@@ -96,8 +116,9 @@ export function SettingsScreen({ after, instead, phone = false }: SettingsScreen
       style={{
         display: 'flex',
         alignItems: 'stretch',
-        width: phone ? PHONE_WIDTH : '100%',
-        height: 760,
+        width: '100%',
+        maxWidth: phone ? PHONE_WIDTH : undefined,
+        height: height === 'auto' ? undefined : height,
         backgroundColor: color.main.white,
         borderRadius: radius.l,
         border: `1px solid ${color.navbar.hover}`,
@@ -122,7 +143,7 @@ export function SettingsScreen({ after, instead, phone = false }: SettingsScreen
           flex: 1,
           minWidth: 0,
           gap: component.settingsSection.stackGap,
-          overflowY: 'auto',
+          overflowY: height === 'auto' ? 'visible' : 'auto',
         }}
       >
         <SettingsHeader
@@ -131,59 +152,67 @@ export function SettingsScreen({ after, instead, phone = false }: SettingsScreen
           paddingBottom={0}
         />
 
-        <SettingsSection
-          title="Custom Prompt"
-          description="The instructions Laziza follows on every CRM run. Save your changes to commit a new version, you can restore any earlier version below."
-        >
-          <AiPromptConfig
-            defaultValue={SAMPLE_PROMPT}
-            fieldHeight={200}
-            variables={VARIABLES}
-            versions={VERSIONS}
-            versionId={versionId}
-            onVersionChange={(version) => setVersionId(version.id)}
-            onVersionRestore={(version) => setSaved(`restored ${version.id}`)}
-            onVersionDelete={(version) => setSaved(`deleted ${version.id}`)}
-            onSave={({ label }) => setSaved(label ? `saved as “${label}”` : 'saved')}
-            onReset={() => setSaved('reset to v0')}
-            savedHint={saved ?? '4 minutes ago'}
-          />
-        </SettingsSection>
-
-        {after?.prompt}
-
-        <SettingsSection
-          title="Mention Presets"
-          description="Reusable @-mention snippets your team can drop into CRM replies. Drag to set priority, the top preset shows first in the mention picker."
-        >
-          <MentionPresetDemo />
-        </SettingsSection>
-
-        {after?.presets}
-
-        {instead?.autoReply ?? (
+        {instead?.prompt ?? (
           <SettingsSection
-            title="Auto Reply"
-            description="Reply to every message in a thread, or only the first one."
+            title="Custom Prompt"
+            description="The instructions Laziza follows on every CRM run. Save your changes to commit a new version, you can restore any earlier version below."
           >
-            <AutoReplyDemo />
+            <AiPromptConfig
+              defaultValue={SAMPLE_PROMPT}
+              fieldHeight={200}
+              variables={VARIABLES}
+              versions={VERSIONS}
+              versionId={versionId}
+              onVersionChange={(version) => setVersionId(version.id)}
+              onVersionRestore={(version) => setSaved(`restored ${version.id}`)}
+              onVersionDelete={(version) => setSaved(`deleted ${version.id}`)}
+              onSave={({ label }) => setSaved(label ? `saved as “${label}”` : 'saved')}
+              onReset={() => setSaved('reset to v0')}
+              savedHint={saved ?? '4 minutes ago'}
+            />
           </SettingsSection>
         )}
 
-        {after?.autoReply}
+        {after?.prompt}
 
-        <SettingsSection
-          title="AI Tools"
-          description="Registered capabilities available to Laziza on every CRM run. Reference them by name in your custom prompt above."
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs, width: '100%' }}>
-            {AI_TOOLS.map((tool) => (
-              <AiTool key={tool.name} {...tool} />
-            ))}
-          </div>
-        </SettingsSection>
+        {through !== 'prompt' && (
+          <>
+            <SettingsSection
+              title="Mention Presets"
+              description="Reusable @-mention snippets your team can drop into CRM replies. Drag to set priority, the top preset shows first in the mention picker."
+            >
+              <MentionPresetDemo />
+            </SettingsSection>
 
-        {after?.tools}
+            {after?.presets}
+
+            {instead?.autoReply ?? (
+              <SettingsSection
+                title="Auto Reply"
+                description="Reply to every message in a thread, or only the first one."
+              >
+                <AutoReplyDemo />
+              </SettingsSection>
+            )}
+
+            {after?.autoReply}
+
+            <SettingsSection
+              title="AI Tools"
+              description="Registered capabilities available to Laziza on every CRM run. Reference them by name in your custom prompt above."
+            >
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs, width: '100%' }}
+              >
+                {AI_TOOLS.map((tool) => (
+                  <AiTool key={tool.name} {...tool} />
+                ))}
+              </div>
+            </SettingsSection>
+
+            {after?.tools}
+          </>
+        )}
 
         {/* The screen's sections sit on 32px of bottom room. */}
         <div style={{ height: spacing.xl, flex: '0 0 auto' }} />
