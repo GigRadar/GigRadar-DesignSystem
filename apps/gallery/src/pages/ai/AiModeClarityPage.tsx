@@ -1,5 +1,7 @@
 import { color, spacing, textStyle } from '@gigradar/theme';
 import {
+  HStack,
+  LifecycleBadge,
   ReplyTemplatePicker,
   SettingsSection,
   StopRuleList,
@@ -24,12 +26,18 @@ const SCREEN_WIDTH = 1421;
  *
  * Replaces the shipped section rather than sitting beside it: the new lines
  * land inside the card that already ships, and two Auto Reply cards on one
- * screen would leave a reader asking which is real.
+ * screen would leave a reader asking which is real. Still marked in
+ * development in its title until the built result is reviewed.
  */
 function AutoReplySection({ phone = false }: { phone?: boolean }) {
   return (
     <SettingsSection
-      title="Auto Reply"
+      title={
+        <HStack gap="xs" alignItems="center">
+          Auto Reply
+          <LifecycleBadge stage="development" />
+        </HStack>
+      }
       description="How much of a reply Laziza sends by itself — for the first reply, and for the rest of the thread."
     >
       {/* SettingsSection sizes its children to their content; the full-width
@@ -57,19 +65,24 @@ function PickerExample() {
 }
 
 /**
- * CRM ▸ Settings ▸ AI Configuration ▸ Auto Reply — mode clarity. BF-4113.
+ * CRM ▸ Settings ▸ AI Configuration ▸ Auto Reply — BF-4113, built and in review.
  *
  * Proposal 1 won: the stop rules are fixed and read-only. The winner is built
  * into `packages/ui` — `AutoReply` gains a `details` slot under its mode row,
  * with `AutoReplyNote`, `ReplyRateStat`, `ReplyTemplatePicker` and
  * `StopRuleList` to fill it — and this page draws the real components.
+ *
+ * Still not in the nav: the section stays marked in development until the
+ * built result is reviewed, and a surface in review is reached from its
+ * Artifact (`developmentArtifacts.ts`). The Artifact's screenshots are
+ * captured from here.
  */
 export function AiModeClarityPage() {
   return (
     <>
       <PageHeader
         title="Auto Reply — mode clarity"
-        description="What each mode does, why the first reply is worth handing over, and what Laziza will never do by itself. BF-4113."
+        description="What each mode does, why the first reply is worth handing over, and what Laziza will never do by itself. BF-4113, proposal 1 built — in development until reviewed."
       />
 
       <CrossLink

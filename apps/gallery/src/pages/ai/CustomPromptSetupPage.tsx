@@ -1,5 +1,7 @@
 import { color, spacing, textStyle } from '@gigradar/theme';
 import {
+  HStack,
+  LifecycleBadge,
   PromptSetup,
   SettingsSection,
   VStack,
@@ -19,9 +21,11 @@ import { Caption } from '../middle/parts';
 /**
  * CRM ▸ Settings ▸ AI Configuration ▸ Custom Prompt — setup. BF-4111.
  *
- * Proposal 1 of three ("the templates are the empty card") won the review and
- * ships as `PromptSetup` and `PromptTemplatePicker` in `packages/ui`. Proposals
- * 2 and 3 live on only in the review Artifact, as the record of the decision.
+ * Proposal 1 of three ("the templates are the empty card") was picked and is
+ * built as `PromptSetup` and `PromptTemplatePicker` in `packages/ui`. It stays
+ * marked in development until the built result is reviewed, so the page is
+ * still reached through its review Artifact (`developmentArtifacts.ts`) rather
+ * than the nav, and it is what that Artifact's screenshots are captured from.
  */
 
 /** The desktop a state frame is drawn at — the settings pane is flexible. */
@@ -30,11 +34,16 @@ const DESKTOP_WIDTH = 1024;
 /** The phone every state is drawn beside. */
 const PHONE_WIDTH = 402;
 
-/** The Custom Prompt section, holding the setup card. */
+/** The Custom Prompt section, marked as in development, holding the setup card. */
 function PromptSection({ children }: { children: ReactNode }) {
   return (
     <SettingsSection
-      title="Custom Prompt"
+      title={
+        <HStack gap="xs" alignItems="center">
+          Custom Prompt
+          <LifecycleBadge stage="development" />
+        </HStack>
+      }
       description="The instructions Laziza follows on every CRM run. Until you save a prompt of your own, Laziza uses GigRadar’s default."
     >
       {children}
@@ -214,7 +223,7 @@ export function CustomPromptSetupPage() {
     <>
       <PageHeader
         title="Custom Prompt setup"
-        description="An empty field, guidance on what to write, and ready templates instead of a blank box. BF-4111."
+        description="An empty field, guidance on what to write, and ready templates instead of a blank box. BF-4111 — proposal 1 was picked and is built; in development until the built result is reviewed."
       />
 
       <CrossLink
@@ -232,6 +241,7 @@ export function CustomPromptSetupPage() {
 
       <Section
         title="The section, in the screen"
+        stage="development"
         description="PromptSetup in place of the shipped Custom Prompt card — everything around it is the shipped screen. Pick a template, preview it, use it, fill its blanks and watch Save turn on; paste the default back and watch it turn off. The phone is beside the desktop."
       >
         <Frame wide={1421 + PHONE_WIDTH + spacing.l + 2} height="auto">
@@ -287,6 +297,7 @@ export function CustomPromptSetupPage() {
 
       <Section
         title="Every state, desktop beside phone"
+        stage="development"
         description="Each drawn from a starting state, so none of them needs a pointer to reach."
       >
         {STATES.map((state) => (
@@ -475,12 +486,13 @@ promptSaveState(text, { defaultPrompt, savedValue });
       </Section>
 
       <Section
-        title="Open questions"
-        description="The five templates are placeholders for Appendix A of the usage report, and should be swapped for the real ones before release to teams."
+        title="Awaiting review"
+        stage="development"
+        description="Built and in development: the section keeps its badge until the built result is reviewed. The five templates are placeholders for Appendix A of the usage report. Proposals 2 (templates beside the field) and 3 (templates behind a button) were not picked; they stay in the review Artifact as the record."
       >
         <Caption>
-          Whether unfilled <code>[blanks]</code> should block Save, as built, or only warn; and
-          what happens to the teams already saved on the default.
+          Still open: whether unfilled <code>[blanks]</code> should block Save, as built, or only
+          warn; and what happens to the teams already saved on the default.
         </Caption>
       </Section>
     </>

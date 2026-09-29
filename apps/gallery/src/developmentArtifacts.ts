@@ -24,13 +24,34 @@ export type DevelopmentArtifact = {
 };
 
 /*
- * Empty while nothing is under review.
- *
- * BF-4280 (per-account prompt and auto-reply), the stage event's max-width
- * name, BF-4111 (custom prompt setup), BF-4113 (auto-reply mode clarity) and
- * BF-3481 (room type and Create BM room) were all decided: the winning
- * proposals moved into `packages/ui` and their surfaces became ordinary gallery
- * pages, which is where a decided design belongs. The next review adds its
- * entry here.
+ * BF-4280 (per-account prompt and auto-reply) and the stage event's max-width
+ * name were both decided: the winning proposals moved into `packages/ui` and
+ * their surfaces became ordinary gallery pages, which is where a decided
+ * design belongs. What is left here is still open.
  */
-export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [];
+export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [
+  {
+    ticket: 'BF-4111',
+    title: 'Custom prompt setup',
+    question:
+      'Proposal 1 (templates are the empty card) is built as PromptSetup and published in @gigradar/ui 2.5.0 — still in development, awaiting review.',
+    decisions: 1,
+    url: 'https://claude.ai/artifact/XueoTo44KeWYZoCiaZ8RKc',
+  },
+  {
+    ticket: 'BF-4113',
+    title: 'Auto Reply mode clarity',
+    question:
+      'Proposal 1 (fixed, read-only stop rules) is built onto AutoReply and published in @gigradar/ui 2.5.0 — still in development, awaiting review.',
+    decisions: 1,
+    url: 'https://claude.ai/artifact/5MnoFwFwmLbrH57gpguGXb',
+  },
+  {
+    ticket: 'BF-3481',
+    title: 'Room type and Create BM room',
+    question:
+      'Proposal 1 (header tag + band) is built as RoomTypeTag and CreateBmRoomModal and published in @gigradar/ui 2.5.0 — still in development, awaiting review.',
+    decisions: 1,
+    url: 'https://claude.ai/artifact/BgHUXKC7K3HXUYK5MsgfED',
+  },
+];
