@@ -23,7 +23,12 @@ export type PromptSaveState = {
 /** Whitespace is not a change: a re-indented default is still the default. */
 const squash = (text: string) => text.replace(/\s+/g, ' ').trim();
 
-/** Two prompts that differ only in whitespace. */
+/**
+ * Two prompts that differ only in whitespace.
+ *
+ * @experimental In development (BF-4111): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
+ */
 export function samePrompt(a: string, b: string): boolean {
   return squash(a) === squash(b);
 }
@@ -33,11 +38,18 @@ export function samePrompt(a: string, b: string): boolean {
  *
  * Square brackets on one line. `{{variables}}` are not blanks: they are filled
  * in by the runtime, not by the team.
+ *
+ * @experimental In development (BF-4111): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export function promptBlanks(text: string): string[] {
   return Array.from(new Set(text.match(/\[[^\]\n]+\]/g) ?? []));
 }
 
+/**
+ * @experimental In development (BF-4111): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
+ */
 export function promptSaveState(
   text: string,
   {

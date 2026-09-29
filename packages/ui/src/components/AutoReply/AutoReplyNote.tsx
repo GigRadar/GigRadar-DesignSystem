@@ -2,6 +2,7 @@ import { color, component, typography } from '@gigradar/theme';
 import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { Icon } from '../../icons/Icon.js';
 import { IconIndicatorUpFill, type IconDef } from '../../icons/defs.js';
+import { useInDevelopmentWarning } from '../Lifecycle/inDevelopment.js';
 
 const { autoReply } = component;
 
@@ -26,11 +27,15 @@ export type AutoReplyNoteProps = {
  * most needs explaining.
  *
  * Pass it in `AutoReply`'s `details` slot.
+ *
+ * @experimental In development (BF-4113): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const AutoReplyNote = forwardRef<HTMLDivElement, AutoReplyNoteProps>(function AutoReplyNote(
   { children, icon, iconColor, textColor, ...rest },
   ref,
 ) {
+  useInDevelopmentWarning('AutoReplyNote', 'BF-4113');
   return (
     <div
       {...rest}
@@ -81,11 +86,15 @@ export type ReplyRateStatProps = {
  * with an up marker; the human figure stays plain. It is the one number that
  * says why the first reply is worth handing over, so it sits under the modes
  * it argues for rather than in a help page.
+ *
+ * @experimental In development (BF-4113): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const ReplyRateStat = forwardRef<HTMLDivElement, ReplyRateStatProps>(function ReplyRateStat(
   { aiRate, humanRate, agentName = 'Laziza', ...rest },
   ref,
 ) {
+  useInDevelopmentWarning('ReplyRateStat', 'BF-4113');
   return (
     <AutoReplyNote
       {...rest}

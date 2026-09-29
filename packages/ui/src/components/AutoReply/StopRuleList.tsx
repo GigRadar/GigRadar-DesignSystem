@@ -2,6 +2,7 @@ import { borderWidth, color, component, typography } from '@gigradar/theme';
 import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { Icon } from '../../icons/Icon.js';
 import { IconLockFill, IconNosign } from '../../icons/defs.js';
+import { useInDevelopmentWarning } from '../Lifecycle/inDevelopment.js';
 
 const { stopRule } = component.autoReply;
 
@@ -21,6 +22,9 @@ export type StopRule = {
  * Exported because they are a platform constant rather than a team setting —
  * BF-4113 decided the rules cannot be switched off or edited, so the copy
  * lives with the component instead of being retyped at each call site.
+ *
+ * @experimental In development (BF-4113): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const defaultStopRules: StopRule[] = [
   {
@@ -68,6 +72,9 @@ export type StopRuleListProps = {
  * switch off would not be one.
  *
  * Pass it in `AutoReply`'s `details` slot on the all-other-replies tab.
+ *
+ * @experimental In development (BF-4113): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const StopRuleList = forwardRef<HTMLDivElement, StopRuleListProps>(function StopRuleList(
   {
@@ -81,6 +88,7 @@ export const StopRuleList = forwardRef<HTMLDivElement, StopRuleListProps>(functi
   },
   ref,
 ) {
+  useInDevelopmentWarning('StopRuleList', 'BF-4113');
   const edge = color.navbar.hover;
 
   return (

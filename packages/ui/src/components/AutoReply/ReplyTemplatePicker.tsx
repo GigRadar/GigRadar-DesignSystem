@@ -3,6 +3,7 @@ import { forwardRef, useEffect, useId, useRef, useState, type ReactNode } from '
 import { Icon } from '../../icons/Icon.js';
 import { IconDropdownArrowDown, IconDropdownArrowUp } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
+import { useInDevelopmentWarning } from '../Lifecycle/inDevelopment.js';
 
 const { templatePicker } = component.autoReply;
 
@@ -38,12 +39,16 @@ export type ReplyTemplatePickerProps = {
  * Deliberately minimal. BF-4111 is building the custom prompt's template
  * picker, and this one is swapped for that component once it ships — so
  * nothing here tries to be more than a menu.
+ *
+ * @experimental In development (BF-4113): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const ReplyTemplatePicker = forwardRef<HTMLDivElement, ReplyTemplatePickerProps>(
   function ReplyTemplatePicker(
     { templates, value, onChange, label = 'Reply template', disabled = false },
     ref,
   ) {
+    useInDevelopmentWarning('ReplyTemplatePicker', 'BF-4113');
     const [open, setOpen] = useState(false);
     const anchor = useRef<HTMLDivElement>(null);
     const listId = useId();

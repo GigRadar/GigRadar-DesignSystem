@@ -5,6 +5,7 @@ import { IconLeftArrow } from '../../icons/defs.js';
 import { Button } from '../Button/Button.js';
 import { CustomPromptField } from './CustomPromptField.js';
 import { promptBlanks } from './promptSaveState.js';
+import { useInDevelopmentWarning } from '../Lifecycle/inDevelopment.js';
 
 const { promptSetup } = component;
 const { textStyle } = typography;
@@ -72,6 +73,9 @@ export type PromptTemplatePickerProps = {
  *
  * On its own rather than inside `PromptSetup`, so another surface can offer
  * templates the same way (BF-4113 reuses it for presets).
+ *
+ * @experimental In development (BF-4111): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const PromptTemplatePicker = forwardRef<HTMLDivElement, PromptTemplatePickerProps>(
   function PromptTemplatePicker(
@@ -92,6 +96,7 @@ export const PromptTemplatePicker = forwardRef<HTMLDivElement, PromptTemplatePic
     },
     ref,
   ) {
+    useInDevelopmentWarning('PromptTemplatePicker', 'BF-4111');
     const [ownSelected, setOwnSelected] = useState<string | null>(defaultSelectedId);
     const [highlighted, setHighlighted] = useState<string | null>(defaultHighlightedId);
     const current = selectedId !== undefined ? selectedId : ownSelected;

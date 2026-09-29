@@ -52,6 +52,8 @@ export type ChatHeaderProps = {
    * What kind of room this is — drawn as a `RoomTypeTag` at the head of the
    * meta row. Omitted, no tag is drawn. It says the same thing "Team" did, more
    * precisely, so a screen that passes it usually drops `topic`.
+   *
+   * @experimental In development (BF-3481): may change in a minor release before the design is signed off.
    */
   roomType?: RoomType;
   /**
@@ -59,6 +61,8 @@ export type ChatHeaderProps = {
    * its place. Pair it with no `addBusinessManager`: nothing is offered until
    * the room is known.
    * @default false
+   *
+   * @experimental In development (BF-3481): may change in a minor release before the design is signed off.
    */
   roomTypeLoading?: boolean;
   /** The client's photo, and the name its initials fall back to. */

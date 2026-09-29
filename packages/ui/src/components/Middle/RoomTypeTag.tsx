@@ -4,6 +4,7 @@ import { IconConnectedPeopleStroke, IconRoom2peopleClientStroke } from '../../ic
 import { Skeleton } from '../Skeleton/Skeleton.js';
 import { Tooltip } from '../Tooltip/Tooltip.js';
 import { HeaderMetaTag } from './HeaderMetaTag.js';
+import { useInDevelopmentWarning } from '../Lifecycle/inDevelopment.js';
 
 const { roomType: tokens } = component.middle;
 
@@ -17,7 +18,12 @@ const { roomType: tokens } = component.middle;
  */
 export type RoomType = 'oneToOne' | 'businessManager';
 
-/** The label each type reads as, unless the caller passes its own. */
+/**
+ * The label each type reads as, unless the caller passes its own.
+ *
+ * @experimental In development (BF-3481): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
+ */
 export const roomTypeLabels: Record<RoomType, string> = {
   oneToOne: 'One-to-one',
   businessManager: 'Business Manager',
@@ -54,11 +60,15 @@ export type RoomTypeTagProps = {
  * Unlike the preset and assignee tags it keeps its label on mobile. The label
  * is the whole point, it is short, and a bare glyph of two people versus three
  * is not something anyone reads at a glance.
+ *
+ * @experimental In development (BF-3481): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const RoomTypeTag = forwardRef<HTMLElement, RoomTypeTagProps>(function RoomTypeTag(
   { type = 'oneToOne', loading = false, children, tooltip = 'Room type', ...rest },
   ref,
 ) {
+  useInDevelopmentWarning('RoomTypeTag', 'BF-3481');
   if (loading) {
     return (
       <Skeleton

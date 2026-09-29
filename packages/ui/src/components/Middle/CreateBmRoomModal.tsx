@@ -3,6 +3,7 @@ import { forwardRef, useId, type HTMLAttributes, type ReactNode } from 'react';
 import { Button } from '../Button/Button.js';
 import { Modal } from '../Modal/Modal.js';
 import { ModalContent, ModalFooter, ModalHeader } from '../Modal/ModalBands.js';
+import { useInDevelopmentWarning } from '../Lifecycle/inDevelopment.js';
 
 const { createBmRoom } = component.middle;
 
@@ -46,6 +47,9 @@ export type CreateBmRoomConfirmProps = {
  * BF-3481. Exported apart from `CreateBmRoomModal` so the same content can sit
  * in a `ModalCard` where there is no backdrop — a gallery frame, a docked panel
  * — the way `ModalHeader` and its siblings compose without `Modal`.
+ *
+ * @experimental In development (BF-3481): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const CreateBmRoomConfirm = forwardRef<HTMLDivElement, CreateBmRoomConfirmProps>(
   function CreateBmRoomConfirm(
@@ -65,6 +69,7 @@ export const CreateBmRoomConfirm = forwardRef<HTMLDivElement, CreateBmRoomConfir
     },
     ref,
   ) {
+    useInDevelopmentWarning('CreateBmRoomConfirm', 'BF-3481');
     return (
       <div
         ref={ref}
@@ -118,6 +123,9 @@ export type CreateBmRoomModalProps = {
  * `creating` is a prop, not internal state: whether the room exists is known
  * by whatever owns the request, and a spinner that cleared itself would clear
  * before the room did. Close the modal and select the new room once it lands.
+ *
+ * @experimental In development (BF-3481): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export function CreateBmRoomModal({
   open,
@@ -126,6 +134,7 @@ export function CreateBmRoomModal({
   creating = false,
   ...rest
 }: CreateBmRoomModalProps) {
+  useInDevelopmentWarning('CreateBmRoomModal', 'BF-3481');
   const titleId = useId();
   return (
     <Modal

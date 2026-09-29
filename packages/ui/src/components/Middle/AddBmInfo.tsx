@@ -41,6 +41,8 @@ export type AddBmInfoProps = {
    * The button's label while `adding`. A one-to-one room is not adding anyone —
    * it is creating a new room — so it passes "Creating".
    * @default 'Adding'
+   *
+   * @experimental In development (BF-3481): may change in a minor release before the design is signed off.
    */
   busyLabel?: ReactNode;
   /**

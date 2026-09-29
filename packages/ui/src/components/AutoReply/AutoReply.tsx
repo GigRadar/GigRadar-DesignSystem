@@ -108,6 +108,8 @@ export type AutoReplyProps = {
    * How the mode options sit — side by side, or stacked for a phone.
    *
    * @default 'row'
+   *
+   * @experimental In development (BF-4113): may change in a minor release before the design is signed off.
    */
   optionsDirection?: AutoReplyOptionsDirection;
 
@@ -119,6 +121,8 @@ export type AutoReplyProps = {
    * and on the other tab the template picker and `StopRuleList`. It sits
    * under the row rather than inside each option because an option's
    * description is one truncated line on a desktop and is dropped on a phone.
+   *
+   * @experimental In development (BF-4113): may change in a minor release before the design is signed off.
    */
   details?: ReactNode;
 
@@ -150,6 +154,8 @@ export type AutoReplyProps = {
    * Marks the card as changed from outside — edits made inside `details`
    * (a template picked, a prompt typed) that the card cannot see itself.
    * Save and Cancel enable while either this or the card's own edits say so.
+   *
+   * @experimental In development (BF-4113): may change in a minor release before the design is signed off.
    */
   dirty?: boolean;
   /** Puts Save in its loading state and blocks editing. */
@@ -171,6 +177,8 @@ export type AutoReplyProps = {
    * all-other-replies tab carries its prompt inside `details`, under a
    * template picker, and a second prompt below would be two places to write
    * the same instructions.
+   *
+   * @experimental In development (BF-4113): may change in a minor release before the design is signed off.
    */
   renderPrompt?: RenderProp<AutoReplyPromptRenderProps>;
 } & AutoReplyStyleProps;

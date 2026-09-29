@@ -15,6 +15,7 @@ import { AiPromptConfig, type PromptVariableDef } from './AiPromptConfig.js';
 import { CustomPromptField } from './CustomPromptField.js';
 import { PromptTemplatePicker, type PromptTemplate } from './PromptTemplatePicker.js';
 import { promptSaveState, samePrompt, type PromptSaveState } from './promptSaveState.js';
+import { useInDevelopmentWarning } from '../Lifecycle/inDevelopment.js';
 
 const { promptSetup } = component;
 const { textStyle } = typography;
@@ -27,7 +28,12 @@ export type PromptGuidancePoint = {
   example?: ReactNode;
 };
 
-/** The five points BF-4111 asks every prompt to cover. */
+/**
+ * The five points BF-4111 asks every prompt to cover.
+ *
+ * @experimental In development (BF-4111): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
+ */
 export const DEFAULT_PROMPT_GUIDANCE: PromptGuidancePoint[] = [
   { label: 'Your rate', example: '“$45/h”, or “fixed price from $1,500”' },
   { label: 'When you can start', example: '“next Monday”, “within 48 hours”' },
@@ -43,6 +49,9 @@ export const DEFAULT_PROMPT_GUIDANCE: PromptGuidancePoint[] = [
  * The empty field's placeholder: an example brief rather than an instruction.
  * One that reads like a real prompt shows the length and the register at a
  * glance, and goes the moment the team starts typing.
+ *
+ * @experimental In development (BF-4111): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const DEFAULT_PROMPT_PLACEHOLDER = `Brief Laziza the way you would brief a new teammate. For example:
 
@@ -174,6 +183,9 @@ function defaultReason(state: PromptSaveState): ReactNode {
  * The card itself is `AiPromptConfig`: its field gets the placeholder and its
  * footer gets the save rule. The version pill is left out — a team setting up
  * its first prompt has nothing to version.
+ *
+ * @experimental In development (BF-4111): published so apps can build against it,
+ * but the design is not signed off yet, so props and look may change in a minor release.
  */
 export const PromptSetup = forwardRef<HTMLDivElement, PromptSetupProps>(function PromptSetup(
   {
@@ -211,6 +223,7 @@ export const PromptSetup = forwardRef<HTMLDivElement, PromptSetupProps>(function
   },
   ref,
 ) {
+  useInDevelopmentWarning('PromptSetup', 'BF-4111');
   const [ownText, setOwnText] = useState(defaultValue);
   const text = value !== undefined ? value : ownText;
   const [ownSaved, setOwnSaved] = useState<string | null>(defaultSavedValue);
