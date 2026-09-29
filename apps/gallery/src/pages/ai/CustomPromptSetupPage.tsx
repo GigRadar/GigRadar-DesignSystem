@@ -1,30 +1,31 @@
-import { color, radius, spacing, textStyle } from '@gigradar/theme';
-import { HStack, LifecycleBadge, SettingsSection, VStack } from '@gigradar/ui';
+import { color, spacing, textStyle } from '@gigradar/theme';
+import {
+  HStack,
+  LifecycleBadge,
+  PromptSetup,
+  SettingsSection,
+  VStack,
+  type PromptSetupProps,
+} from '@gigradar/ui';
 import type { ReactNode } from 'react';
-import { DevelopmentPlaceholder, Proposal } from '../../components/DevelopmentPlaceholder';
+import { CodeBlock } from '../../components/CodeBlock';
 import { Frame } from '../../components/Frame';
+import { PropsTable } from '../../components/PropsTable';
 import { SettingsScreen } from '../../demos/settingsScreen';
+import { AGENCY_FILLED, DEFAULT_PROMPT, PROMPT_TEMPLATES } from '../../fixtures/promptSetup';
+import { VARIABLES } from '../../fixtures/prompt';
 import { PageHeader, Section } from '../../layout';
 import { CrossLink } from '../../navigation';
-import {
-  DEFAULT_PROMPT,
-  PROPOSALS,
-  SharedPromptSetup,
-  TEMPLATES,
-  type SetupInitial,
-  type SetupRenderOptions,
-} from '../../proposals/CustomPromptSetupProposals';
 import { Caption } from '../middle/parts';
 
 /**
- * CRM ▸ Settings ▸ AI Configuration ▸ Custom Prompt — setup. BF-4111, under
- * review.
+ * CRM ▸ Settings ▸ AI Configuration ▸ Custom Prompt — setup. BF-4111.
  *
- * Not in the nav: a surface under development is reached through its review
- * Artifact (`developmentArtifacts.ts`), and this page is what that Artifact's
- * screenshots are captured from. The screen around the proposals is the real
- * one — `SettingsScreen`, assembled from the shipped rail, header and sections
- * — with the Custom Prompt section replaced by the block under review.
+ * Proposal 1 of three ("the templates are the empty card") was picked and is
+ * built as `PromptSetup` and `PromptTemplatePicker` in `packages/ui`. It stays
+ * marked in development until the built result is reviewed, so the page is
+ * still reached through its review Artifact (`developmentArtifacts.ts`) rather
+ * than the nav, and it is what that Artifact's screenshots are captured from.
  */
 
 /** The desktop a state frame is drawn at — the settings pane is flexible. */
@@ -33,7 +34,7 @@ const DESKTOP_WIDTH = 1024;
 /** The phone every state is drawn beside. */
 const PHONE_WIDTH = 402;
 
-/** The Custom Prompt section, marked as under review, holding whatever it is given. */
+/** The Custom Prompt section, marked as in development, holding the setup card. */
 function PromptSection({ children }: { children: ReactNode }) {
   return (
     <SettingsSection
@@ -50,29 +51,15 @@ function PromptSection({ children }: { children: ReactNode }) {
   );
 }
 
-/** The three proposals, in the placeholder the screen draws collapsed. */
-function Proposals({ phone }: { phone?: boolean }) {
+/** The card as the screen wires it, from a starting state. */
+function Setup(props: Partial<PromptSetupProps>) {
   return (
-    <PromptSection>
-      <DevelopmentPlaceholder
-        title="Custom prompt setup"
-        problem="Two teams switched on a “custom” prompt that was still GigRadar’s default, and a team that clears the field gets a blank box. Start empty, guide what to write, offer templates — and keep Save off until the prompt is theirs."
-        proposalCount={PROPOSALS.length}
-      >
-        <VStack gap="l">
-          {PROPOSALS.map((proposal) => (
-            <Proposal
-              key={proposal.number}
-              number={proposal.number}
-              approach={proposal.approach}
-              rationale={proposal.rationale}
-            >
-              {proposal.render({ phone })}
-            </Proposal>
-          ))}
-        </VStack>
-      </DevelopmentPlaceholder>
-    </PromptSection>
+    <PromptSetup
+      defaultPrompt={DEFAULT_PROMPT}
+      templates={PROMPT_TEMPLATES}
+      variables={VARIABLES}
+      {...props}
+    />
   );
 }
 
@@ -84,64 +71,52 @@ function StatePair({
   name,
   slug,
   trigger,
-  settled,
-  draw,
+  initial,
 }: {
   name: string;
   /** The capture hook — `-mobile` is added for the phone frame. */
   slug: string;
   trigger: ReactNode;
-  /** Settled states are the same in all three proposals. */
-  settled?: boolean;
-  draw: (options: SetupRenderOptions) => ReactNode;
+  initial: Partial<PromptSetupProps>;
 }) {
   return (
     <VStack gap="s" mb="xl">
-      <HStack gap="s" alignItems="center" flexWrap="wrap">
-        <span style={{ ...textStyle.lSemibold, color: color.navbar.text2 }}>{name}</span>
-        {settled ? (
-          <span
-            style={{
-              ...textStyle.sMedium,
-              color: color.main.description,
-              border: `1px solid ${color.navbar.border}`,
-              borderRadius: radius.xs,
-              padding: `0 ${spacing.xxs}px`,
-            }}
-          >
-            Settled · same in all three
-          </span>
-        ) : (
-          <LifecycleBadge stage="development" />
-        )}
-      </HStack>
+      <span style={{ ...textStyle.lSemibold, color: color.navbar.text2 }}>{name}</span>
       <p style={{ ...textStyle.mRegular, color: color.main.description, margin: 0, maxWidth: 720 }}>
         {trigger}
       </p>
       <Frame wide={DESKTOP_WIDTH + PHONE_WIDTH + spacing.l + 2} height="auto">
-        <div style={{ display: 'flex', gap: spacing.l, alignItems: 'flex-start', padding: 0 }}>
+        <div style={{ display: 'flex', gap: spacing.l, alignItems: 'flex-start' }}>
           <VStack gap="xs" width={DESKTOP_WIDTH} flex="0 0 auto">
-            <span style={{ ...textStyle.sMedium, color: color.main.description }}>
-              Desktop · {DESKTOP_WIDTH}px
-            </span>
+            <FrameLabel>Desktop · {DESKTOP_WIDTH}px</FrameLabel>
             <div data-state-screen={slug}>
               <SettingsScreen
                 height="auto"
                 through="prompt"
-                replace={{ prompt: <PromptSection>{draw({})}</PromptSection> }}
+                replace={{
+                  prompt: (
+                    <PromptSection>
+                      <Setup {...initial} />
+                    </PromptSection>
+                  ),
+                }}
               />
             </div>
           </VStack>
           <VStack gap="xs" width={PHONE_WIDTH} flex="0 0 auto">
-            <span style={{ ...textStyle.sMedium, color: color.main.description }}>
-              Phone · {PHONE_WIDTH}px, the Prompt pane
-            </span>
+            <FrameLabel>Phone · {PHONE_WIDTH}px, the Prompt pane</FrameLabel>
             <div data-state-screen={`${slug}-mobile`}>
               <SettingsScreen
                 phone
                 height="auto"
                 through="prompt"
-                replace={{ prompt: <PromptSection>{draw({ phone: true })}</PromptSection> }}
+                replace={{
+                  prompt: (
+                    <PromptSection>
+                      <Setup {...initial} narrow />
+                    </PromptSection>
+                  ),
+                }}
               />
             </div>
           </VStack>
@@ -151,52 +126,95 @@ function StatePair({
   );
 }
 
-/** Draws the shared, picker-less card from a starting state. */
-const shared = (initial: SetupInitial) => (options: SetupRenderOptions) =>
-  <SharedPromptSetup {...options} initial={initial} />;
+function FrameLabel({ children }: { children: ReactNode }) {
+  return <span style={{ ...textStyle.sMedium, color: color.main.description }}>{children}</span>;
+}
 
-/** Draws one proposal from a starting state. */
-const proposal = (index: number, initial: SetupInitial) => (options: SetupRenderOptions) =>
-  PROPOSALS[index]?.render({ ...options, initial });
-
-const AGENCY = TEMPLATES[1]!;
-
-/** The agency template with its blanks filled — a prompt that can be saved. */
-const AGENCY_FILLED = AGENCY.body
-  .replace('[team size]', '4')
-  .replace("[lead's name]", 'Marta')
-  .replace('[rate]', '$45/h')
-  .replace('[start date]', 'next Monday')
-  .replace('[calendar link]', 'calendly.com/northwind/intro');
-
-/** The template states every proposal is drawn in. */
-const TEMPLATE_STATES: { key: string; name: string; trigger: string; initial: SetupInitial }[] = [
+/** Every state the card can be in, drawn at both widths. */
+const STATES: {
+  slug: string;
+  name: string;
+  trigger: string;
+  initial: Partial<PromptSetupProps>;
+}[] = [
   {
-    key: 'default',
-    name: 'Default',
-    trigger: 'First visit, popup already dismissed: nothing written, nothing picked.',
-    initial: { popup: false },
+    slug: 'first-visit',
+    name: 'First visit — templates, popup open',
+    trigger:
+      'Nothing written, so the card is five templates and “Write my own”. The popup points at the default badge and closes for good on Got it, a click elsewhere, the first keystroke, or a template used.',
+    initial: { defaultFirstVisit: true },
   },
   {
-    key: 'hover',
-    name: 'Hover',
+    slug: 'template-hover',
+    name: 'Template — hover',
     trigger:
-      'The pointer is over “Agency”. On a phone there is no hover, so the phone frame shows the same rest state.',
-    initial: { popup: false, hoverId: 'agency', menuOpen: true },
+      'The pointer is over “Agency”, which says it previews. A phone has no hover, so its frame shows the tiles at rest.',
+    initial: { defaultHighlightedTemplateId: 'agency' },
   },
   {
-    key: 'selected',
-    name: 'Selected — preview',
+    slug: 'template-selected',
+    name: 'Template — selected, preview',
     trigger:
-      '“Agency” is picked and previewed read-only, with its blanks listed. Nothing has touched the field yet.',
-    initial: { popup: false, selectedId: 'agency', menuOpen: true },
+      '“Agency” opens read-only in the field’s place, with its blanks listed. Nothing has touched the field yet.',
+    initial: { defaultSelectedTemplateId: 'agency' },
   },
   {
-    key: 'applied',
-    name: 'Applied',
+    slug: 'template-applied',
+    name: 'Template — applied',
     trigger:
-      'The template is in the field and editable. Its blanks are still there, so Save stays off and the footer names them.',
-    initial: { popup: false, text: AGENCY.body, appliedId: 'agency', writing: true },
+      'The template is in the field and editable, and “Change template” goes back. Its blanks are still there, so Save stays off and the footer names them.',
+    initial: {
+      defaultValue: PROMPT_TEMPLATES[1]!.body,
+      defaultAppliedTemplateId: 'agency',
+    },
+  },
+  {
+    slug: 'empty',
+    name: 'Write my own — empty field',
+    trigger:
+      'The empty field with its example placeholder. Save is off, and the footer says Laziza keeps the default until a prompt is saved.',
+    initial: { defaultView: 'field' },
+  },
+  {
+    slug: 'tooltip',
+    name: 'Guidance tooltip',
+    trigger:
+      'The info mark beside “Your prompt”: rate, start date, agency or solo, calendar link, and what Laziza must never say. Hover on a desktop, tap on a phone.',
+    initial: { defaultView: 'field', defaultGuidanceOpen: true },
+  },
+  {
+    slug: 'typing',
+    name: 'Typing — Save on',
+    trigger:
+      'The placeholder goes at the first keystroke. The text is the team’s own, so Save is on.',
+    initial: {
+      defaultValue:
+        'We are a 3-person Webflow studio. Our rate is $45/h and we can start next Monday.',
+    },
+  },
+  {
+    slug: 'unchanged-default',
+    name: 'Unchanged from the default — Save off',
+    trigger:
+      'The default pasted back in, whitespace aside. Save is off and the footer says why: this is the audit’s two teams, caught.',
+    initial: { defaultValue: DEFAULT_PROMPT },
+  },
+  {
+    slug: 'changed',
+    name: 'Changed — Save on',
+    trigger:
+      'A template with every blank filled in. Save is on, and the badge says the prompt is not saved yet.',
+    initial: { defaultValue: AGENCY_FILLED, defaultAppliedTemplateId: 'agency' },
+  },
+  {
+    slug: 'saved',
+    name: 'Saved',
+    trigger: 'After Save: the badge turns to “Custom prompt”, and Save waits for the next edit.',
+    initial: {
+      defaultValue: AGENCY_FILLED,
+      defaultSavedValue: AGENCY_FILLED,
+      defaultAppliedTemplateId: 'agency',
+    },
   },
 ];
 
@@ -205,7 +223,7 @@ export function CustomPromptSetupPage() {
     <>
       <PageHeader
         title="Custom Prompt setup"
-        description="An empty field, guidance on what to write, and ready templates instead of a blank box. BF-4111 — one decision, three proposals."
+        description="An empty field, guidance on what to write, and ready templates instead of a blank box. BF-4111 — proposal 1 was picked and is built; in development until the built result is reviewed."
       />
 
       <CrossLink
@@ -216,113 +234,265 @@ export function CustomPromptSetupPage() {
         ]}
       >
         From the CRM usage audit: two teams turned on a “custom” prompt that was still the default
-        text, and believe their agent is configured. The field pre-fills with the default, so Save
-        is one click from a prompt nobody wrote — and a team that clears it gets a blank box with no
-        idea what belongs in it.
+        text, and believe their agent is configured. The field pre-filled with the default, so Save
+        was one click from a prompt nobody wrote, and a team that cleared it got a blank box with no
+        idea what belonged in it.
       </CrossLink>
 
       <Section
-        title="The screen, with the decision in place"
-        description="Everything except the Custom Prompt block is the shipped screen — SettingsPanel, SettingsHeader, and a SettingsSection per block. The block under review replaces the shipped Custom Prompt card rather than sitting beside it. The phone is beside the desktop."
+        title="The section, in the screen"
+        stage="development"
+        description="PromptSetup in place of the shipped Custom Prompt card — everything around it is the shipped screen. Pick a template, preview it, use it, fill its blanks and watch Save turn on; paste the default back and watch it turn off. The phone is beside the desktop."
       >
         <Frame wide={1421 + PHONE_WIDTH + spacing.l + 2} height="auto">
           <div style={{ display: 'flex', gap: spacing.l, alignItems: 'flex-start' }}>
             <VStack gap="xs" width={1421} flex="0 0 auto">
-              <span style={{ ...textStyle.sMedium, color: color.main.description }}>
-                Desktop · 1421px
-              </span>
+              <FrameLabel>Desktop · 1421px</FrameLabel>
               <div data-screen-shot="desktop">
-                <SettingsScreen replace={{ prompt: <Proposals /> }} />
+                <SettingsScreen
+                  replace={{
+                    prompt: (
+                      <PromptSection>
+                        <Setup defaultFirstVisit />
+                      </PromptSection>
+                    ),
+                  }}
+                />
               </div>
             </VStack>
             <VStack gap="xs" width={PHONE_WIDTH} flex="0 0 auto">
-              <span style={{ ...textStyle.sMedium, color: color.main.description }}>
-                Phone · 402px
-              </span>
+              <FrameLabel>Phone · 402px</FrameLabel>
               <div data-screen-shot="phone">
-                <SettingsScreen phone replace={{ prompt: <Proposals phone /> }} />
+                <SettingsScreen
+                  phone
+                  replace={{
+                    prompt: (
+                      <PromptSection>
+                        <Setup defaultFirstVisit narrow />
+                      </PromptSection>
+                    ),
+                  }}
+                />
               </div>
             </VStack>
           </div>
         </Frame>
+        <CodeBlock
+          code={`<SettingsSection title="Custom Prompt" description="…">
+  <PromptSetup
+    defaultPrompt={gigradarDefault}
+    templates={templates}
+    variables={variables}
+    value={draft}
+    onChange={setDraft}
+    savedValue={team.customPrompt}      // null while running on the default
+    onSave={({ value }) => save(value)}
+    firstVisit={!user.seenPromptSetup}
+    onFirstVisitDismiss={() => markSeen('promptSetup')}
+    narrow={isPhone}
+  />
+</SettingsSection>`}
+        />
+      </Section>
+
+      <Section
+        title="Every state, desktop beside phone"
+        stage="development"
+        description="Each drawn from a starting state, so none of them needs a pointer to reach."
+      >
+        {STATES.map((state) => (
+          <StatePair key={state.slug} {...state} />
+        ))}
+      </Section>
+
+      <Section
+        title="The save rule"
+        description="promptSaveState is exported on its own, so the API can refuse what the card refuses — a Save button the server would accept anyway is only a hint."
+      >
+        <CodeBlock
+          code={`import { promptSaveState } from '@gigradar/ui';
+
+promptSaveState(text, { defaultPrompt, savedValue });
+// → { canSave: false, reason: 'empty' | 'default' | 'blanks' | 'saved', blanks }
+// → { canSave: true,  reason: 'ready', blanks: [] }`}
+        />
         <Caption>
-          The card is collapsed until opened, so the screen first reads as it will once one proposal
-          has won and the other two are deleted.
+          Whitespace is not a change, so a re-indented default is still the default. Square-bracket
+          blanks on one line count; <code>{'{{variables}}'}</code> do not, since the runtime fills
+          those in.
         </Caption>
       </Section>
 
-      <Section
-        title="Settled — the same in all three"
-        description="The field starts empty, Save is off until the prompt is the team’s own, the guidance tip lists the five points, and the first-visit popup goes for good once closed. Drawn without any picker, so none of it reads as belonging to one proposal."
-      >
-        <StatePair
-          settled
-          name="First visit — empty, popup open"
-          slug="first-visit"
-          trigger="The field is empty with its example placeholder. The popup points at the default badge; it closes for good on Got it, a click elsewhere, the first keystroke, or a template applied."
-          draw={shared({ popup: true })}
-        />
-        <StatePair
-          settled
-          name="Guidance tooltip"
-          slug="tooltip"
-          trigger="The info mark beside “Your prompt”: rate, start date, agency or solo, calendar link, and what Laziza must never say. Hover on a desktop, tap on a phone."
-          draw={shared({ popup: false, tipOpen: true })}
-        />
-        <StatePair
-          settled
-          name="Typing"
-          slug="typing"
-          trigger="The placeholder is gone at the first keystroke. The text is the team’s own, so Save is on."
-          draw={shared({
-            popup: false,
-            text: 'We are a 3-person Webflow studio. Our rate is $45/h and we can start next Monday.',
-          })}
-        />
-        <StatePair
-          settled
-          name="Unchanged from the default — Save off"
-          slug="unchanged-default"
-          trigger="The default text pasted back in (whitespace aside). Save is off and the footer says why — this is the audit’s two teams, caught."
-          draw={shared({ popup: false, text: DEFAULT_PROMPT })}
-        />
-        <StatePair
-          settled
-          name="Changed — Save on"
-          slug="changed"
-          trigger="A template with every blank filled in. Save is on, and the badge says the prompt is not saved yet."
-          draw={shared({ popup: false, text: AGENCY_FILLED, appliedId: 'agency' })}
+      <Section title="PromptSetup props">
+        <PropsTable
+          rows={[
+            {
+              name: 'defaultPrompt',
+              type: 'string',
+              description:
+                'What the agent runs on until a prompt is saved. Never shown in the field — it is what Save refuses to save as custom.',
+            },
+            {
+              name: 'templates',
+              type: 'PromptTemplate[]',
+              description:
+                '`{ id, name, description, body }`. `[blanks]` in the body mark what only the team can fill in.',
+            },
+            {
+              name: 'value / defaultValue / onChange',
+              type: 'string',
+              default: `''`,
+              description: 'The prompt text. Starts empty — the default is not pre-filled.',
+            },
+            {
+              name: 'savedValue / defaultSavedValue',
+              type: 'string | null',
+              default: 'null',
+              description:
+                'The saved custom prompt, or null while running on the default. Drives the badge and the “already saved” rule.',
+            },
+            {
+              name: 'onSave / onCancel / saving',
+              type: '({ value }) => void / () => void / boolean',
+              description:
+                'Save is reachable only when promptSaveState allows it. Cancel reverts to what is saved.',
+            },
+            {
+              name: 'firstVisit / defaultFirstVisit / onFirstVisitDismiss',
+              type: 'boolean / boolean / () => void',
+              default: 'false',
+              description:
+                'The one-time “Change this” popup. The product owns the seen flag; every way of closing it calls back once.',
+            },
+            {
+              name: 'firstVisitTitle / firstVisitDescription',
+              type: 'ReactNode',
+              description: 'The popup’s wording.',
+            },
+            {
+              name: 'onTemplateApply',
+              type: '(template) => void',
+              description: 'After a template has filled the field.',
+            },
+            {
+              name: 'defaultView',
+              type: `'templates' | 'field'`,
+              description:
+                'Which face the card starts on. Templates while empty, the field once there is text.',
+            },
+            {
+              name: 'defaultSelectedTemplateId / defaultHighlightedTemplateId / defaultAppliedTemplateId',
+              type: 'string | null',
+              description:
+                'Start in preview, draw a tile hovered, or mark which template the text came from — for stills and restored state.',
+            },
+            {
+              name: 'placeholder',
+              type: 'string',
+              default: 'DEFAULT_PROMPT_PLACEHOLDER',
+              description: 'The empty field’s example brief.',
+            },
+            {
+              name: 'guidance / guidanceTitle / guidanceIntro',
+              type: 'PromptGuidancePoint[] / ReactNode',
+              default: 'DEFAULT_PROMPT_GUIDANCE',
+              description:
+                'The tooltip beside the label: rate, start date, agency or solo, calendar link, what it must never say.',
+            },
+            {
+              name: 'defaultGuidanceOpen',
+              type: 'boolean',
+              default: 'false',
+              description: 'Opens the tooltip on mount.',
+            },
+            {
+              name: 'label',
+              type: 'ReactNode',
+              default: `'Your prompt'`,
+              description: 'The label over the card.',
+            },
+            {
+              name: 'statusLabels',
+              type: '{ default, unsaved, saved }',
+              description: 'The badge text for each state of the prompt.',
+            },
+            {
+              name: 'reasonCopy',
+              type: '(state: PromptSaveState) => ReactNode',
+              description: 'The footer line for each reason Save is off, or on.',
+            },
+            {
+              name: 'variables / variablesHint',
+              type: 'PromptVariableDef[] / ReactNode',
+              description: 'Passed to the AiPromptConfig card’s insert strip.',
+            },
+            {
+              name: 'narrow',
+              type: 'boolean',
+              default: 'false',
+              description:
+                'The phone layout: one template per row, tooltip on tap, variable strip collapsed, a taller field.',
+            },
+          ]}
         />
       </Section>
 
-      {PROPOSALS.map((p, index) => (
-        <Section
-          key={p.number}
-          title={`Proposal ${p.number} — ${p.approach}`}
-          description={p.rationale}
-          stage="development"
-        >
-          {TEMPLATE_STATES.map((state) => (
-            <StatePair
-              key={state.key}
-              name={state.name}
-              slug={`p${p.number}-${state.key}`}
-              trigger={state.trigger}
-              draw={proposal(index, state.initial)}
-            />
-          ))}
-        </Section>
-      ))}
+      <Section
+        title="PromptTemplatePicker props"
+        description="The tiles and the preview, on their own, so another surface can offer templates the same way. PromptSetup is this plus the card."
+      >
+        <PropsTable
+          rows={[
+            { name: 'templates', type: 'PromptTemplate[]', description: 'The tiles, in order.' },
+            {
+              name: 'selectedId / defaultSelectedId / onSelectedChange',
+              type: 'string | null',
+              description: 'The template in preview; null shows the tiles.',
+            },
+            {
+              name: 'defaultHighlightedId',
+              type: 'string | null',
+              description: 'A tile drawn hovered. Tracks the pointer on its own after that.',
+            },
+            {
+              name: 'appliedId',
+              type: 'string | null',
+              description: 'Ticks the tile of the template currently in the field.',
+            },
+            {
+              name: 'onApply',
+              type: '(template) => void',
+              description: '“Use this template” on the preview.',
+            },
+            {
+              name: 'onWriteOwn',
+              type: '() => void',
+              description: 'The dashed “Write my own” tile. Omitted when not supplied.',
+            },
+            {
+              name: 'replaces',
+              type: 'boolean',
+              default: 'false',
+              description: 'Adds a line to the preview saying the field’s text will be replaced.',
+            },
+            { name: 'narrow', type: 'boolean', default: 'false', description: 'One tile per row.' },
+            {
+              name: 'intro / writeOwnLabel / writeOwnDescription',
+              type: 'ReactNode',
+              description: 'The picker’s wording.',
+            },
+          ]}
+        />
+      </Section>
 
       <Section
-        title="Open for review"
-        description="Whether an applied template with blanks left should block Save outright, as drawn, or only warn. Blocking is the same rule as the unchanged default one step later; warning trusts a team that deliberately leaves “[calendar link]” for later. The templates are placeholders for Appendix A of the usage report."
+        title="Awaiting review"
+        stage="development"
+        description="Built and in development: the section keeps its badge until the built result is reviewed. The five templates are placeholders for Appendix A of the usage report. Proposals 2 (templates beside the field) and 3 (templates behind a button) were not picked; they stay in the review Artifact as the record."
       >
         <Caption>
-          Once a proposal is picked, the winner moves into <code>packages/ui</code> — most likely as
-          props on <code>AiPromptConfig</code> (placeholder, a save rule, templates) rather than a
-          new card — and gets the usual live example, usage snippet and props table. The losers are
-          deleted with the proposals file.
+          Still open: whether unfilled <code>[blanks]</code> should block Save, as built, or only
+          warn; and what happens to the teams already saved on the default.
         </Caption>
       </Section>
     </>

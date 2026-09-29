@@ -33,7 +33,8 @@ export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [
   {
     ticket: 'BF-4111',
     title: 'Custom prompt setup',
-    question: 'Where do the templates live relative to the prompt field?',
+    question:
+      'Proposal 1 (templates are the empty card) was picked and is built as PromptSetup — awaiting review of the built result.',
     decisions: 1,
     url: 'https://claude.ai/artifact/XueoTo44KeWYZoCiaZ8RKc',
   },
