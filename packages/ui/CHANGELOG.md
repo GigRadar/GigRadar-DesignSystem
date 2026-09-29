@@ -1,5 +1,30 @@
 # @gigradar/ui
 
+## 2.5.0
+
+### Minor Changes
+
+- 183e961: Auto Reply mode clarity (BF-4113). `AutoReply` gains a `details` slot under its mode row, `renderPrompt` to replace or drop the additional-prompt block, `optionsDirection` to stack the modes on a phone, and `dirty` for edits made inside `details`. New: `AutoReplyNote` (one line on what the open mode does and where its result shows up), `ReplyRateStat` (the AI-first vs person-first reply rate), `StopRuleList` with `defaultStopRules` (the fixed, read-only stop rules), and `ReplyTemplatePicker` (a minimal template picker for all other replies, to be replaced by BF-4111's). Theme: `component.autoReply.optionsGap`, `details`, `stopRule` and `templatePicker` tokens.
+- e5b8a46: Add `PromptSetup`, `PromptTemplatePicker` and `promptSaveState` for setting up the CRM custom prompt (BF-4111).
+
+  The card no longer arrives holding the default prompt. With nothing written it offers ready templates and "Write my own" in the field's place; a template previews read-only before it fills the field, which stays editable. The field starts empty with an example placeholder, Save stays off while the text is empty, the default, a template with `[blanks]` left, or already saved, an info tooltip lists what a prompt needs, and a one-time "Change this" popup points at the default badge. `promptSaveState` exports the same save rule for callers and servers. New `component.promptSetup` tokens in `@gigradar/theme`.
+
+- f20058f: Room type and Create BM room (BF-3481).
+
+  - New `RoomTypeTag` (`oneToOne` / `businessManager`, with a `loading` bar) and `roomTypeLabels`.
+  - `ChatHeader` takes optional `roomType` and `roomTypeLoading`, drawing the tag at the head of the meta row.
+  - `AddBmInfo` takes an optional `busyLabel` (defaults to "Adding"), and `managerName` is now optional — omitted, the manager chip is dropped.
+  - `HeaderMetaTag` gains a `meeting` variant.
+  - New `CreateBmRoomModal` and `CreateBmRoomConfirm`: the confirmation before a one-to-one room starts a Business Manager room.
+  - Theme: `component.middle.roomType` and `component.middle.createBmRoom` tokens.
+
+### Patch Changes
+
+- Updated dependencies [183e961]
+- Updated dependencies [e5b8a46]
+- Updated dependencies [f20058f]
+  - @gigradar/theme@2.5.0
+
 ## 2.4.0
 
 ### Minor Changes
