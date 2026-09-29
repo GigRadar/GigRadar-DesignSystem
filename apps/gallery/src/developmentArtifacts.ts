@@ -23,18 +23,12 @@ export type DevelopmentArtifact = {
   url: string;
 };
 
-export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [
-  {
-    ticket: 'BF-4280',
-    title: 'Per-account AI prompt and auto-reply',
-    question: 'Where an account’s prompt lives, and how its reply mode is reached.',
-    decisions: 2,
-    url: 'https://claude.ai/artifact/M5VMFPffnoqvBa6kDi38Su',
-  },
-  {
-    title: 'Stage update in room',
-    question: 'What a stage event’s name does when it no longer fits the row.',
-    decisions: 1,
-    url: 'https://claude.ai/artifact/KAVemxWFmSwMnAj4LVhoXJ',
-  },
-];
+/*
+ * Empty while nothing is under review.
+ *
+ * BF-4280 (per-account prompt and auto-reply) and the stage event's max-width
+ * name were both decided: the winning proposals moved into `packages/ui` and
+ * their surfaces became ordinary gallery pages, which is where a decided
+ * design belongs. The next review adds its entry here.
+ */
+export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [];

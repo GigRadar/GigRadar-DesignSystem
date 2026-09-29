@@ -26,6 +26,7 @@ import { AddBmInfoPage } from './pages/middle/AddBmInfoPage';
 import { FilterChatPage } from './pages/middle/FilterChatPage';
 import { MenuButtonPage } from './pages/middle/MenuButtonPage';
 import { LeadStageButtonPage } from './pages/middle/LeadStageButtonPage';
+import { StageUpdatePage } from './pages/middle/StageUpdatePage';
 import { BubbleChatPage } from './pages/middle/BubbleChatPage';
 import { AttachmentBubblePage } from './pages/middle/AttachmentBubblePage';
 import { SenderPage } from './pages/middle/SenderPage';
@@ -504,6 +505,17 @@ const NAV: NavGroup[] = [
                 id: 'crm-mid-leadstage',
                 label: 'Lead Stage Button',
                 render: () => <LeadStageButtonPage />,
+              },
+              {
+                /**
+                 * What the thread draws when a lead's stage changes — the
+                 * event, not the button that triggers it. Filed after the
+                 * button for that reason: one is the control, the other is
+                 * the record it leaves behind.
+                 */
+                id: 'crm-mid-stage-update',
+                label: 'Stage Update in Room',
+                render: () => <StageUpdatePage />,
               },
               {
                 id: 'crm-mid-bubble',

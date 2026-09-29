@@ -477,6 +477,24 @@ export type { RenderProp, WithDefaultRender } from './internal/render.js';
 export { AvatarGroup } from './components/Avatar/AvatarGroup.js';
 export type { AvatarGroupProps, AvatarGroupGap } from './components/Avatar/AvatarGroup.js';
 
+/**
+ * Per-account AI settings — the row a connected Upwork account's prompt and
+ * auto-reply mode open from.
+ *
+ * BF-4280. `AccountRow` is the list item; what it opens is a slot, because the
+ * prompt screen and the auto-reply screen list the same accounts and set
+ * different things on them.
+ */
+export { AccountList, AccountRow, AccountIdentity } from './components/AccountPrompt/AccountRow.js';
+export type {
+  AccountListProps,
+  AccountListStyleProps,
+  AccountRowProps,
+  AccountRowStyleProps,
+  AccountIdentityProps,
+  AccountIdentityStyleProps,
+} from './components/AccountPrompt/AccountRow.js';
+
 export { DatePicker } from './components/DatePicker/DatePicker.js';
 
 /**

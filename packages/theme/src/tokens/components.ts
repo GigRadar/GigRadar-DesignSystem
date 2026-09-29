@@ -3474,6 +3474,20 @@ const middle = {
     /** Space between the words and the badges inside the sentence. */
     innerGap: spacing.xxs,
     iconSize: 14,
+    /**
+     * How wide the "by …" name may get before it is clipped.
+     *
+     * An event is one line. A name long enough to wrap pushes "by" onto a
+     * second row and turns an inert one-line marker into a two-row block in
+     * the middle of the thread — and "Multiple" stacks three of them. So the
+     * name gives way rather than the row.
+     *
+     * The clipped name is not recoverable, which is the accepted cost: the
+     * alternative was a hover target on a row that is otherwise inert, and it
+     * would have carried nothing on a touch screen anyway. Figma draws the
+     * ellipsis (node 8945:23018, "Stage Transition - Max Width").
+     */
+    byMaxWidth: 180,
   },
   /**
    * The room itself — the thread, and the rails around it.

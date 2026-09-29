@@ -141,7 +141,27 @@ export const RoomEvent = forwardRef<HTMLDivElement, RoomEventProps>(function Roo
                   : toMode}
                 {by != null && (
                   <>
-                    by <strong style={{ ...textStyle.mMedium, color: tone }}>{by}</strong>
+                    by{' '}
+                    <strong
+                      style={{
+                        ...textStyle.mMedium,
+                        color: tone,
+                        // The name is the one part of the sentence allowed to
+                        // give way, so the event stays one line whatever it is
+                        // called. `inline-block` is what lets it clip at all,
+                        // and `vertical-align` puts it back on the baseline the
+                        // rest of the words sit on — without it the name rides
+                        // low against "by".
+                        display: 'inline-block',
+                        maxWidth: roomEvent.byMaxWidth,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        verticalAlign: 'bottom',
+                      }}
+                    >
+                      {by}
+                    </strong>
                   </>
                 )}
               </>

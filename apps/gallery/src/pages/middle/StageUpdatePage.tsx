@@ -1,11 +1,9 @@
 import { color, radius, spacing, textStyle } from '@gigradar/theme';
 import { HStack, LifecycleBadge, RoomEvent, VStack } from '@gigradar/ui';
 import type { ReactNode } from 'react';
-import { DevelopmentPlaceholder, Proposal } from '../../components/DevelopmentPlaceholder';
 import { Frame } from '../../components/Frame';
 import { PageHeader, Section } from '../../layout';
 import { AssembledInbox } from '../../demos/inboxScreen';
-import { PROPOSALS } from '../../proposals/StageEventNameProposals';
 
 /**
  * CRM ▸ Chat Room ▸ Stage Update in Room.
@@ -159,7 +157,7 @@ export function StageUpdatePage() {
 
       <Section
         title="Possible states"
-        description="Every alternative the Figma page draws. Three of the five are already what the shipped RoomEvent does; two are not, and are marked."
+        description="Every alternative the Figma page draws. Four of the five are what the shipped RoomEvent does; the last one is not, and is marked."
       >
         <State
           name="Stage Transition — Multiple"
@@ -228,8 +226,8 @@ export function StageUpdatePage() {
         <State
           name="Stage Transition — Max Width"
           slug="maxwidth"
-          ships={false}
-          trigger="The name is longer than the row can hold. Figma truncates it with an ellipsis; the shipped component wraps instead, so a long name turns the event into two rows. What the name does when it no longer fits is the open question — three proposals below."
+          ships
+          trigger="The name is longer than the row can hold, so it clips with an ellipsis and the event stays one line. The full name is not recoverable — the accepted cost of keeping the row inert, since a hover target would have carried nothing on a phone anyway."
           mobile={
             <AssembledInbox
               layout="mobile"
@@ -258,39 +256,6 @@ export function StageUpdatePage() {
             }
           />
         </State>
-
-        <DevelopmentPlaceholder
-          title="Stage event — the name at max width"
-          problem="A name longer than the row wraps the sentence onto a second line. Figma clips it with an ellipsis; what is undecided is whether the reader can still recover the full name, and what that costs."
-          proposalCount={PROPOSALS.length}
-        >
-          <VStack gap="l">
-            {PROPOSALS.map((proposal) => (
-              <Proposal
-                key={proposal.number}
-                number={proposal.number}
-                approach={proposal.approach}
-                rationale={proposal.rationale}
-              >
-                {/* Each proposal draws the long name and a short one, on the
-                    thread's own width rather than the full screen: the question
-                    is what the row does, and three whole Inboxes would bury it. */}
-                <VStack
-                  gap="xs"
-                  style={{
-                    width: 788,
-                    maxWidth: '100%',
-                    borderRadius: radius.xs,
-                    border: `1px solid ${color.navbar.border}`,
-                    backgroundColor: color.main.background,
-                  }}
-                >
-                  {proposal.render()}
-                </VStack>
-              </Proposal>
-            ))}
-          </VStack>
-        </DevelopmentPlaceholder>
 
         <State
           name="Stage Transition — Last message in the room list"

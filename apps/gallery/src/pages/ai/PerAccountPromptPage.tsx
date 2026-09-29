@@ -1,21 +1,165 @@
-import { HStack, LifecycleBadge, SettingsSection, VStack } from '@gigradar/ui';
-import { DevelopmentPlaceholder, Proposal } from '../../components/DevelopmentPlaceholder';
+import { color, component, textStyle } from '@gigradar/theme';
+import {
+  AccountIdentity,
+  AccountList,
+  AccountRow,
+  AutoReply,
+  Avatar,
+  Button,
+  CustomPromptField,
+  HStack,
+  SettingsSection,
+  StatusBadge,
+  VStack,
+} from '@gigradar/ui';
+import { useState } from 'react';
+import { CodeBlock } from '../../components/CodeBlock';
 import { SettingsScreen } from '../../demos/settingsScreen';
 import { PageHeader, Section } from '../../layout';
 import { CrossLink } from '../../navigation';
-import { AUTO_REPLY_PROPOSALS } from '../../proposals/AccountAutoReplyProposals';
-import { PROPOSALS } from '../../proposals/AccountPromptProposals';
 import { Caption } from '../middle/parts';
+
+const { accountPrompt } = component;
+
+/**
+ * The accounts the screen lists.
+ *
+ * Three profiles in three unrelated niches, which is the shape the ticket
+ * reported — and the reason the setting exists at all. One of them carries a
+ * prompt of its own and two run on the team prompt, so both states of the row
+ * are on screen without having to be described.
+ */
+const ACCOUNTS = [
+  {
+    id: 'ai-crm',
+    name: 'Investa Garden — AI & CRM Automation',
+    initials: 'IG',
+    tone: 'purple' as const,
+    prompt:
+      'We build AI and CRM automation for mid-market teams. Do not offer social media management or logistics work.',
+  },
+  {
+    id: 'social',
+    name: 'Investa Garden — Social Media Marketing',
+    initials: 'IG',
+    tone: 'magenta' as const,
+    prompt: '',
+  },
+  {
+    id: 'logistics',
+    name: 'Investa Garden — Logistics',
+    initials: 'IG',
+    tone: 'geekBlue' as const,
+    prompt: '',
+  },
+];
+
+const PLACEHOLDER =
+  'e.g. We do social media marketing only. Do not offer CRM automation or logistics.';
+
+/** The identity block, which is the same row on both screens. */
+function Identity({ account }: { account: (typeof ACCOUNTS)[number] }) {
+  const custom = account.prompt !== '';
+  return (
+    <AccountIdentity
+      avatar={<Avatar size="medium" initials={account.initials} tone={account.tone} />}
+      name={account.name}
+      status={custom ? 'Team prompt + account prompt' : 'Team prompt only'}
+      badge={
+        <StatusBadge tone={custom ? 'active' : 'inactive'}>
+          {custom ? 'Custom' : 'Inherited'}
+        </StatusBadge>
+      }
+    />
+  );
+}
+
+/** The account list, with each row opening its own prompt field. */
+function AccountPromptList() {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [drafts, setDrafts] = useState<Record<string, string>>(
+    Object.fromEntries(ACCOUNTS.map((account) => [account.id, account.prompt])),
+  );
+
+  return (
+    <AccountList>
+      {ACCOUNTS.map((account, index) => (
+        <AccountRow
+          key={account.id}
+          open={openId === account.id}
+          onOpenChange={(open) => setOpenId(open ? account.id : null)}
+          last={index === ACCOUNTS.length - 1}
+          panel={
+            <VStack gap={accountPrompt.gap}>
+              <span style={{ ...textStyle.sRegular, color: color.main.description }}>
+                Added after the team prompt, for this account only.
+              </span>
+              <CustomPromptField
+                value={drafts[account.id] ?? ''}
+                onChange={(next) => setDrafts((state) => ({ ...state, [account.id]: next }))}
+                placeholder={PLACEHOLDER}
+                minHeight={accountPrompt.stackedFieldMinHeight}
+              />
+              <HStack gap="xs" justifyContent="flex-end">
+                <Button
+                  size="small"
+                  variant="secondary"
+                  onClick={() => setDrafts((state) => ({ ...state, [account.id]: '' }))}
+                >
+                  Cancel
+                </Button>
+                {/* Saving an empty field is how an account goes back to
+                    inherited — the same gesture as clearing it, rather than a
+                    separate Reset to find. */}
+                <Button size="small" disabled={(drafts[account.id] ?? '').length === 0}>
+                  Save
+                </Button>
+              </HStack>
+            </VStack>
+          }
+        >
+          <Identity account={account} />
+        </AccountRow>
+      ))}
+    </AccountList>
+  );
+}
+
+/** The same list, with each row opening the auto-reply card instead. */
+function AccountAutoReplyList() {
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  return (
+    <AccountList>
+      {ACCOUNTS.map((account, index) => (
+        <AccountRow
+          key={account.id}
+          open={openId === account.id}
+          onOpenChange={(open) => setOpenId(open ? account.id : null)}
+          last={index === ACCOUNTS.length - 1}
+          panel={<AutoReply />}
+        >
+          <Identity account={account} />
+        </AccountRow>
+      ))}
+    </AccountList>
+  );
+}
 
 /**
  * CRM ▸ Settings ▸ AI Configuration ▸ Per-Account Prompt.
  *
- * BF-4280, under review. The screen around the proposals is the real one,
- * assembled from the components that ship it — rail, header, and the four
- * sections that already exist. Only the two blocks under review are new, and
- * each is a `DevelopmentPlaceholder` holding three competing proposals.
+ * BF-4280, decided. One team runs several Upwork profiles in unrelated niches,
+ * and both the prompt and the auto-reply mode were set once at team level — so
+ * any single value was right for one profile and wrong for the others.
  *
- * Drawn in place rather than on a page of their own: an account prompt sits
+ * Both decisions landed on the same shape: a list of accounts, each row opening
+ * its own settings. That agreement is the point. The prompt screen and the
+ * auto-reply screen list the same accounts, and picking a list in one place and
+ * a badge menu in the other would have left the screen with two ways of
+ * choosing an account for no reason a reader could name.
+ *
+ * Drawn in place rather than on a page of its own: an account prompt sits
  * directly under the team prompt it appends to, and per-account auto-reply
  * beside the team-level card it scopes — which is half of what makes either
  * legible.
@@ -25,11 +169,11 @@ export function PerAccountPromptPage() {
     <>
       <PageHeader
         title="Per-Account AI Prompt"
-        description="Scoping the AI prompt and auto-reply to a connected Upwork account rather than the whole team. BF-4280 — two decisions, three proposals each."
+        description="Scoping the AI prompt and auto-reply to a connected Upwork account rather than the whole team. BF-4280."
       />
 
       <CrossLink
-        eyebrow="The problem"
+        eyebrow="The problem it solves"
         links={[
           { label: 'CRM ▸ AI Configuration', pageId: 'crm-settings-ai' },
           { label: 'AI ▸ Custom Prompt', pageId: 'crm-ai-prompt' },
@@ -37,108 +181,82 @@ export function PerAccountPromptPage() {
         ]}
       >
         One team, three Upwork profiles, three unrelated niches — AI/CRM automation, social media
-        marketing, logistics. Both the prompt and the auto-reply mode are set once at team level, so
-        any single value is right for one profile and wrong for the other two. The inbox already
-        filters by account, so the system knows which profile a chat belongs to; neither setting has
-        access to that.
+        marketing, logistics. Both settings were team-wide, so any single value was right for one
+        profile and wrong for the other two. The inbox already filters by account, so the system
+        knows which profile a chat belongs to; now the prompt and the auto-reply mode do too.
       </CrossLink>
 
       <Section
-        title="The screen, with both decisions in place"
-        description="Everything except the two development cards is the shipped screen — SettingsPanel for the rail, SettingsHeader, and a SettingsSection per block wrapping AiPromptConfig, MentionPresetList, AutoReply and AiTool. Scroll the pane: Account Prompt sits under the team prompt it appends to, and per-account auto-reply beside the team-level card it scopes."
+        title="The screen"
+        description="Account Prompt sits under the team prompt it appends to, and per-account auto-reply beside the team-level card it scopes. Both are the same list, so an account is reached one way whatever is being set."
       >
         <SettingsScreen
           after={{
             prompt: (
               <SettingsSection
-                title={
-                  <HStack gap="xs" alignItems="center">
-                    Account Prompt
-                    <LifecycleBadge stage="development" />
-                  </HStack>
-                }
-                description="Instructions for one connected Upwork account, added after the team prompt above. Three proposals, all appending one field per account and differing only in where that field lives."
+                title="Account Prompt"
+                description="Instructions for one connected Upwork account, added after the team prompt above. An account with nothing of its own runs on the team prompt alone."
               >
-                <DevelopmentPlaceholder
-                  title="Account prompt"
-                  problem="A team running unrelated niches on separate Upwork profiles gets one team-level prompt that is wrong for every profile but one. Give an account instructions of its own, and say plainly which text wins when the two disagree."
-                  proposalCount={PROPOSALS.length}
-                >
-                  <VStack gap="l">
-                    {PROPOSALS.map((proposal) => (
-                      <Proposal
-                        key={proposal.number}
-                        number={proposal.number}
-                        approach={proposal.approach}
-                        rationale={proposal.rationale}
-                      >
-                        {proposal.render()}
-                      </Proposal>
-                    ))}
-                  </VStack>
-                </DevelopmentPlaceholder>
+                <AccountPromptList />
               </SettingsSection>
             ),
             autoReply: (
               <SettingsSection
-                title={
-                  <HStack gap="xs" alignItems="center">
-                    Auto Reply, per account
-                    <LifecycleBadge stage="development" />
-                  </HStack>
-                }
-                description="The same card as above, scoped to one account rather than the team. It already carries a mode per message class and “off” among those modes, so “this profile does not auto-reply” is a setting that exists rather than a switch to invent — what differs between the proposals is how an account is reached."
+                title="Auto Reply, per account"
+                description="The same card as above, scoped to one account rather than the team. It already carries a mode per message class and “off” among those modes, so “this profile does not auto-reply” is a setting that exists rather than a switch to invent."
               >
-                <DevelopmentPlaceholder
-                  title="Account auto-reply"
-                  problem="Stopping one profile from auto-replying currently means writing “do not auto-reply from account X” into the team prompt — asking a language model to enforce a rule the system could guarantee outright."
-                  proposalCount={AUTO_REPLY_PROPOSALS.length}
-                >
-                  <VStack gap="l">
-                    {AUTO_REPLY_PROPOSALS.map((proposal) => (
-                      <Proposal
-                        key={proposal.number}
-                        number={proposal.number}
-                        approach={proposal.approach}
-                        rationale={proposal.rationale}
-                      >
-                        {proposal.render()}
-                      </Proposal>
-                    ))}
-                  </VStack>
-                </DevelopmentPlaceholder>
+                <AccountAutoReplyList />
               </SettingsSection>
             ),
           }}
         />
         <Caption>
-          Both cards are collapsed until opened, so the screen first reads as it would once one
-          proposal per card has won and the rest are deleted.
+          Every row is collapsed until it is opened: the list is what the screen is for, and every
+          row open at once would bury it.
         </Caption>
       </Section>
 
       <Section
-        title="Deciding"
-        description="Every proposal is drawn against fifty accounts as well as three — a shape that works at three and collapses at fifty is a layout, not a design, which is why an earlier tab strip and card stack were cut."
+        title="The row"
+        description="`AccountRow` is the list item and what it opens is a slot — the row's job is which account is being edited, and what “edited” means differs per settings page."
       >
         <Caption>
-          Worth picking the same shape for both cards. If the list wins on the prompt section and the
-          badge menu wins on auto-reply, the screen ends up with two ways of choosing an account for
-          no reason a reader could name. My read is proposal 1 on both: three accounts is small
-          enough that a list reads at a glance, and it is then the same list in both places.
+          The whole row is the control rather than a button inside it. A button beside the name
+          implies a second thing to hit, and its label has to change to say what the chevron already
+          says by pointing.
+        </Caption>
+        <CodeBlock
+          code={`<AccountList>
+  <AccountRow
+    open={openId === account.id}
+    onOpenChange={(open) => setOpenId(open ? account.id : null)}
+    panel={<CustomPromptField value={draft} onChange={setDraft} />}
+  >
+    <AccountIdentity
+      avatar={<Avatar initials="IG" tone="purple" />}
+      name="Investa Garden — Logistics"
+      status="Team prompt only"
+      badge={<StatusBadge tone="inactive">Inherited</StatusBadge>}
+    />
+  </AccountRow>
+</AccountList>`}
+        />
+      </Section>
+
+      <Section
+        title="Why a list"
+        description="Tabs do not survive fifty accounts — they cannot wrap, and a scrolling strip hides the one being looked for. A side panel spends width the settings page does not have once the two columns stack on a narrow screen."
+      >
+        <Caption>
+          The list's own cost is height: with a long panel open, the accounts below are pushed off
+          the fold. That is the accepted trade, because the screen is used one account at a time.
         </Caption>
       </Section>
 
       <Section
-        title="Open for review"
-        description="Whether an account prompt should be able to replace the team prompt outright rather than only add to it. Every prompt proposal here appends, so this is the question none of them answers — worth settling before the pick rather than after. Robert's other two questions — splitting teams, and what breaks around billing, API keys, and connected-account limits — are product decisions, and nothing here commits to an answer."
-      >
-        <Caption>
-          Once each card is decided, the winner moves into <code>packages/ui</code> and takes the
-          section over with the usual live example, usage snippet and props table. The losers are
-          deleted with the proposals file.
-        </Caption>
-      </Section>
+        title="Still open"
+        description="Whether an account prompt should be able to replace the team prompt outright rather than only add to it. What ships appends, so this is the question it does not answer. Splitting teams, and what breaks around billing, API keys and connected-account limits, are product decisions that nothing here commits to."
+      />
     </>
   );
 }
