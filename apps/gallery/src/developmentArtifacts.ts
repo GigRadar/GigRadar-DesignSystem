@@ -24,11 +24,17 @@ export type DevelopmentArtifact = {
 };
 
 /*
- * Empty while nothing is under review.
- *
  * BF-4280 (per-account prompt and auto-reply) and the stage event's max-width
  * name were both decided: the winning proposals moved into `packages/ui` and
  * their surfaces became ordinary gallery pages, which is where a decided
- * design belongs. The next review adds its entry here.
+ * design belongs.
  */
-export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [];
+export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [
+  {
+    ticket: 'BF-4113',
+    title: 'Auto Reply mode clarity',
+    question: 'Can a team change the stop rules, and how far?',
+    decisions: 1,
+    url: 'https://claude.ai/artifact/5MnoFwFwmLbrH57gpguGXb',
+  },
+];
