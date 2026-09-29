@@ -1,5 +1,11 @@
 import { color } from '@gigradar/theme';
-import { IconTrunOffPower, type AutoReplyOption, type AutoReplyTab, type MentionPresetItem } from '@gigradar/ui';
+import {
+  IconTrunOffPower,
+  type AutoReplyOption,
+  type AutoReplyTab,
+  type MentionPresetItem,
+  type ReplyTemplate,
+} from '@gigradar/ui';
 
 /**
  * The sample data behind CRM ▸ Settings ▸ AI Configuration.
@@ -93,4 +99,59 @@ export const AUTO_REPLY_OPTIONS: AutoReplyOption[] = [
     markerIcon: IconTrunOffPower,
     markerColor: color.navbar.text,
   },
+];
+
+/*
+ * BF-4113 — the Auto Reply card with its modes explained. In development: the
+ * section it draws is marked as such until the built result is reviewed.
+ */
+
+/** The message classes, in the words the CRM usage audit uses. */
+export const REPLY_TABS: AutoReplyTab[] = [
+  { id: 'first', label: 'First reply', mode: 'fullAuto' },
+  { id: 'other', label: 'All other replies', mode: 'coPilot' },
+];
+
+/** What each mode does once it is on, and where you see it — per class. */
+export const MODE_LINES: Record<string, Partial<Record<string, string>>> = {
+  first: {
+    fullAuto:
+      'Laziza answers a new client message by itself. The reply shows in the Inbox thread, marked Laziza.',
+    coPilot:
+      'Laziza writes the first reply into the composer. Nothing sends until you press Send in the Inbox.',
+    off: 'Laziza stays out of it. New client messages wait in the Inbox for your team to answer.',
+  },
+  other: {
+    fullAuto:
+      'Laziza keeps the conversation going by itself, within the stop rules below. Replies show in the thread, marked Laziza.',
+    coPilot:
+      'Laziza drafts each follow-up into the composer. You review it in the Inbox and send it yourself.',
+    off: 'Every reply after the first is yours. Laziza drafts nothing and sends nothing.',
+  },
+};
+
+/** The audit's reply rates: AI first against a person first. */
+export const REPLY_RATE = { ai: 68, human: 50 };
+
+/** Starting points for "all other replies". Picking one fills the prompt. */
+export const REPLY_TEMPLATES: ReplyTemplate[] = [
+  {
+    id: 'call',
+    name: 'Answer, then book a call',
+    prompt:
+      'Answer the client’s question in two or three sentences, then offer a 20-minute call to go through the details. Share {{calendar_link}}.',
+  },
+  {
+    id: 'warm',
+    name: 'Keep it warm',
+    prompt:
+      'Thank the client, answer anything they asked directly, and end with one question about their timeline.',
+  },
+  {
+    id: 'qualify',
+    name: 'Qualify before scoping',
+    prompt:
+      'Before discussing approach, ask about budget range, deadline and who makes the decision. One question per message.',
+  },
+  { id: 'blank', name: 'Write my own', prompt: '' },
 ];

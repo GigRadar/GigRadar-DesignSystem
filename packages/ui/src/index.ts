@@ -119,8 +119,22 @@ export type {
   AutoReplyOption,
   AutoReplyOptionRenderProps,
   AutoReplyFooterRenderProps,
+  AutoReplyPromptRenderProps,
+  AutoReplyOptionsDirection,
   ReplyMode,
 } from './components/AutoReply/AutoReply.js';
+
+export { AutoReplyNote, ReplyRateStat } from './components/AutoReply/AutoReplyNote.js';
+export type { AutoReplyNoteProps, ReplyRateStatProps } from './components/AutoReply/AutoReplyNote.js';
+
+export { StopRuleList, defaultStopRules } from './components/AutoReply/StopRuleList.js';
+export type { StopRule, StopRuleListProps } from './components/AutoReply/StopRuleList.js';
+
+export { ReplyTemplatePicker } from './components/AutoReply/ReplyTemplatePicker.js';
+export type {
+  ReplyTemplate,
+  ReplyTemplatePickerProps,
+} from './components/AutoReply/ReplyTemplatePicker.js';
 
 export { ModeBadge } from './components/AutoReply/ModeBadge.js';
 export type { ModeBadgeProps, ModeBadgeStyleProps } from './components/AutoReply/ModeBadge.js';

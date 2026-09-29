@@ -33,7 +33,8 @@ export const DEVELOPMENT_ARTIFACTS: DevelopmentArtifact[] = [
   {
     ticket: 'BF-4113',
     title: 'Auto Reply mode clarity',
-    question: 'Can a team change the stop rules, and how far?',
+    question:
+      'Proposal 1 picked — fixed, read-only stop rules — and built into packages/ui; in development, awaiting review of the built result.',
     decisions: 1,
     url: 'https://claude.ai/artifact/5MnoFwFwmLbrH57gpguGXb',
   },

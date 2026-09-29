@@ -1167,6 +1167,48 @@ export const autoReply = {
   promptHeight: 64,
   /** Figma dims a disabled card rather than restyling it. */
   disabledOpacity: 0.3,
+  /** Between the mode options, side by side or stacked. */
+  optionsGap: spacing.s,
+  /**
+   * The block between the mode row and the prompt — the mode's one-line
+   * explanation, the reply-rate line, the template picker and the stop rules
+   * (BF-4113). Tighter than `gap`: the lines read as notes on the row above.
+   */
+  details: {
+    gap: spacing.s,
+    /** Between a note's leading icon and its text. */
+    noteGap: spacing.xs,
+    noteIconSize: 16,
+  },
+  /** The locked stop-rules list (BF-4113). */
+  stopRule: {
+    padding: spacing.s,
+    gap: spacing.s,
+    radius: radius.s,
+    iconSize: 16,
+    /** The lock beside each rule, and the gap to its "Always on" label. */
+    lockSize: 14,
+    lockGap: spacing.xxs,
+    /** Title over detail. */
+    textGap: 2,
+    /** Heading, lead line, list and footnote. */
+    blockGap: spacing.xs,
+  },
+  /**
+   * The reply-template picker. Minimal on purpose — BF-4111's custom-prompt
+   * template picker replaces it once that ships.
+   */
+  templatePicker: {
+    gap: spacing.xs,
+    menuOffset: spacing.xs,
+    menuMinWidth: 240,
+    menuPadding: spacing.xs,
+    menuGap: 2,
+    menuRadius: radius.s,
+    itemPaddingX: spacing.s,
+    itemPaddingY: spacing.xs,
+    itemRadius: radius.xs,
+  },
 } as const;
 
 /**
